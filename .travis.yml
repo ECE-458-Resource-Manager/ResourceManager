@@ -3,3 +3,5 @@ node_js:
   - "0.10"
 services:
   - mongodb
+notifications:
+  slack: ece458:OHYqdH5MDfVDvhvydEcs0Wsm
