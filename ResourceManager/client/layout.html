@@ -1,0 +1,29 @@
+<template name="layout">
+	<header>
+		<div class="navbar-fixed">
+			<nav> 
+				<div class="nav-wrapper" style="margin-left:50px; margin-right:50px;">
+					<ul class="left">
+						<li><a class="brand-logo" href="#">Resource Manager</a></li>
+					</ul>
+					<ul class="right">
+						<li><span>{{> loginButtons align="right"}}</span></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</header>
+
+	<main id="main" style="margin-bottom:50px; margin-left:50px; margin-right:50px;">
+		{{> yield}}
+	</main>
+
+	<footer class="page-footer" style="padding-top:0px;">
+		<div class="footer-copyright">
+			<div style="margin-left:50px; margin-right:50px;">
+				© 2016 Hypotheticorp, LLC
+				<span class="grey-text text-lighten-4 right">Allan Kiplagat, Davis Gossage, Emmanuel Shiferaw, and Sam Ginsburg</span>
+			</div>
+		</div>
+	</footer>
+</template>
