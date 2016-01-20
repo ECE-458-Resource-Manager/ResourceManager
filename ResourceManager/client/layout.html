@@ -1,13 +1,15 @@
 <template name="layout">
 	<header>
 		<div class="navbar-fixed">
-			<nav> 
+			<nav>
 				<div class="nav-wrapper" style="margin-left:50px; margin-right:50px;">
 					<ul class="left">
-						<li><a class="brand-logo" href="#">Resource Manager</a></li>
+						<li><a class="brand-logo" style="padding:0 15px 0 15px;" href="#">Resource Manager</a></li>
 					</ul>
 					<ul class="right">
-						<li><span>{{> loginButtons align="right"}}</span></li>
+						<li><a><i class="mdi-content-add-circle"></i></a></li>
+						<li><a><i class="mdi-social-people"></i></a></li>
+						<li>{{> loginButtons align="right"}}</li>
 					</ul>
 				</div>
 			</nav>
