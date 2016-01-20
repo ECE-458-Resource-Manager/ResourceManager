@@ -1,0 +1,1 @@
+Tests = new Meteor.Collection('tests');
