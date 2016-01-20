@@ -1,11 +1,12 @@
 language: node_js
 node_js:
   - "0.12"
-before_install:
-  - "curl -L https://raw.githubusercontent.com/arunoda/travis-ci-laika/master/configure.sh | /bin/sh"
+install:
+  - "curl https://install.meteor.com | /bin/sh"
+  - "npm install -g gagarin"
 services:
   - mongodb
-env:
-  - LAIKA_OPTIONS="-t 5000"
+script:
+  - gagarin -v
 notifications:
   slack: ece458:OHYqdH5MDfVDvhvydEcs0Wsm
