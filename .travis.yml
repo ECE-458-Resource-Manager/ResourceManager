@@ -1,3 +1,4 @@
+sudo: required
 language: node_js
 node_js:
   - "0.12"
@@ -7,6 +8,6 @@ install:
 services:
   - mongodb
 script:
-  - gagarin -v; pwd
+  - gagarin -v
 notifications:
   slack: ece458:OHYqdH5MDfVDvhvydEcs0Wsm
