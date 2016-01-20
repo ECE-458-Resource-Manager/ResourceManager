@@ -1,4 +1,4 @@
-Permission = new Mongo.Collection('permission');
+Permissions = new Mongo.Collection('permissions');
 
 /* Fields:
  * is_admin: Bool

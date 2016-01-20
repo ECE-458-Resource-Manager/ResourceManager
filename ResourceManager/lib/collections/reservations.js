@@ -1,4 +1,4 @@
-Reservation = new Mongo.Collection('reservation');
+Reservations = new Mongo.Collection('reservations');
 
 /* Fields:
  * owner_id (array)

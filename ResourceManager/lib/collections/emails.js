@@ -1,4 +1,4 @@
-Email = new Mongo.Collection('email');
+Emails = new Mongo.Collection('emails');
 
 /* Fields: 
  * sent_to: String [ ]

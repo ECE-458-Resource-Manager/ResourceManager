@@ -1,4 +1,4 @@
-UserGroup = new Mongo.Collection('usergroup');
+UserGroups = new Mongo.Collection('usergroups');
 
 /* Field:
  * name: String

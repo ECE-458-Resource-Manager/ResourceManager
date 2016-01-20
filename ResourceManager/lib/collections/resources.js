@@ -1,4 +1,4 @@
-Resource = new Mongo.Collection('resource');
+Resources = new Mongo.Collection('resources');
 
 /* Fields:
  * name: String
