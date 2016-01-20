@@ -7,6 +7,6 @@ install:
 services:
   - mongodb
 script:
-  - gagarin -v
+  - gagarin -v; pwd
 notifications:
   slack: ece458:OHYqdH5MDfVDvhvydEcs0Wsm
