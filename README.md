@@ -1,4 +1,4 @@
-![Travis Status](https://travis-ci.org/ECE-458-Resource-Manager/ResourceManager.svg?branch=master)
+[![Build Status](https://travis-ci.org/ECE-458-Resource-Manager/ResourceManager.svg?branch=master)](https://travis-ci.org/ECE-458-Resource-Manager/ResourceManager)
 
 # ResourceManager
 Project for ECE 458 - Engineering Software Maintainability
