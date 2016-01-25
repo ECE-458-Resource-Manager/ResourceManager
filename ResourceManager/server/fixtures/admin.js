@@ -3,10 +3,11 @@
 Meteor.startup(function () {
 	var admin = Meteor.users.findOne({username: "admin"});
 	if (!admin) {
-		Accounts.createUser({
+		admin_id = Accounts.createUser({
 			username: "admin",
 			// email: "admin@test.com",
 			password: "admin123",
 		});
+		Roles.addUsersToRoles(admin_id, ["admin"]);
 	}
 });

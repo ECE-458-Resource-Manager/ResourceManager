@@ -1,1 +1,1 @@
-// intentionally blank for now
+Meteor.subscribe('resources');
