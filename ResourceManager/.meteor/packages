@@ -22,6 +22,8 @@ momentjs:moment
 iron:router
 sacha:spin
 dburles:collection-helpers
-accounts-ui
 accounts-password
 anti:gagarin@=0.4.12
+useraccounts:materialize
+useraccounts:iron-routing
+alanning:roles
