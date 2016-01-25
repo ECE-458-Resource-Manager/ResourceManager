@@ -1,0 +1,3 @@
+[submodule "ResourceManager/packages/meteor-fullcalendar"]
+	path = ResourceManager/packages/meteor-fullcalendar
+	url = https://github.com/ECE-458-Resource-Manager/meteor-fullcalendar
