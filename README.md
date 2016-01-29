@@ -5,6 +5,8 @@ Project for ECE 458 - Engineering Software Maintainability
 
 A web application for resource management.
 
+Created by Allan Kiplagat, Davis Gossage, Emmanuel Shiferaw, and Sam Ginsburg.
+
 ## Cloning
 
 When cloning, make sure to include all project submodules with the --recursive option:
@@ -15,7 +17,6 @@ If already cloned without submodules, use:
 
 `git submodule update --init --recursive`
 
-Created by Allan Kiplagat, Davis Gossage, Emmanuel Shiferaw, and Sam Ginsburg.
 
 ## Deploying
 
