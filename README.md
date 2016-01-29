@@ -16,3 +16,16 @@ If already cloned without submodules, use:
 `git submodule update --init --recursive`
 
 Created by Allan Kiplagat, Davis Gossage, Emmanuel Shiferaw, and Sam Ginsburg.
+
+## Deploying
+
+To deploy to the aws instance using the mup package, use the following commands:
+
+Install mup: `npm install -g mup`
+
+Obtain the .pem file for the aws instance and modify mup.json to point to it
+
+Setup/update mup remotely: `mup setup`
+
+Deploy mup: `mup deploy`
+
