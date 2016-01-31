@@ -8,6 +8,12 @@ Router.route('/', {
     name: 'mainPage',
 });
 
+Router.route('/search',{
+    name: 'search',
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
 
 //Routes
 AccountsTemplates.configureRoute('changePwd');

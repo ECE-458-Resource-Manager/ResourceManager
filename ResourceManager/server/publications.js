@@ -1,3 +1,3 @@
-Meteor.publish('resources', function() {
-	return Resources.find();
+Meteor.publish('resources', function () {
+    return Resources.find();
 });

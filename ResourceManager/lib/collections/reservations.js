@@ -12,15 +12,15 @@ Reservations = new Mongo.Collection('reservations');
 
 ReservationSchema = new SimpleSchema({
     owner_id: {
-        type: [Number],
+        type: [String],
         label: "Owner ID"
     },
     attending_user_id: {
-        type: [Number],
+        type: [String],
         label: "Attending User ID"
     },
     resources: {
-        type: [Object],
+        type: [String],
         label: "Resources Reserved" 
     },
     start_date: {

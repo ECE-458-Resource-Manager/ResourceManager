@@ -1,0 +1,50 @@
+<template name="tagsFilter">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Choose required tags
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    {{#each availableTags}}
+                        <li class="required-tag"><a href="#">{{this}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <ul class="list-inline">
+                {{#each selectedRequiredTags}}
+                    <li class="required-tag">{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Choose tags to exclude
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    {{#each availableTags}}
+                        <li class="excluded-tag"><a href="#">{{this}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <ul class="list-inline">
+                {{#each selectedExcludedTags}}
+                    <li class="excluded-tag">{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+
+</template>
