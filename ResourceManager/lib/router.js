@@ -8,8 +8,15 @@ Router.route('/', {
     name: 'mainPage',
 });
 
-Router.route('/search',{
+Router.route('/search', {
     name: 'search',
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
+Router.route('/create', {
+    name: 'createResources',
     waitOn: function() {
         return Meteor.subscribe('resources');
     }
