@@ -3,7 +3,7 @@ var debug = true                       //debug flag for showing dummy events
 var dummyEvents = [
   {
     title : 'dummy event',
-    start : '2016-01-28T12:30:00'
+    start : moment()
   },
   {
     title : 'dummy event',
