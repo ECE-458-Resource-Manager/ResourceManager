@@ -4,11 +4,7 @@ var excludedTagsKey = 'excludedTags';
 
 Template.tagsFilter.helpers({
     availableTags: function () {
-        var tagArrays = Resources.find({}, {fields: {tags: 1}}).map(function (obj) {
-            return obj.tags;
-        });
-
-        var tags = _.uniq([].concat.apply([], tagArrays), false); // flatten tag arrays and get unique values
+        var tags = getAvailableTags(); // Used global helper
         return _.difference(tags, Session.get(requiredTagsKey), Session.get(excludedTagsKey));
     },
 

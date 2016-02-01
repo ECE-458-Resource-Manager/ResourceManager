@@ -1,0 +1,25 @@
+<template name="selectTags">
+	<div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Choose tags
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    {{#each availableTags}}
+                        <li class="selected-tag"><a href="#">{{this}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <ul class="list-inline">
+                {{#each selectedTags}}
+                    <li class="selected-tag">{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</template>

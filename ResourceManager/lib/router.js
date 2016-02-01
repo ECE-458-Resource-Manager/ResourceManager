@@ -11,6 +11,13 @@ Router.route('/', {
     }
 });
 
+Router.route('/create', {
+    name: 'createResources',
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
 //Routes
 AccountsTemplates.configureRoute('changePwd');
 AccountsTemplates.configureRoute('enrollAccount');
