@@ -1,3 +1,22 @@
+var debug = true                       //debug flag for showing dummy events
+
+var dummyEvents = [
+  {
+    title : 'dummy event',
+    start : '2016-01-28T12:30:00'
+  },
+  {
+    title : 'dummy event',
+    start : '2016-01-26T12:30:00'
+  },
+  {
+    title : 'dummy event',
+    start : '2016-02-04T12:30:00'
+  }
+]
+
+var events = debug ? dummyEvents : this.calEvents
+
 Template.calendar.helpers({
   options: function() {
     return {
@@ -15,22 +34,9 @@ Template.calendar.helpers({
       eventDrop: didMoveEvent,
       eventResize: didResizeEvent,
       //TODO: define color pallete globally!
-      eventColor: 'rgb(39, 170, 158)',
+      eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
       //TODO: dummy static events!
-      events: [
-        {
-          title : 'dummy event',
-          start : '2016-01-28T12:30:00'
-        },
-        {
-          title : 'dummy event',
-          start : '2016-01-26T12:30:00'
-        },
-        {
-          title : 'dummy event',
-          start : '2016-02-04T12:30:00'
-        }
-      ]
+      events: events
     }
   }
 });
