@@ -1,11 +1,38 @@
+var debug = true                       //debug flag for showing dummy events
+
+var dummyEvents = [
+  {
+    title : 'dummy event',
+    start : moment()
+  },
+  {
+    title : 'dummy event',
+    start : '2016-01-26T12:30:00'
+  },
+  {
+    title : 'dummy event',
+    start : '2016-02-04T12:30:00'
+  }
+]
+
+var events = debug ? dummyEvents : this.calEvents
+
+var defaultView = daysToDisplay() == 7 ? 'agendaWeek' : 'agendaXDay'
+
 Template.calendar.helpers({
   options: function() {
     return {
-      defaultView: 'agendaWeek',
+      defaultView: defaultView,
       header: {
         left:     'agendaDay,agendaWeek',
         center:   'title',
         right:    'today prev,next'
+      },
+      views: {
+        agendaXDay: {
+          type: 'agenda',
+          duration: { days: daysToDisplay() }
+        }
       },
       firstDay: 1,
       selectable: true,
@@ -14,26 +41,19 @@ Template.calendar.helpers({
       eventClick: didClickEvent,
       eventDrop: didMoveEvent,
       eventResize: didResizeEvent,
-      //TODO: define color pallete globally!
-      eventColor: 'rgb(39, 170, 158)',
+      eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
       //TODO: dummy static events!
-      events: [
-        {
-          title : 'dummy event',
-          start : '2016-01-28T12:30:00'
-        },
-        {
-          title : 'dummy event',
-          start : '2016-01-26T12:30:00'
-        },
-        {
-          title : 'dummy event',
-          start : '2016-02-04T12:30:00'
-        }
-      ]
+      events: events
     }
   }
 });
+
+
+/****
+* 
+* Event hooks
+*
+****/
 
 
 /**
@@ -114,4 +134,18 @@ A callback triggered after resizing when the event has changed duration.
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
   console.log("Event resized");
   console.log(event);
+}
+
+
+/****
+* 
+* Helpers
+*
+****/
+
+/**
+Looks at start and end date (from session?) and returns how many days will be displayed on the calendar
+**/
+function daysToDisplay(){
+  return 7
 }
