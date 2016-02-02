@@ -1,5 +1,8 @@
 <template name="resourceItem">
     <h5>{{name}}</h5>
     <p>{{description}}</p>
-    <p>Tags: {{formattedTags}}</p>
+    {{#each tags}}
+    	{{> tagChip}}
+    {{/each}}
+    <!-- <p>Tags: {{formattedTags}}</p> -->
 </template>

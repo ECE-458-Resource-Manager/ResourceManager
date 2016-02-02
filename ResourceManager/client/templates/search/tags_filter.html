@@ -13,17 +13,14 @@
 
     <div>
         {{#each selectedRequiredTags}}
-            <div class="chip">
-                {{this}}
-                <i class="material-icons">close</i>
-            </div>
+            {{> tagChip}}
         {{/each}}
     </div>
 
     <!-- Excluded tags section -->
 
     <!-- Dropdown Trigger -->
-    <a class='dropdown-button btn' href='#' data-activates='dropdown2'>Choose required tags</a>
+    <a class='dropdown-button btn' href='#' data-activates='dropdown2'>Choose excluded tags</a>
     <!-- Dropdown Structure -->
     <ul id='dropdown2' class='dropdown-content'>
         {{#each availableTags}}
@@ -33,10 +30,7 @@
 
     <div>
         {{#each selectedExcludedTags}}
-            <div class="chip">
-                {{this}}
-                <i class="material-icons">close</i>
-            </div>
+            {{> tagChip}}
         {{/each}}
     </div>
 
