@@ -1,5 +1,5 @@
 Template.createResources.rendered = function() {
-	clearCreateResourceForm();
+	Session.set(selectedTagsKey, []); // clear tags
 };
 
 Template.createResources.events({
@@ -19,7 +19,7 @@ Template.createResources.events({
 		});
 
 		// Clear form
-		clearCreateResourceForm();
+		clearCreateResourceForm(event);
 		// event.target.resourceName.value = "";
 		// event.target.resourceDescription.value = "";
 		// Session.set(selectedTagsKey, []);
@@ -29,7 +29,7 @@ Template.createResources.events({
 	}
 });
 
-function clearCreateResourceForm() {
+function clearCreateResourceForm(event) {
 	event.target.resourceName.value = "";
 	event.target.resourceDescription.value = "";
 	Session.set(selectedTagsKey, []);
