@@ -18,6 +18,10 @@ Router.route('/create', {
     }
 });
 
+Router.route('/calendar', {
+    name: 'calendar'
+});
+
 //Routes
 AccountsTemplates.configureRoute('changePwd');
 AccountsTemplates.configureRoute('enrollAccount');
