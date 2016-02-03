@@ -1,25 +1,18 @@
 <template name="selectTags">
-	<div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                    Choose tags
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    {{#each availableTags}}
-                        <li class="selected-tag"><a href="#">{{this}}</a></li>
-                    {{/each}}
-                </ul>
-            </div>
-        </div>
 
-        <div class="panel-body">
-            <ul class="list-inline">
-                {{#each selectedTags}}
-                    {{> tagChip}}
-                {{/each}}
-            </ul>
-        </div>
+    <!-- Dropdown Trigger -->
+    <a class='dropdown-button btn' href='#' data-activates='dropdown1'>Choose tags</a>
+    <!-- Dropdown Structure -->
+    <ul id='dropdown1' class='dropdown-content'>
+        {{#each availableTags}}
+            <li><a class="selected-tag" href="#">{{this}}</a></li>
+        {{/each}}
+    </ul>
+
+    <div>
+        {{#each selectedTags}}
+            {{> tagChip}}
+        {{/each}}
     </div>
+
 </template>
