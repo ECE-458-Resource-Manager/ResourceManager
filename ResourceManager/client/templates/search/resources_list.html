@@ -1,4 +1,7 @@
 <template name="resourcesList">
     <ul class="collection">
+        {{#each resources}}
+            {{> resourceItem }}
+        {{/each}}
     </ul>
 </template>

@@ -1,8 +1,10 @@
 <template name="resourceItem">
-    <h5>{{name}}</h5>
-    <p>{{description}}</p>
-    {{#each tags}}
-    	{{> tagChipNoX}}
-    {{/each}}
-    <!-- <p>Tags: {{formattedTags}}</p> -->
+	<a href="/calendar/{{_id}}" class="collection-item">
+    	<h5>{{name}}</h5>
+    	<p>{{description}}</p>
+    	{{#each tags}}
+    		{{> tagChipNoX}}
+    	{{/each}}
+    	<!-- <p>Tags: {{formattedTags}}</p> -->
+    </a>
 </template>

@@ -18,8 +18,12 @@ Router.route('/create', {
     }
 });
 
-Router.route('/calendar', {
-    name: 'calendar'
+Router.route('/calendar/:_id', {
+    name: 'calendar',
+    data: function() { return Resources.findOne(this.params._id); },
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
 });
 
 //Routes
