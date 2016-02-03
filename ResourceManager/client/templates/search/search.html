@@ -1,5 +1,29 @@
 <template name="search">
     <div>
+    <h3> Search </h3>
+	<nav class="navbar navbar-inverse" role="navigation">
+    	   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+           <form class="navbar-form navbar-left" role="search">
+           <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search" value="{{fcFilterSearchable.criteria}}" data-fc-search-target="search-box">
+          </div>
+          <button type="submit" class="btn btn-success fc-search-trigger" data-fc-search-trigger="search-box">Submit</button>
+          {{#if fcFilterSearchable.criteria}}<button type="button" class="btn btn-danger fc-search-clear">Reset</button>{{/if}}
+        </form>
+
+        <!-- active filters -->
+        {{#if fcFilterActive}}
+          <div class="navbar-form pull-right">
+            {{#each fcFilterActive}}
+              <a href="#" class="btn btn-info fc-filter-clear">{{title}}: {{operator}} {{value}}</a>
+            {{/each}}
+          </div>
+        {{/if}}
+        <!-- /active filters -->
+
+       </div>
+    </nav>
+
         <h3>Time Span</h3>
         <!--{{>timeSpan}}-->
 
@@ -8,6 +32,10 @@
 
         <h3>Resources</h3>
         {{> resourcesList }}
+
+        {{#each fcResults}}
+          {{name}}
+        {{/each}}
 
     </div>
 </template>

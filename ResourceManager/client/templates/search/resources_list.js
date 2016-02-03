@@ -3,3 +3,5 @@ Template.resourcesList.helpers({
         return Resources.find();
     }
 });
+
+
