@@ -1,4 +1,5 @@
-if (Resources.find().count() === 0) {
+Meteor.startup(function() { 
+    if (Resources.find().count() === 0) {
 
     // Laptops
 
@@ -125,4 +126,5 @@ if (Resources.find().count() === 0) {
         end_date: new Date(now + 7 * 24 * 3600 * 1000), // 7 days later
         cancelled: false
     });
-}
+    }
+});

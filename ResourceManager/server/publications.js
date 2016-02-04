@@ -3,6 +3,6 @@ Meteor.publish('resources', function () {
 });
 
 
-Meteor.FilterCollections.publish(Resources, {
+FilterCollections.publish(Resources, {
     name: 'resources_filter'
 });
