@@ -22,11 +22,13 @@
          </div>
          <!-- active filters -->
            {{#if fcFilterActive}}
-             <div class="navbar-form pull-right">
+              <hr/>
+              <strong>Active Filters</strong>
+              <ul class="nav nav-pills">
               {{#each fcFilterActive}}
-              <a href="#" class="btn btn-info fc-filter-clear">{{title}}: {{operator}} {{value}}</a>
+                  <li class="active"> <a href="#" class="btn btn-info fc-filter-clear">{{title}}: {{operator}} {{value}}</a></li>
               {{/each}}
-             </div>
+              </ul>
            {{/if}}
            <!-- /active filters -->
 
@@ -37,7 +39,11 @@
         <!-- {{> resourcesList }} !-->
          <div class="table-responsive">
              <table class="table table-striped table-hover table-condensed">
-                 <tr><th>Resource Name</th></tr>
+                 <tr><th class="fc-sort" data-fc-sort="name">
+                         Resource Name
+                         {{#if fcSort.name.desc}} (desc) {{/if}}
+                         {{#if fcSort.name.asc}} (asc) {{/if}}
+                </th></tr>
                  {{#each fcResults}}
                     <tr><td>{{name}}</td></tr>
                 {{/each}}
