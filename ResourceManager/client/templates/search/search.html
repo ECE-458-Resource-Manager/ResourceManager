@@ -45,7 +45,14 @@
                          {{#if fcSort.name.asc}} (asc) {{/if}}
                 </th></tr>
                  {{#each fcResults}}
-                    <tr><td>{{name}}</td></tr>
+                     <tr><td>
+                        <a href="/calendar/{{_id}}">
+                            <h5>{{name}}</h5>
+                            {{#each tags}}
+                              {{> tagChipNoX}}
+                            {{/each}}
+                        </a>
+                    </td></tr>
                 {{/each}}
             </table>
         </div>
