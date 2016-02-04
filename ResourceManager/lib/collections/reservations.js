@@ -4,7 +4,7 @@ Reservations = new Mongo.Collection('reservations');
  * owner_id (array)
  * attending_user_id (array)
  * privileged_user_id (array)
- * resources (array)
+ * resource_id
  * start_date (datetime)
  * end_date (datetime)
  * cancelled - Bool
@@ -19,9 +19,9 @@ ReservationSchema = new SimpleSchema({
         type: [String],
         label: "Attending User ID"
     },
-    resources: {
-        type: [String],
-        label: "Resources Reserved" 
+    resource_id: {
+        type: String,
+        label: "Resource Reserved ID" 
     },
     start_date: {
         type: Date,

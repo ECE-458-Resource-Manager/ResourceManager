@@ -1,4 +1,5 @@
-var debug = true                       //debug flag for showing dummy events
+var debug = false                       //debug flag for showing dummy events
+var attachedResource                    //resource attached to the calendar
 
 var dummyEvents = [
   {
@@ -15,7 +16,7 @@ var dummyEvents = [
   }
 ]
 
-var events = debug ? dummyEvents : this.calEvents
+var events = debug ? dummyEvents : getCalendarEvents
 
 var defaultView = daysToDisplay() == 7 ? 'agendaWeek' : 'agendaXDay'
 
@@ -49,6 +50,96 @@ Template.calendar.helpers({
 });
 
 
+Template.calendar.rendered = function(){
+  $('#resourceCalendar').fullCalendar({
+    defaultView: defaultView,
+    header: {
+      left:     'agendaDay,agendaWeek',
+      center:   'title',
+      right:    'today prev,next'
+    },
+    views: {
+      agendaXDay: {
+        type: 'agenda',
+        duration: { days: daysToDisplay() }
+      }
+    },
+    firstDay: 1,
+    selectable: true,
+    editable: true,
+    select: didMakeSelection,
+    eventClick: didClickEvent,
+    eventDrop: didMoveEvent,
+    eventResize: didResizeEvent,
+    eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
+    timezone: 'UTC',
+    //TODO: dummy static events!
+    events: events
+  })
+  attachedResource = this.data
+  refetchEvents();
+}
+
+
+/****
+*
+* Calendar Data Source
+*
+****/
+
+/**
+Tell the calendar to refetch its events.
+**/
+function refetchEvents(){
+  $('#resourceCalendar').fullCalendar('refetchEvents');
+}
+
+/**
+The function that is called by full calendar when it needs events for a certain time period.
+
+@param start
+  A moment.js object indicating the beginning of a selection
+@param end
+  A moment.js object indicating the end of a selection
+@param timezone
+  A string/boolean describing the calendar's current timezone
+@param callback
+  A function that must be called when the function has generated events
+**/
+function getCalendarEvents(start, end, timezone, callback){
+  var events = []
+  //are we linked to a resource?
+  if (attachedResource){
+    Meteor.call('queryReservations', attachedResource, function(error, result){
+      console.log(result.length);
+      for (var i = 0; i < result.length; i++) {
+        var reservation = result[i];
+        events.push(buildCalObject(reservation))
+      };
+      console.log(events)
+      callback(events)
+    });
+  }
+}
+
+/**
+Build a calendar object for use with full calendar.
+
+@param reservation
+  Reservations collection object
+**/
+
+function buildCalObject(reservation){
+  var calObject = {}
+  var labelString = "Owner:\n" + reservation.owner.username
+  labelString += "\nResource:\n" + attachedResource.name
+  calObject.title = labelString
+  calObject.start = moment(reservation.start_date)
+  calObject.end = moment(reservation.end_date)
+  return calObject
+}
+
+
 /****
 * 
 * Event hooks
@@ -71,7 +162,12 @@ http://fullcalendar.io/docs/selection/select_callback/
   The calendar view object
 **/
 function didMakeSelection(start, end, jsEvent, view){
-  console.log("Selection made " + start + " : " + end);
+  Meteor.call('createReservation', attachedResource, start.toDate(), end.toDate(), function(error, result){
+    if(error){
+      Materialize.toast(error.details, 3000);
+    }
+    refetchEvents();
+  })
 }
 
 
@@ -111,8 +207,8 @@ http://fullcalendar.io/docs/event_ui/eventDrop/
   The calendar view object
 **/
 function didMoveEvent(event, delta, revertFunc, jsEvent, ui, view){
-  console.log("Event moved");
-  console.log(event);
+  newStart = event.start.add(delta);
+  newEnd = event.end.add(delta);
 }
 
 /**
