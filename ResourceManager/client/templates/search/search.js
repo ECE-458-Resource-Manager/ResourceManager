@@ -15,5 +15,11 @@ ResourceFilter = new FilterCollections(Resources, {
             searchable: 'optional'
         }
 
+    },
+    pager: {
+        options: [3, 6, 9, 12, 15],
+        itemsPerPage: 3,
+        currentPage: 1,
+        showPages: 5,
     }
 });
