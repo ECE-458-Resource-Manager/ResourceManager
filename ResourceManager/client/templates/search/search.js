@@ -12,7 +12,7 @@ ResourceFilter = new FilterCollections(Resources, {
             title: 'Name',
             operator: ['$regex', 'i'],
             condition: '$and',
-            searchable: 'required'
+            searchable: 'optional'
         },
         tags: {
             title: 'Tags',
