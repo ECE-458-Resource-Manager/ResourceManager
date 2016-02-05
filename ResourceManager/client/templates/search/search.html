@@ -36,25 +36,19 @@
         <!--{{>timeSpan}}-->
         <br><br><br>
         
-        <!-- {{> resourcesList }} !-->
-         <div class="table-responsive">
-             <table class="table table-striped table-hover table-condensed">
-                 <tr><th class="fc-sort" data-fc-sort="name">
-                         Resource Name
-                         {{#if fcSort.name.desc}} (desc) {{/if}}
-                         {{#if fcSort.name.asc}} (asc) {{/if}}
-                </th></tr>
-                 {{#each fcResults}}
-                     <tr><td>
-                        <a href="/calendar/{{_id}}">
-                            <h5>{{name}}</h5>
-                            {{#each tags}}
-                              {{> tagChipNoX}}
-                            {{/each}}
-                        </a>
-                    </td></tr>
-                {{/each}}
-            </table>
+        <!-- {{> resourcesList }} -->
+     <a href="#" class="fc-sort-clear">Clear sorting</a>
+	 <div class="table-responsive">
+           <table class="table table-striped table-hover table-condensed">
+             <tr><th class="fc-sort" data-fc-sort="name">
+                     Resource Name
+                     {{#if fcSort.name.desc}} (desc) {{/if}}
+                     {{#if fcSort.name.asc}} (asc) {{/if}}
+             </th></tr>
+               {{#each fcResults}}
+                  {{> resourceItem}}
+             {{/each}}
+           </table>
         </div>
 
     </div>
