@@ -32,5 +32,5 @@ AccountsTemplates.configureRoute('enrollAccount');
 // AccountsTemplates.configureRoute('forgotPwd');
 // AccountsTemplates.configureRoute('resetPwd');
 AccountsTemplates.configureRoute('signIn');
-AccountsTemplates.configureRoute('signUp');
+// AccountsTemplates.configureRoute('signUp');
 // AccountsTemplates.configureRoute('verifyEmail');
