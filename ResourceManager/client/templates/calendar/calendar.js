@@ -111,12 +111,10 @@ function getCalendarEvents(start, end, timezone, callback){
   //are we linked to a resource?
   if (attachedResource){
     Meteor.call('queryReservations', attachedResource, function(error, result){
-      console.log(result.length);
       for (var i = 0; i < result.length; i++) {
         var reservation = result[i];
         events.push(buildCalObject(reservation))
       };
-      console.log(events)
       callback(events)
     });
   }
@@ -135,6 +133,7 @@ function buildCalObject(reservation){
   labelString += "\nResource:\n" + attachedResource.name
   calObject.title = labelString
   calObject.start = moment(reservation.start_date)
+  calObject.reservation = reservation
   calObject.end = moment(reservation.end_date)
   return calObject
 }
@@ -207,8 +206,8 @@ http://fullcalendar.io/docs/event_ui/eventDrop/
   The calendar view object
 **/
 function didMoveEvent(event, delta, revertFunc, jsEvent, ui, view){
-  newStart = event.start.add(delta);
-  newEnd = event.end.add(delta);
+  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate());
+  refetchEvents();
 }
 
 /**
@@ -228,8 +227,8 @@ A callback triggered after resizing when the event has changed duration.
   The calendar view object
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
-  console.log("Event resized");
-  console.log(event);
+  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate());
+  refetchEvents();
 }
 
 
