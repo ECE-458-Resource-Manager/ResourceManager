@@ -64,12 +64,18 @@ methods.createReservation = function(resource, startDate, endDate){
     New reservation end date (JS date object)
 **/
 methods.changeReservationTime = function(reservation, startDate, endDate){
-  Reservations.update(reservation._id, {
-    $set: {
-      start_date: startDate,
-      end_date: endDate
-    }
-  })
+  if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+  }
+  else{
+    Reservations.update(reservation._id, {
+      $set: {
+        start_date: startDate,
+        end_date: endDate
+      }
+    })
+  }
 }
 
 /**
@@ -79,11 +85,17 @@ methods.changeReservationTime = function(reservation, startDate, endDate){
     Reservation collection object
 **/
 methods.cancelReservation = function(reservation){
-  Reservations.update(reservation._id, {
-    $set: {
-      cancelled: true
-    }
-  })
+  if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+  }
+  else{
+    Reservations.update(reservation._id, {
+      $set: {
+        cancelled: true
+      }
+    })
+  }
 }
 
 /**

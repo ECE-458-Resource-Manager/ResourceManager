@@ -115,6 +115,7 @@ function getCalendarEvents(start, end, timezone, callback){
         var reservation = result[i];
         events.push(buildCalObject(reservation))
       };
+      console.log(events);
       callback(events)
     });
   }
@@ -162,9 +163,7 @@ http://fullcalendar.io/docs/selection/select_callback/
 **/
 function didMakeSelection(start, end, jsEvent, view){
   Meteor.call('createReservation', attachedResource, start.toDate(), end.toDate(), function(error, result){
-    if(error){
-      Materialize.toast(error.details, 3000);
-    }
+    errorHandle(error);
     refetchEvents();
   })
 }
@@ -206,8 +205,10 @@ http://fullcalendar.io/docs/event_ui/eventDrop/
   The calendar view object
 **/
 function didMoveEvent(event, delta, revertFunc, jsEvent, ui, view){
-  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate());
-  refetchEvents();
+  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
+    errorHandle(error);
+    refetchEvents();
+  });
 }
 
 /**
@@ -227,8 +228,10 @@ A callback triggered after resizing when the event has changed duration.
   The calendar view object
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
-  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate());
-  refetchEvents();
+  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
+    errorHandle(error);
+    refetchEvents();
+  });
 }
 
 
@@ -243,4 +246,11 @@ Looks at start and end date (from session?) and returns how many days will be di
 **/
 function daysToDisplay(){
   return 7
+}
+
+/**
+Present errors to the user in a nice way
+**/
+function errorHandle(error){
+  Materialize.toast(error.details, 3000);
 }
