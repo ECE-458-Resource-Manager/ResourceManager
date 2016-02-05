@@ -6,10 +6,21 @@ Router.configure({
 
 Router.route('/', {
     name: 'mainPage',
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
 });
 
-Router.route('/search',{
-    name: 'search',
+Router.route('/create', {
+    name: 'createResources',
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
+Router.route('/calendar/:_id', {
+    name: 'calendar',
+    data: function() { return Resources.findOne(this.params._id); },
     waitOn: function() {
         return Meteor.subscribe('resources');
     }

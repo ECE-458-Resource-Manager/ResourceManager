@@ -1,50 +1,37 @@
 <template name="tagsFilter">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                    Choose required tags
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    {{#each availableTags}}
-                        <li class="required-tag"><a href="#">{{this}}</a></li>
-                    {{/each}}
-                </ul>
-            </div>
-        </div>
 
-        <div class="panel-body">
-            <ul class="list-inline">
-                {{#each selectedRequiredTags}}
-                    <li class="required-tag">{{this}}</li>
-                {{/each}}
-            </ul>
-        </div>
+    <!-- Required tags section -->
+
+    <!-- Dropdown Trigger -->
+    <a class='dropdown-button btn' href='#' data-activates='dropdown1'>Choose required tags</a>
+    <!-- Dropdown Structure -->
+    <ul id='dropdown1' class='dropdown-content'>
+        {{#each availableTags}}
+            <li><a class="required-tag" href="#!">{{this}}</a></li>
+        {{/each}}
+    </ul>
+
+    <div>
+        {{#each selectedRequiredTags}}
+            {{> tagChip}}
+        {{/each}}
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                    Choose tags to exclude
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    {{#each availableTags}}
-                        <li class="excluded-tag"><a href="#">{{this}}</a></li>
-                    {{/each}}
-                </ul>
-            </div>
-        </div>
+    <!-- Excluded tags section -->
 
-        <div class="panel-body">
-            <ul class="list-inline">
-                {{#each selectedExcludedTags}}
-                    <li class="excluded-tag">{{this}}</li>
-                {{/each}}
-            </ul>
-        </div>
+    <!-- Dropdown Trigger -->
+    <a class='dropdown-button btn' href='#' data-activates='dropdown2'>Choose excluded tags</a>
+    <!-- Dropdown Structure -->
+    <ul id='dropdown2' class='dropdown-content'>
+        {{#each availableTags}}
+            <li><a class="excluded-tag" href="#!">{{this}}</a></li>
+        {{/each}}
+    </ul>
+
+    <div>
+        {{#each selectedExcludedTags}}
+            {{> tagChip}}
+        {{/each}}
     </div>
 
 </template>

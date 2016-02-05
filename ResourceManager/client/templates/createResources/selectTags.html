@@ -1,0 +1,18 @@
+<template name="selectTags">
+
+    <!-- Dropdown Trigger -->
+    <a class='dropdown-button btn' href='#' data-activates='dropdown1'>Choose tags</a>
+    <!-- Dropdown Structure -->
+    <ul id='dropdown1' class='dropdown-content'>
+        {{#each availableTags}}
+            <li><a class="selected-tag" href="#">{{this}}</a></li>
+        {{/each}}
+    </ul>
+
+    <div>
+        {{#each selectedTags}}
+            {{> tagChip}}
+        {{/each}}
+    </div>
+
+</template>

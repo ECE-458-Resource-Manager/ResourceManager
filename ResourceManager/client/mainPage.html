@@ -1,13 +1,3 @@
 <template name="mainPage">
-	<p>Welcome to Resource Manager!</p>
-	<!-- <div>{{> atForm}}</div> -->
-	<ul class="collection">
-		{{#each resources}}
-			{{> resource}}
-		{{/each}}
-	</ul>
-</template>
-
-<template name="resource">
-	<a href="#!" class="collection-item">Name: {{name}}, Description: {{description}}</a>
+    {{>search}}
 </template>
