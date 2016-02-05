@@ -102,7 +102,7 @@ if (Resources.find().count() === 0) {
     Reservations.insert({
         owner_id: [dummy._id],
         attending_user_id: [dummy._id],
-        resources: [hpEnvyId],
+        resource_id: hpEnvyId,
         start_date: now,
         end_date: new Date(now + 24 * 3600 * 1000), // 1 day later
         cancelled: false
@@ -111,7 +111,7 @@ if (Resources.find().count() === 0) {
     Reservations.insert({
         owner_id: [dummy._id],
         attending_user_id: [dummy._id],
-        resources: [macAirId],
+        resource_id: macAirId,
         start_date: now,
         end_date: new Date(now + 3 * 24 * 3600 * 1000), // 3 days later
         cancelled: false
@@ -120,7 +120,7 @@ if (Resources.find().count() === 0) {
     Reservations.insert({
         owner_id: [dummy._id],
         attending_user_id: [dummy._id],
-        resources: [dellId],
+        resource_id: dellId,
         start_date: now,
         end_date: new Date(now + 7 * 24 * 3600 * 1000), // 7 days later
         cancelled: false
