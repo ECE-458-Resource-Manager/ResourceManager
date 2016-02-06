@@ -14,7 +14,8 @@ var methods = {};
 **/
 methods.queryReservations = function(resource, startDate, endDate){
   var reservations = Reservations.find({
-    resource_id: resource._id
+    resource_id: resource._id,
+    cancelled: false
   }).fetch();
   //we want to include the actual objects for some references
   for (var i = 0; i < reservations.length; i++) {
@@ -44,7 +45,7 @@ methods.createReservation = function(resource, startDate, endDate){
   else{
       Reservations.insert({
         owner_id: [Meteor.userId()],
-        attending_user_id: [],
+        attending_user_id: [Meteor.userId()],
         resource_id: resource._id,
         start_date: startDate,
         end_date: endDate,
