@@ -1,6 +1,6 @@
 var requiredTagsKey = 'requiredTags';
 var excludedTagsKey = 'excludedTags';
-searchEntryKey = 'searchEntryKey'; // global variable also used in search.js
+searchEntryKey = 'searchEntryKey'; // global var used in search.js
 
 Template.tagsFilter.helpers({
     availableTags: function () {
@@ -65,7 +65,7 @@ var getTag = function (closeChipIcon) {
 }
 
 runFilters = function () {
-    ResourcesFilter.filter.clear('tags');
+    ResourcesFilter.filter.clear();
 
     // TODO: Figure out how to make both the required tags filter and excluded tags filter work simultaneously on 'tags' field
     // Required tags filter

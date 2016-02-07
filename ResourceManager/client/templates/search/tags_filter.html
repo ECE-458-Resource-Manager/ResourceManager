@@ -1,38 +1,41 @@
 <template name="tagsFilter">
 
     <!-- Required tags section -->
-
-    <!-- Dropdown Trigger -->
-    <a class='dropdown-button btn' href='#' data-activates='required-tags-dropdown'>Choose required tags</a>
-    <!-- Dropdown Structure -->
-    <ul id='required-tags-dropdown' class='dropdown-content'>
-        {{#each availableTags}}
-            <li><a class="required-tag" href="#!">{{this}}</a></li>
-        {{/each}}
-    </ul>
-
     <div>
-        {{#each requiredTags}}
-            {{> requiredTagChip}}
-        {{/each}}
+        <!-- Dropdown Trigger -->
+        <a class='dropdown-button btn' href='#' data-activates='required-tags-dropdown'>Choose required tags</a>
+        <!-- Dropdown Structure -->
+        <ul id='required-tags-dropdown' class='dropdown-content'>
+            {{#each availableTags}}
+                <li><a class="required-tag" href="#!">{{this}}</a></li>
+            {{/each}}
+        </ul>
+
+        <div>
+            {{#each requiredTags}}
+                {{> requiredTagChip}}
+            {{/each}}
+        </div>
     </div>
 
+    &nbsp;
 
     <!-- Excluded tags section -->
-
-    <!-- Dropdown Trigger -->
-    <a class='dropdown-button btn' href='#' data-activates='excluded-tags-dropdown'>Choose excluded tags</a>
-    <!-- Dropdown Structure -->
-    <ul id='excluded-tags-dropdown' class='dropdown-content'>
-        {{#each availableTags}}
-            <li><a class="excluded-tag" href="#!">{{this}}</a></li>
-        {{/each}}
-    </ul>
-
     <div>
-        {{#each excludedTags}}
-            {{> excludedTagChip}}
-        {{/each}}
+        <!-- Dropdown Trigger -->
+        <a class='dropdown-button btn' href='#' data-activates='excluded-tags-dropdown'>Choose excluded tags</a>
+        <!-- Dropdown Structure -->
+        <ul id='excluded-tags-dropdown' class='dropdown-content'>
+            {{#each availableTags}}
+                <li><a class="excluded-tag" href="#!">{{this}}</a></li>
+            {{/each}}
+        </ul>
+
+        <div>
+            {{#each excludedTags}}
+                {{> excludedTagChip}}
+            {{/each}}
+        </div>
     </div>
 
 </template>

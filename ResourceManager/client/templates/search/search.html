@@ -1,14 +1,25 @@
 <template name="search">
     <div>
         <h3>Time Span</h3>
+        <div class="row">
+            <div class="input-field col s6">
+                <input type="date" class="datepicker" id="start_date">
+                <label class="active" for="start_date">Start date</label>
+            </div>
 
-        <h3>Search</h3>
-        <div class="input-field col s6">
-            <input placeholder="Enter resource name" id="search_entry" type="text" class="validate">
+            <div class="input-field col s6">
+                <input type="date" class="datepicker" id="end_date">
+                <label class="active" for="end_date">End date</label>
+            </div>
         </div>
 
         <h3>Tags</h3>
         {{>tagsFilter}}
+
+        <h3>Search</h3>
+        <div class="input-field">
+            <input placeholder="Enter resource name" id="search_entry" type="text" class="validate">
+        </div>
 
         <h3>Resources</h3>
         <!-- Sort button -->
