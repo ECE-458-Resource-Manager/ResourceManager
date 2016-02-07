@@ -11,20 +11,33 @@ var methods = {};
     start date for query (JS date object)
   @param endDate
     end date for query (JS date object)
+  @param returnQueryParams
+    Returns the db query params instead of the processed data
 **/
-methods.queryReservations = function(resource, startDate, endDate){
-  var reservations = Reservations.find({
+methods.queryReservations = function(resource, startDate, endDate, returnQueryParams){
+  var params = {
     resource_id: resource._id,
-    cancelled: false
-  }).fetch();
+    cancelled: false,
+    start_date: {
+      $gte: startDate
+    },
+    end_date: {
+      $lte: endDate
+    }
+  };
+  var reservations = Reservations.find(params);
+  if (returnQueryParams){
+    return params;
+  }
+  var reservationData = reservations.fetch();
   //we want to include the actual objects for some references
-  for (var i = 0; i < reservations.length; i++) {
-    var reservation = reservations[i]
+  for (var i = 0; i < reservationData.length; i++) {
+    var reservation = reservationData[i]
     //TODO: send objects for all owners?
     reservation.owner = Meteor.users.findOne({_id:reservation.owner_id[0]});
     reservation.resource = resource;
   };
-  return reservations;
+  return reservationData;
 }
 
 /**
