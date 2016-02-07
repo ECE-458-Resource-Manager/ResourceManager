@@ -85,10 +85,12 @@ if (Resources.find().count() === 0) {
 
     var dummy = Meteor.users.findOne({username: "dummy"});
     if (!dummy) {
-        dummy = Accounts.createUser({
+        //Accounts.createUser only returns the ID
+        var dummyId = Accounts.createUser({
             username: "dummy",
             password: "dummy123",
         });
+        dummy = Meteor.users.findOne({_id: dummyId});
     }
 
     // Create reservations for dummy user
