@@ -1,13 +1,44 @@
 <template name="search">
     <div>
         <h3>Time Span</h3>
-        <!--{{>timeSpan}}-->
+        <div class="row">
+            <div class="input-field col s6">
+                <input type="date" class="datepicker" id="start_date">
+                <label class="active" for="start_date">Start date</label>
+            </div>
+
+            <div class="input-field col s6">
+                <input type="date" class="datepicker" id="end_date">
+                <label class="active" for="end_date">End date</label>
+            </div>
+        </div>
 
         <h3>Tags</h3>
         {{>tagsFilter}}
 
-        <h3>Resources</h3>
-        {{> resourcesList }}
+        <h3>Search</h3>
+        <div class="input-field">
+            <input placeholder="Enter resource name" id="search_entry" type="text" class="validate">
+        </div>
 
+        <h3>Resources</h3>
+        <!-- Sort button -->
+        <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
+            {{#if fcSort.name.desc}}
+                Sorted desc
+            {{else}}
+                {{#if fcSort.name.asc}}
+                    Sorted asc
+                {{else}}
+                    Sort
+                {{/if}}
+            {{/if}}
+        </a>
+
+        <ul class="collection">
+            {{#each fcResults}}
+                {{> resourceItem }}
+            {{/each}}
+        </ul>
     </div>
 </template>

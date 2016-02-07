@@ -5,10 +5,8 @@ Router.configure({
 });
 
 Router.route('/', {
-    name: 'mainPage',
-    waitOn: function() {
-        return Meteor.subscribe('resources');
-    }
+    name: 'mainPage'
+    // Subscription to resources is handled by the filter-collections package
 });
 
 Router.route('/create', {
