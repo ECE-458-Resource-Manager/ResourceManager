@@ -2,12 +2,26 @@
     <div>
         <h3>Time Span</h3>
 
+        <h3>Search</h3>
+        <div class="input-field col s6">
+            <input placeholder="Enter resource name" id="search_entry" type="text" class="validate">
+        </div>
+
         <h3>Tags</h3>
         {{>tagsFilter}}
 
         <h3>Resources</h3>
+        <!-- Sort button -->
         <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
-            Sort {{#if fcSort.name.desc}}desc{{/if}} {{#if fcSort.name.asc}}asc{{/if}}
+            {{#if fcSort.name.desc}}
+                Sorted desc
+            {{else}}
+                {{#if fcSort.name.asc}}
+                    Sorted asc
+                {{else}}
+                    Sort
+                {{/if}}
+            {{/if}}
         </a>
 
         <ul class="collection">
