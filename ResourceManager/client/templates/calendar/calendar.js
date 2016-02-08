@@ -317,7 +317,7 @@ Triggered while an event is being rendered by full calendar.
 **/
 function calendarEventRendered(event, element, view){
   //we need to insert a delete button
-  var deleteHtml = "<i class='fc-delete-button material-icons'>delete</i>"
+  var deleteHtml = "<i class='fc-delete-button material-icons'>close</i>"
   element.find('.fc-content').append(deleteHtml);
 }
 
