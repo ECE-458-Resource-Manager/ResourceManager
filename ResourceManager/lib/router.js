@@ -24,6 +24,10 @@ Router.route('/calendar/:_id', {
     }
 });
 
+Router.route('/manageUsers', {
+    name: 'manageUsers'
+});
+
 //Routes
 AccountsTemplates.configureRoute('changePwd');
 AccountsTemplates.configureRoute('enrollAccount');

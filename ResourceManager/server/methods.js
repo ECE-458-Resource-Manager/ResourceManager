@@ -101,7 +101,7 @@ methods.changeReservationTime = function(reservation, startDate, endDate){
 methods.cancelReservation = function(reservation){
   if (!Meteor.userId()){
     //TODO: or not privileged
-    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+    throw new Meteor.Error('Error 401: Unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
     Reservations.update(reservation._id, {
@@ -117,6 +117,22 @@ methods.cancelReservation = function(reservation){
 * Helpers
 *
 **/
+
+/**
+  Create/enroll a new user account.
+  Sends an email to the user linking to a page to set their password.
+  **/
+  methods.createAccount = function(username, email){
+    if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'The user is not authorized to create a new user account.');
+  }
+  var accountId = Accounts.createUser({
+    'username': username,
+    'email': email
+  });
+  Accounts.sendEnrollmentEmail(accountId);
+}
 
 /**
 Look through some array of objects and build an array of the object's IDs
