@@ -265,7 +265,10 @@ http://fullcalendar.io/docs/event_ui/eventDrop/
 **/
 function didMoveEvent(event, delta, revertFunc, jsEvent, ui, view){
   Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
-    errorHandle(error);
+    if (error){
+      revertFunc();
+      errorHandle(error);
+    }
   });
 }
 
@@ -287,7 +290,10 @@ A callback triggered after resizing when the event has changed duration.
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
   Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
-    errorHandle(error);
+    if (error){
+      revertFunc();
+      errorHandle(error);
+    }
   });
 }
 
