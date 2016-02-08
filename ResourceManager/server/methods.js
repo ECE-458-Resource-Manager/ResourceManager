@@ -3,7 +3,7 @@ var methods = {};
 
 
 /**
-  Query reservations given a resource
+  Get a stream of reservations given a resource, constained by start and end date.
 
   @param resource
     A resource to find associated reservations
@@ -13,8 +13,11 @@ var methods = {};
     end date for query (JS date object)
   @param returnQueryParams
     Returns the db query params instead of the processed data
+
+  @return
+    An array of objects formatted for use with full calendar
 **/
-methods.queryReservations = function(resource, startDate, endDate, returnQueryParams){
+methods.getReservationStream = function(resource, startDate, endDate, returnQueryParams){
   var params = {
     resource_id: resource._id,
     cancelled: false,
@@ -29,15 +32,15 @@ methods.queryReservations = function(resource, startDate, endDate, returnQueryPa
   if (returnQueryParams){
     return params;
   }
+
   var reservationData = reservations.fetch();
-  //we want to include the actual objects for some references
+  var calendarEventObjects = [];
+  
   for (var i = 0; i < reservationData.length; i++) {
     var reservation = reservationData[i]
-    //TODO: send objects for all owners?
-    reservation.owner = Meteor.users.findOne({_id:reservation.owner_id[0]});
-    reservation.resource = resource;
+    calendarEventObjects.push(buildCalObject(reservation, resource));
   };
-  return reservationData;
+  return calendarEventObjects;
 }
 
 /**
@@ -117,6 +120,34 @@ methods.cancelReservation = function(reservation){
 * Helpers
 *
 **/
+
+/**
+Build a calendar object for use with full calendar.
+
+@param reservation
+  Reservations collection object
+**/
+
+function buildCalObject(reservation, resource){
+  /**
+  * Format the reservation object
+  **/
+  //we want to include the actual objects for some references
+  //TODO: send objects for all owners?
+  reservation.owner = Meteor.users.findOne({_id:reservation.owner_id[0]});
+  reservation.resource = resource;
+  /**
+  * Format the calendar object
+  **/
+  var calObject = {}
+  var labelString = "Owner:\n" + reservation.owner.username
+  labelString += "\nResource:\n" + resource.name
+  calObject.title = labelString
+  calObject.start = reservation.start_date
+  calObject.reservation = reservation
+  calObject.end = reservation.end_date
+  return calObject
+}
 
 /**
 Look through some array of objects and build an array of the object's IDs
