@@ -107,7 +107,7 @@ function listenForChanges(startDate, endDate){
   }
 
   //we need to find the query paramaters, which we'll be observing for changes
-  Meteor.call('queryReservations', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
+  Meteor.call('getReservationStream', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
     errorHandle(error);
     var params = result;
     activeListener = Reservations.find(params).observeChanges({
@@ -155,32 +155,16 @@ function getCalendarEvents(start, end, timezone, callback){
   var events = []
   //are we linked to a resource?
   if (attachedResource){
-    Meteor.call('queryReservations', attachedResource, start.toDate(), end.toDate(), false, function(error, result){
+    Meteor.call('getReservationStream', attachedResource, start.toDate(), end.toDate(), false, function(error, result){
+      errorHandle(error);
+      //initialize dates as moments, can't send moments via server
       for (var i = 0; i < result.length; i++) {
-        var reservation = result[i];
-        events.push(buildCalObject(reservation))
+        result[i].start = moment(result[i].start)
+        result[i].end = moment(result[i].end)
       };
-      callback(events)
+      callback(result);
     });
   }
-}
-
-/**
-Build a calendar object for use with full calendar.
-
-@param reservation
-  Reservations collection object
-**/
-
-function buildCalObject(reservation){
-  var calObject = {}
-  var labelString = "Owner:\n" + reservation.owner.username
-  labelString += "\nResource:\n" + attachedResource.name
-  calObject.title = labelString
-  calObject.start = moment(reservation.start_date)
-  calObject.reservation = reservation
-  calObject.end = moment(reservation.end_date)
-  return calObject
 }
 
 
@@ -227,7 +211,7 @@ http://fullcalendar.io/docs/mouse/eventClick/
 function didClickEvent(event, jsEvent, view){
   //was the delete button clicked?
   if($(jsEvent.target).hasClass('fc-delete-button')){
-    didDeleteEvent(event, jsEvent, view);
+    shouldDeleteEvent(event, jsEvent, view);
   }
   else{
     console.log("Event clicked:");
@@ -245,9 +229,19 @@ A callback triggered when the user deletes an event
 @param view
   The calendar view object
 **/
-function didDeleteEvent(){
-  Meteor.call('cancelReservation', event.reservation, function(error, result){
-    errorHandle(error);
+function shouldDeleteEvent(event, jsEvent, view){
+  MaterializeModal.message({
+    title: 'Confirm',
+    submitLabel: 'Yes',
+    closeLabel: 'Cancel',
+    message: 'Are you sure you want to delete?',
+    callback: function(error, response){
+      if (response.submit){
+        Meteor.call('cancelReservation', event.reservation, function(error, result){
+          errorHandle(error);
+        });
+      }
+    }
   });
 }
 
@@ -271,7 +265,10 @@ http://fullcalendar.io/docs/event_ui/eventDrop/
 **/
 function didMoveEvent(event, delta, revertFunc, jsEvent, ui, view){
   Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
-    errorHandle(error);
+    if (error){
+      revertFunc();
+      errorHandle(error);
+    }
   });
 }
 
@@ -293,7 +290,10 @@ A callback triggered after resizing when the event has changed duration.
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
   Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
-    errorHandle(error);
+    if (error){
+      revertFunc();
+      errorHandle(error);
+    }
   });
 }
 
@@ -317,7 +317,7 @@ Triggered while an event is being rendered by full calendar.
 **/
 function calendarEventRendered(event, element, view){
   //we need to insert a delete button
-  var deleteHtml = "<i class='fc-delete-button material-icons'>delete</i>"
+  var deleteHtml = "<i class='fc-delete-button material-icons'>close</i>"
   element.find('.fc-content').append(deleteHtml);
 }
 
