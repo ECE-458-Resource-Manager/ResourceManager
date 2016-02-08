@@ -1,3 +1,6 @@
 [submodule "ResourceManager/packages/meteor-fullcalendar"]
 	path = ResourceManager/packages/meteor-fullcalendar
 	url = https://github.com/ECE-458-Resource-Manager/meteor-fullcalendar
+[submodule "ResourceManager/packages/filter-collections"]
+	path = ResourceManager/packages/filter-collections
+	url = https://github.com/ECE-458-Resource-Manager/filter-collections

@@ -11,19 +11,33 @@ var methods = {};
     start date for query (JS date object)
   @param endDate
     end date for query (JS date object)
+  @param returnQueryParams
+    Returns the db query params instead of the processed data
 **/
-methods.queryReservations = function(resource, startDate, endDate){
-  var reservations = Reservations.find({
-    resource_id: resource._id
-  }).fetch();
+methods.queryReservations = function(resource, startDate, endDate, returnQueryParams){
+  var params = {
+    resource_id: resource._id,
+    cancelled: false,
+    start_date: {
+      $gte: startDate
+    },
+    end_date: {
+      $lte: endDate
+    }
+  };
+  var reservations = Reservations.find(params);
+  if (returnQueryParams){
+    return params;
+  }
+  var reservationData = reservations.fetch();
   //we want to include the actual objects for some references
-  for (var i = 0; i < reservations.length; i++) {
-    var reservation = reservations[i]
+  for (var i = 0; i < reservationData.length; i++) {
+    var reservation = reservationData[i]
     //TODO: send objects for all owners?
     reservation.owner = Meteor.users.findOne({_id:reservation.owner_id[0]});
     reservation.resource = resource;
   };
-  return reservations;
+  return reservationData;
 }
 
 /**
@@ -44,7 +58,7 @@ methods.createReservation = function(resource, startDate, endDate){
   else{
       Reservations.insert({
         owner_id: [Meteor.userId()],
-        attending_user_id: [],
+        attending_user_id: [Meteor.userId()],
         resource_id: resource._id,
         start_date: startDate,
         end_date: endDate,
@@ -64,12 +78,18 @@ methods.createReservation = function(resource, startDate, endDate){
     New reservation end date (JS date object)
 **/
 methods.changeReservationTime = function(reservation, startDate, endDate){
-  Reservations.update(reservation._id, {
-    $set: {
-      start_date: startDate,
-      end_date: endDate
-    }
-  })
+  if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+  }
+  else{
+    Reservations.update(reservation._id, {
+      $set: {
+        start_date: startDate,
+        end_date: endDate
+      }
+    })
+  }
 }
 
 /**
@@ -79,11 +99,17 @@ methods.changeReservationTime = function(reservation, startDate, endDate){
     Reservation collection object
 **/
 methods.cancelReservation = function(reservation){
-  Reservations.update(reservation._id, {
-    $set: {
-      cancelled: true
-    }
-  })
+  if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+  }
+  else{
+    Reservations.update(reservation._id, {
+      $set: {
+        cancelled: true
+      }
+    })
+  }
 }
 
 /**

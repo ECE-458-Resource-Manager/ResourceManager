@@ -1,5 +1,6 @@
-var debug = false                       //debug flag for showing dummy events
-var attachedResource                    //resource attached to the calendar
+var debug = false;                      //debug flag for showing dummy events
+var attachedResource;                   //resource attached to the calendar
+var activeListener;                     //the current meteor collection listener
 
 var dummyEvents = [
   {
@@ -71,6 +72,8 @@ Template.calendar.rendered = function(){
     eventClick: didClickEvent,
     eventDrop: didMoveEvent,
     eventResize: didResizeEvent,
+    eventRender: calendarEventRendered,
+    viewRender: viewRendered,
     eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
     timezone: 'UTC',
     //TODO: dummy static events!
@@ -78,6 +81,10 @@ Template.calendar.rendered = function(){
   })
   attachedResource = this.data
   refetchEvents();
+  var view = getCalendarView();
+  listenForChanges(view.intervalStart, view.intervalEnd);
+
+  Meteor.subscribe("reservations");
 }
 
 
@@ -86,6 +93,44 @@ Template.calendar.rendered = function(){
 * Calendar Data Source
 *
 ****/
+
+/**
+Listen to the Reservations collection for changes
+**/
+function listenForChanges(startDate, endDate){
+
+  //don't run the reactive updates on initial load
+  var initializing = true;
+
+  if (activeListener){
+    activeListener.stop();
+  }
+
+  //we need to find the query paramaters, which we'll be observing for changes
+  Meteor.call('queryReservations', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
+    errorHandle(error);
+    var params = result;
+    activeListener = Reservations.find(params).observeChanges({
+      added: function(id, fields) {
+        if (!initializing){
+          refetchEvents();
+        }
+      },
+      changed: function(id, fields) {
+        if (!initializing){
+          refetchEvents();
+        }
+      },
+      removed: function(id) {
+        if (!initializing){
+          refetchEvents();
+        }
+      }
+    });
+    initializing = false;
+  });
+
+}
 
 /**
 Tell the calendar to refetch its events.
@@ -110,7 +155,7 @@ function getCalendarEvents(start, end, timezone, callback){
   var events = []
   //are we linked to a resource?
   if (attachedResource){
-    Meteor.call('queryReservations', attachedResource, function(error, result){
+    Meteor.call('queryReservations', attachedResource, start.toDate(), end.toDate(), false, function(error, result){
       for (var i = 0; i < result.length; i++) {
         var reservation = result[i];
         events.push(buildCalObject(reservation))
@@ -162,10 +207,7 @@ http://fullcalendar.io/docs/selection/select_callback/
 **/
 function didMakeSelection(start, end, jsEvent, view){
   Meteor.call('createReservation', attachedResource, start.toDate(), end.toDate(), function(error, result){
-    if(error){
-      Materialize.toast(error.details, 3000);
-    }
-    refetchEvents();
+    errorHandle(error);
   })
 }
 
@@ -183,8 +225,30 @@ http://fullcalendar.io/docs/mouse/eventClick/
   The calendar view object
 **/
 function didClickEvent(event, jsEvent, view){
-  console.log("Event clicked:");
-  console.log(event);
+  //was the delete button clicked?
+  if($(jsEvent.target).hasClass('fc-delete-button')){
+    didDeleteEvent(event, jsEvent, view);
+  }
+  else{
+    console.log("Event clicked:");
+    console.log(event);
+  }
+}
+
+/**
+A callback triggered when the user deletes an event
+
+@param event
+  A full calendar event object holding the event information
+@param jsEvent
+  Primitive JavaScript event object
+@param view
+  The calendar view object
+**/
+function didDeleteEvent(){
+  Meteor.call('cancelReservation', event.reservation, function(error, result){
+    errorHandle(error);
+  });
 }
 
 /**
@@ -206,8 +270,9 @@ http://fullcalendar.io/docs/event_ui/eventDrop/
   The calendar view object
 **/
 function didMoveEvent(event, delta, revertFunc, jsEvent, ui, view){
-  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate());
-  refetchEvents();
+  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
+    errorHandle(error);
+  });
 }
 
 /**
@@ -227,8 +292,57 @@ A callback triggered after resizing when the event has changed duration.
   The calendar view object
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
-  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate());
-  refetchEvents();
+  Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
+    errorHandle(error);
+  });
+}
+
+
+/****
+*
+* Event and View Rendering
+*
+****/
+
+
+/**
+Triggered while an event is being rendered by full calendar.
+
+@param event
+  A full calendar event object holding the event information
+@param element
+  The newly created jQuery element
+@param view
+  The calendar view object
+**/
+function calendarEventRendered(event, element, view){
+  //we need to insert a delete button
+  var deleteHtml = "<i class='fc-delete-button material-icons'>delete</i>"
+  element.find('.fc-content').append(deleteHtml);
+}
+
+/**
+Triggered when a new date range is rendered
+
+@param view
+  The calendar view object
+@param element
+  The newly created jQuery element for the container of the new view
+**/
+function viewRendered(view, element){
+  if (attachedResource){
+    listenForChanges(view.intervalStart, view.intervalEnd);
+  }
+}
+
+/**
+Get the fullcalendar view
+
+@return
+  The calendar view object
+**/
+function getCalendarView(){
+  return $('#resourceCalendar').fullCalendar('getView');
 }
 
 
@@ -243,4 +357,13 @@ Looks at start and end date (from session?) and returns how many days will be di
 **/
 function daysToDisplay(){
   return 7
+}
+
+/**
+Present errors to the user in a nice way
+**/
+function errorHandle(error){
+  if (error){
+    Materialize.toast(error.details, 3000);
+  }
 }

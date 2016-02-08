@@ -29,7 +29,7 @@ ddp-rate-limiter@1.0.0
 ddp-server@1.2.2
 deps@1.0.9
 diff-sequence@1.0.1
-doctorpangloss:filter-collections@1.0.2
+ece458:filter-collections@1.0.3
 ece458:fullcalendar@2.6.0
 ecmascript@0.1.6
 ecmascript-runtime@0.2.6
