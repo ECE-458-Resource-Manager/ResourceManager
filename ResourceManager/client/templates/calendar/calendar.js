@@ -245,7 +245,7 @@ A callback triggered when the user deletes an event
 @param view
   The calendar view object
 **/
-function didDeleteEvent(){
+function didDeleteEvent(event, jsEvent, view){
   Meteor.call('cancelReservation', event.reservation, function(error, result){
     errorHandle(error);
   });
