@@ -9,7 +9,8 @@ ResourcesFilter = new FilterCollections(Resources, {
 
     filters: {
         name: {title: 'Name'},
-        tags: {title: 'Tags'}
+        tags: {title: 'Tags'},
+        description: {title: 'Description'}
     }
 });
 
