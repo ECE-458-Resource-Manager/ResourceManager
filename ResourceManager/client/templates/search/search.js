@@ -4,12 +4,12 @@ ResourcesFilter = new FilterCollections(Resources, {
 
     sort: {
         order: ['desc', 'asc'],
-        defaults: ['name', 'asc']
     },
 
     filters: {
         name: {title: 'Name'},
-        tags: {title: 'Tags'}
+        tags: {title: 'Tags'},
+        description: {title: 'Description'}
     }
 });
 

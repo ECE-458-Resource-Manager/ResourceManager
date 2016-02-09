@@ -36,3 +36,5 @@ AccountsTemplates.configureRoute('enrollAccount');
 AccountsTemplates.configureRoute('signIn');
 // AccountsTemplates.configureRoute('signUp');
 // AccountsTemplates.configureRoute('verifyEmail');
+
+Router.plugin('ensureSignedIn');

@@ -81,10 +81,12 @@ runFilters = function () {
     // Search entry filter
     var searchEntry = Session.get(searchEntryKey);
     if (searchEntry && searchEntry.length > 0) {
-        ResourcesFilter.filter.set('name', {value: searchEntry, operator: ['$regex', 'i'], condition: '$and'});
+        ResourcesFilter.filter.set('name', {value: searchEntry, operator: ['$regex', 'i'], condition: '$or'});
+        ResourcesFilter.filter.set('description', {value: searchEntry, operator: ['$regex', 'i'], condition: '$or'});
     } else {
         // '.*' regex will match any string
         ResourcesFilter.filter.set('name', {value: '.*', operator: ['$regex', 'i'], condition: '$and'});
+        ResourcesFilter.filter.set('description', {value: '.*', operator: ['$regex', 'i'], condition: '$and'});
     }
 
     // Build query from filters and run it

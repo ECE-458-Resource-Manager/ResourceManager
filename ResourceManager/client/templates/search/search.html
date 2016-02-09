@@ -1,40 +1,52 @@
 <template name="search">
     <div>
-        <h3>Time Span</h3>
+        <h5>Available in Time Span:</h5>
         <div class="row">
-            <div class="input-field col s6">
+            <div class="input-field col s4">
                 <input type="date" class="datepicker" id="start_date">
                 <label class="active" for="start_date">Start date</label>
             </div>
-
-            <div class="input-field col s6">
+            <div class="input-field col s4">
                 <input type="date" class="datepicker" id="end_date">
                 <label class="active" for="end_date">End date</label>
             </div>
         </div>
 
-        <h3>Tags</h3>
-        {{>tagsFilter}}
+	<div class="row">
+            <div class="input-field col s4">
+                <input type="time" id="start_time">
+                <label class="active" for="start_time">Start time</label>
+            </div>
+            <div class="input-field col s4">
+                <input type="time" id="end_time">
+                <label class="active" for="end_time">End time</label>
+            </div>
+	</div>
 
-        <h3>Search</h3>
-        <div class="input-field">
-            <input placeholder="Enter resource name" id="search_entry" type="text" class="validate">
-        </div>
+        <div class="row">
+           <div class="input-field col s6">
+              <h4>Search Resources</h4>
+              <input placeholder="Enter resource name/description" id="search_entry" type="text" class="validate">
+           </div>
 
-        <h3>Resources</h3>
+           <div class="col s4">
+              <h4>Tags</h4>
+              {{>tagsFilter}}
+           </div>
+	</div>
+        
         <!-- Sort button -->
         <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
-            {{#if fcSort.name.desc}}
+              {{#if fcSort.name.desc}}
                 Sorted desc
-            {{else}}
-                {{#if fcSort.name.asc}}
+              {{else}}
+                  {{#if fcSort.name.asc}}
                     Sorted asc
-                {{else}}
-                    Sort
-                {{/if}}
-            {{/if}}
+                  {{else}}
+                    Unsorted
+                  {{/if}}
+              {{/if}}
         </a>
-
         <ul class="collection">
             {{#each fcResults}}
                 {{> resourceItem }}
