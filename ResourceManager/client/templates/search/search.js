@@ -4,7 +4,6 @@ ResourcesFilter = new FilterCollections(Resources, {
 
     sort: {
         order: ['desc', 'asc'],
-        defaults: ['name', 'asc']
     },
 
     filters: {

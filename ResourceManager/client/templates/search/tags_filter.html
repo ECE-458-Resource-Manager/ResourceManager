@@ -1,7 +1,7 @@
 <template name="tagsFilter">
-
+<div class="row">
     <!-- Required tags section -->
-    <div>
+    <div class="col s10">
         <!-- Dropdown Trigger -->
         <a class='dropdown-button btn' href='#' data-activates='required-tags-dropdown'>Choose required tags</a>
         <!-- Dropdown Structure -->
@@ -21,7 +21,7 @@
     &nbsp;
 
     <!-- Excluded tags section -->
-    <div>
+    <div class="col s10">
         <!-- Dropdown Trigger -->
         <a class='dropdown-button btn' href='#' data-activates='excluded-tags-dropdown'>Choose excluded tags</a>
         <!-- Dropdown Structure -->
@@ -37,5 +37,5 @@
             {{/each}}
         </div>
     </div>
-
+</div>
 </template>
