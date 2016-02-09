@@ -30,4 +30,14 @@ Template.tagsFilter.rendered = function () {
     });
 };
 
+Template.search.helpers({
+    isAvailable: function(resource) {
+        Meteor.call('getReservationStream', resource, null, null, true, function(error, result){
+            errorHandle(error);
+            var params = result;
+           });
+        
 
+        return true;
+    }
+});
