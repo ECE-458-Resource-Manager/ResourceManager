@@ -22,10 +22,10 @@ methods.getReservationStream = function(resource, startDate, endDate, returnQuer
     resource_id: resource._id,
     cancelled: false,
     start_date: {
-      $gte: startDate
+      $gt: startDate
     },
     end_date: {
-      $lte: endDate
+      $lt: endDate
     }
   };
   var reservations = Reservations.find(params);
@@ -54,9 +54,24 @@ methods.getReservationStream = function(resource, startDate, endDate, returnQuer
     New reservation end date (JS date object)
 **/
 methods.createReservation = function(resource, startDate, endDate){
-  if (!Meteor.userId()){
+  //check for a conflicting reservation
+  var params = {
+    resource_id: resource._id,
+    cancelled: false,
+    start_date: {
+      $lte: endDate
+    },
+    end_date: {
+      $gte: startDate
+    }
+  };
+  var conflictingReservations = Reservations.find(params);
+  if (conflictingReservations.count()){
+    throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
+  }
+  else if (!Meteor.userId()){
     //TODO: or not privileged
-    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
       Reservations.insert({
@@ -81,9 +96,9 @@ methods.createReservation = function(resource, startDate, endDate){
     New reservation end date (JS date object)
 **/
 methods.changeReservationTime = function(reservation, startDate, endDate){
-  if (!Meteor.userId()){
-    //TODO: or not privileged
-    throw new Meteor.Error(401, 'Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+  if (!(isOwner(reservation) || isAdmin())){
+    //TODO: expand privileges
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
     Reservations.update(reservation._id, {
@@ -102,9 +117,9 @@ methods.changeReservationTime = function(reservation, startDate, endDate){
     Reservation collection object
 **/
 methods.cancelReservation = function(reservation){
-  if (!Meteor.userId()){
-    //TODO: or not privileged
-    throw new Meteor.Error('Error 401: Unauthorized', 'You are not authorized to perform that operation.');
+  if (!(isOwner(reservation) || isAdmin())){
+    //TODO: expand privileges
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
     Reservations.update(reservation._id, {
@@ -122,7 +137,7 @@ Sends an email to the user linking to a page to set their password.
 methods.createAccount = function(username, email){
   if (!Meteor.userId()){
     //TODO: or not privileged
-    throw new Meteor.Error('unauthorized', 'The user is not authorized to create a new user account.');
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   var accountId = Accounts.createUser({
     'username': username,
@@ -163,6 +178,27 @@ function buildCalObject(reservation, resource){
   calObject.reservation = reservation
   calObject.end = reservation.end_date
   return calObject
+}
+
+function isAdmin(){
+  if (!Meteor.user()){
+    return false;
+  }
+  return Meteor.user().username == 'admin';
+}
+
+function isOwner(reservation){
+  if (!Meteor.user()){
+    return false;
+  }
+  var found = false;
+  for (var i = 0; i < reservation.owner_id.length; i++) {
+    var ownerId = reservation.owner_id[i];
+    if (ownerId == Meteor.userId()){
+      found = true;
+    }
+  };
+  return found;
 }
 
 /**

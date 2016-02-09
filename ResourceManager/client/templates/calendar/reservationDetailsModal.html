@@ -1,0 +1,13 @@
+<template name="reservationDetailsModal">
+  <div class='center-align'>
+    <div class="row">
+      <h5>Owner: {{reservation.owner.username}}</h5>
+    </div>
+    <div class="row">
+      <h5>Resource: {{reservation.resource.name}}</h5>
+    </div>
+    <div class="row">
+      <h5>Reserved from {{startDateFormatted}} to {{endDateFormatted}}</h5>
+    </div>
+  </div>
+</template>
