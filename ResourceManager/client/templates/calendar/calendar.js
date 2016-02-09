@@ -370,6 +370,6 @@ Present errors to the user in a nice way
 **/
 function errorHandle(error){
   if (error){
-    Materialize.toast(error.details, 3000);
+    Materialize.toast(error.reason, 3000);
   }
 }
