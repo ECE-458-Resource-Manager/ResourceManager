@@ -37,4 +37,6 @@ AccountsTemplates.configureRoute('signIn');
 // AccountsTemplates.configureRoute('signUp');
 // AccountsTemplates.configureRoute('verifyEmail');
 
-Router.plugin('ensureSignedIn');
+Router.plugin('ensureSignedIn', {
+    except: ['signIn']
+});
