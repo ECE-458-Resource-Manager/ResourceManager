@@ -214,8 +214,14 @@ function didClickEvent(event, jsEvent, view){
     shouldDeleteEvent(event, jsEvent, view);
   }
   else{
-    console.log("Event clicked:");
-    console.log(event);
+    MaterializeModal.message({
+      title: "Reservation Details:",
+      bodyTemplate: "reservationDetailsModal",
+      reservation: event.reservation,
+      startDateFormatted: moment(event.reservation.start_date).utc().format("ddd, MMM Do YYYY, h:mm a"),
+      endDateFormatted: moment(event.reservation.end_date).utc().format("ddd, MMM Do YYYY, h:mm a"),
+      bottomSheet: true
+    });
   }
 }
 
