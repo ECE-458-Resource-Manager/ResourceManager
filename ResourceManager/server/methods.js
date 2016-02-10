@@ -38,7 +38,7 @@ methods.getReservationStream = function(resource, startDate, endDate, returnQuer
   
   for (var i = 0; i < reservationData.length; i++) {
     var reservation = reservationData[i]
-    calendarEventObjects.push(buildCalObject(reservation, resource));
+    calendarEventObjects.push(buildCalObject(reservation));
   };
   return calendarEventObjects;
 }
@@ -54,19 +54,7 @@ methods.getReservationStream = function(resource, startDate, endDate, returnQuer
     New reservation end date (JS date object)
 **/
 methods.createReservation = function(resource, startDate, endDate){
-  //check for a conflicting reservation
-  var params = {
-    resource_id: resource._id,
-    cancelled: false,
-    start_date: {
-      $lte: endDate
-    },
-    end_date: {
-      $gte: startDate
-    }
-  };
-  var conflictingReservations = Reservations.find(params);
-  if (conflictingReservations.count()){
+  if (conflictingReservationCount(null, resource, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
   else if (!Meteor.userId()){
@@ -80,7 +68,8 @@ methods.createReservation = function(resource, startDate, endDate){
         resource_id: resource._id,
         start_date: startDate,
         end_date: endDate,
-        cancelled: false
+        cancelled: false,
+        reminder_sent: false
       })
   }
 }
@@ -96,6 +85,9 @@ methods.createReservation = function(resource, startDate, endDate){
     New reservation end date (JS date object)
 **/
 methods.changeReservationTime = function(reservation, startDate, endDate){
+  if (conflictingReservationCount(reservation, reservation.resource, startDate, endDate)){
+    throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
+  }
   if (!(isOwner(reservation) || isAdmin())){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
@@ -159,25 +151,36 @@ Build a calendar object for use with full calendar.
   Reservations collection object
 **/
 
-function buildCalObject(reservation, resource){
-  /**
-  * Format the reservation object
-  **/
-  //we want to include the actual objects for some references
-  //TODO: send objects for all owners?
-  reservation.owner = Meteor.users.findOne({_id:reservation.owner_id[0]});
-  reservation.resource = resource;
-  /**
-  * Format the calendar object
-  **/
+function buildCalObject(reservation){
   var calObject = {}
   var labelString = "Owner:\n" + reservation.owner.username
-  labelString += "\nResource:\n" + resource.name
+  labelString += "\nResource:\n" + reservation.resource.name
   calObject.title = labelString
   calObject.start = reservation.start_date
   calObject.reservation = reservation
   calObject.end = reservation.end_date
   return calObject
+}
+
+function conflictingReservationCount(reservation, resource, startDate, endDate){
+  //check for a conflicting reservation
+  var params = {
+    resource_id: resource._id,
+    cancelled: false,
+    start_date: {
+      $lt: endDate
+    },
+    end_date: {
+      $gt: startDate
+    }
+  };
+  if (reservation){
+    params._id = {
+      $ne: reservation._id
+    }
+  }
+  var conflictingReservations = Reservations.find(params);
+  return conflictingReservations.count();
 }
 
 function isAdmin(){
