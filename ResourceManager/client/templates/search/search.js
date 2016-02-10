@@ -55,12 +55,25 @@ Template.search.helpers({
      * @returns {boolean} true if there are no reservations within the given period
      */
     isAvailable: function (resource) {
-        var startDate = new Date(Session.get(startDateKey) + ' ' + Session.get(startTimeKey));
-        var endDate = new Date(Session.get(endDateKey) + ' ' + Session.get(endTimeKey));
+        var startDate = Session.get(startDateKey);
+        var endDate = Session.get(endDateKey);
+
+        var startTime = Session.get(startTimeKey);
+        var endTime = Session.get(endTimeKey);
+
+        // ignore invalid dates/times
+        if (!startDate || !endDate || !startTime || !endTime) return true;
+
+        var start = new Date(startDate + ' ' + startTime);
+        var end = new Date(endDate + ' ' + endTime);
+
+        // TODO: Remove
+        console.log('start:' + start.toDateString()+' '+start.toTimeString());
+        console.log('end: '+ end.toDateString()+' '+end.toTimeString());
 
         // Get resource's reservations from start to end date
         var reservations = [];
-        Meteor.call('getReservationStream', resource, startDate, endDate, false, function (error, result) {
+        Meteor.call('getReservationStream', resource, start, end, false, function (error, result) {
                 reservations = result;
             }
         );
