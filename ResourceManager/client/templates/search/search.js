@@ -26,10 +26,10 @@ Template.search.events({
         Session.set(searchEntryKey, e.target.value);
         runFilters();
     },
-    'input #start_date': function(e) {
+    'change #start_date': function(e) {
         Session.set(startDateKey, e.target.value);
     },
-    'input #end_date': function(e) {
+    'change #end_date': function(e) {
         Session.set(endDateKey, e.target.value);
     },
     'input #start_time': function(e) {
