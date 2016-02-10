@@ -16,6 +16,14 @@ Router.route('/create', {
     }
 });
 
+Router.route('/editResource/:_id', {
+    name: 'editResource',
+    data: function() { return Resources.findOne(this.params._id); },
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
 Router.route('/calendar/:_id', {
     name: 'calendar',
     data: function() { return Resources.findOne(this.params._id); },

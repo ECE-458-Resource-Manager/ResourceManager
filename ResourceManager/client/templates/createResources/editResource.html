@@ -1,0 +1,23 @@
+<template name="editResource">
+	<h4>Edit Resource</h4>
+	<form>
+
+		<div class="input-field">
+			<label for="resourceNameInput" class="active">Resource Name</label>
+			<input type="text" name="resourceName" id="resourceNameInput" required>
+		</div>
+
+		<div class="input-field">
+			<label for="resourceDescriptionInput" class="active">Resource Description</label>
+			<textarea id="resourceDescriptionInput" class="materialize-textarea" name="resourceDescription"></textarea>
+			<!-- <input type="text" name="resourceDescription" id="resourceDescriptionInput" class="active" required> -->
+		</div>
+
+		{{> selectTags}}
+
+		<br>
+
+		<button type="submit" class="btn btn-default">Update Resource<i class="material-icons right">send</i></button>
+	</form>
+
+</template>
