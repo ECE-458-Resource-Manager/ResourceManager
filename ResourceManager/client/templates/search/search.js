@@ -64,12 +64,16 @@ Template.search.helpers({
         // ignore invalid dates/times
         if (!startDate || !endDate || !startTime || !endTime) return true;
 
+        // Create date objects
         var start = new Date(startDate + ' ' + startTime);
         var end = new Date(endDate + ' ' + endTime);
 
-        // TODO: Remove
+        // TODO: View date object properties
         console.log('start:' + start.toDateString()+' '+start.toTimeString());
         console.log('end: '+ end.toDateString()+' '+end.toTimeString());
+
+        // TODO: View resource properties
+        console.log(resource);
 
         // Get resource's reservations from start to end date
         var reservations = [];
@@ -78,7 +82,7 @@ Template.search.helpers({
             }
         );
 
-        // TODO: Remove later (used for debugging)
+        // TODO: View reservations count for resource
         console.log(resource.name + ' :: reservations count = ' + reservations.length);
 
         return (reservations.length === 0);
