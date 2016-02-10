@@ -1,4 +1,10 @@
-Reservations = new Mongo.Collection('reservations');
+Reservations = new Mongo.Collection('reservations', {
+    transform: function(doc) {
+        doc.resource = Resources.findOne({_id:doc.resource_id});
+        doc.owner = Meteor.users.findOne({_id:doc.owner_id[0]});
+        return doc;
+    }
+});
 
 /* Fields:
  * owner_id (array)
@@ -34,6 +40,10 @@ ReservationSchema = new SimpleSchema({
     cancelled: {
         type: Boolean,
         label: "Cancelled"
+    },
+    reminder_sent: {
+        type: Boolean,
+        label: "Reminder Email Sent"
     }
 });
 
