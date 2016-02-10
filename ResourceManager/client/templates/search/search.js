@@ -60,8 +60,8 @@ Template.search.helpers({
            }
         );
         for(var i = 0; i < resObjects.length; i++) {
-            //here basically check if resObjects[i]'s start or end is between that queried
-            if(resObjects[i].start) {
+            if(resObjects[i].start < end && resObjects[i].end > start) {
+                console.log("taken");
                 return false;
             }
         }
