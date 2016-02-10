@@ -156,6 +156,18 @@ methods.createAccount = function(username, email){
   Accounts.sendEnrollmentEmail(accountId);
 }
 
+methods.getAllTags = function(){
+  if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+  var tagArrays = Resources.find({}, {fields: {tags: 1}}).map(function (obj) {
+    return obj.tags;
+  });
+  var tags = _.uniq([].concat.apply([], tagArrays), false); // flatten tag arrays and get unique values
+  return tags;
+}
+
 /**
 *
 * Helpers

@@ -1,17 +1,29 @@
 <template name="selectTags">
 
-    <!-- Dropdown Trigger -->
-    <a class='dropdown-button btn' href='#' data-activates='dropdown1'>Choose tags</a>
-    <!-- Dropdown Structure -->
-    <ul id='dropdown1' class='dropdown-content'>
-        {{#each availableTags}}
-            <li><a class="selected-tag" href="#">{{this}}</a></li>
-        {{/each}}
-    </ul>
+    <div class="row">
+        <!-- Dropdown Trigger -->
+        <a class='dropdown-button btn col s2' href='#' data-activates='dropdown1'>Choose tags</a>
+        <!-- Dropdown Structure -->
+        <ul id='dropdown1' class='dropdown-content'>
+            {{#each availableTags}}
+                <li><a class="selected-tag" href="#">{{this}}</a></li>
+            {{/each}}
+        </ul>
+
+        <div>
+            <div class="input-field col s3 offset-s1">
+                <label for="newTagInput">New Tag</label>
+                <input type="text" name="newTag" id="newTagInput">
+            </div>
+            <div class="col s2">
+                <a class="new-tag-button btn-floating waves-effect waves-light" href="#"><i class="material-icons">add</i></a>
+            </div>
+        </div>
+    </div>
 
     <div>
         {{#each selectedTags}}
-            {{> tagChip}}
+            {{> selectedTagChip}}
         {{/each}}
     </div>
 
