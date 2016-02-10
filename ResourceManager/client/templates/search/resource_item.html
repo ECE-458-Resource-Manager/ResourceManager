@@ -1,7 +1,9 @@
 <template name="resourceItem">
 	<a href="/calendar/{{_id}}" class="collection-item">
     	<h5>{{name}}</h5>
-    	<a href="/editResource/{{_id}}" class="waves-effect waves-light btn-floating right red"><i class="material-icons right">edit</i></a>
+    	{{#if isInRole 'admin'}}
+    		<a href="/editResource/{{_id}}" class="waves-effect waves-light btn-floating right red"><i class="material-icons right">edit</i></a>
+    	{{/if}}
     	<p>{{description}}</p>
     	{{#each tags}}
     		{{> tagChipNoX}}
