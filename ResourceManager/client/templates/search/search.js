@@ -26,16 +26,16 @@ Template.search.events({
         Session.set(searchEntryKey, e.target.value);
         runFilters();
     },
-    'change #start_date': function(e) {
+    'change #start_date': function (e) {
         Session.set(startDateKey, e.target.value);
     },
-    'change #end_date': function(e) {
+    'change #end_date': function (e) {
         Session.set(endDateKey, e.target.value);
     },
-    'input #start_time': function(e) {
+    'input #start_time': function (e) {
         Session.set(startTimeKey, e.target.value);
     },
-    'input #end_time': function(e) {
+    'input #end_time': function (e) {
         Session.set(endTimeKey, e.target.value);
     }
 });
@@ -49,24 +49,26 @@ Template.search.rendered = function () {
 };
 
 Template.search.helpers({
-    isAvailable: function(resource) {
-        var start = Session.get(startDateKey) + Session.get(startTimeKey);
-        var end = Session.get(endDateKey) + Session.get(endTimeKey);
-        //Is this a legitimate way to build the dates we're searching on?
-        
-        var resObjects = []
-        Meteor.call('getReservationStream', resource, start, end, false, function(error, result){
-              resObjects = result;
-           }
-        );
-        for(var i = 0; i < resObjects.length; i++) {
-            //here basically check if resObjects[i]'s start or end is between that queried
-            if(resObjects[i].start) {
-                return false;
-            }
-        }
+    /**
+     * This method checks whether a resource is available between given start and end dates
+     * @param resource
+     * @returns {boolean} true if there are no reservations within the given period
+     */
+    isAvailable: function (resource) {
+        var startDate = new Date(Session.get(startDateKey) + ' ' + Session.get(startTimeKey));
+        var endDate = new Date(Session.get(endDateKey) + ' ' + Session.get(endTimeKey));
 
-        return true;
+        // Get resource's reservations from start to end date
+        var reservations = [];
+        Meteor.call('getReservationStream', resource, startDate, endDate, false, function (error, result) {
+                reservations = result;
+            }
+        );
+
+        // TODO: Remove later (used for debugging)
+        console.log(resource.name + ' :: reservations count = ' + reservations.length);
+
+        return (reservations.length === 0);
     }
 });
 
