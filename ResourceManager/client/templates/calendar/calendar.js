@@ -75,7 +75,7 @@ Template.calendar.rendered = function(){
     eventRender: calendarEventRendered,
     viewRender: viewRendered,
     eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
-    timezone: 'UTC',
+    timezone: 'local',
     //TODO: dummy static events!
     events: events
   })
@@ -218,8 +218,8 @@ function didClickEvent(event, jsEvent, view){
       title: "Reservation Details:",
       bodyTemplate: "reservationDetailsModal",
       reservation: event.reservation,
-      startDateFormatted: moment(event.reservation.start_date).utc().format("ddd, MMM Do YYYY, h:mm a"),
-      endDateFormatted: moment(event.reservation.end_date).utc().format("ddd, MMM Do YYYY, h:mm a"),
+      startDateFormatted: moment(event.reservation.start_date).format("ddd, MMM Do YYYY, h:mm a"),
+      endDateFormatted: moment(event.reservation.end_date).format("ddd, MMM Do YYYY, h:mm a"),
       bottomSheet: true
     });
   }
