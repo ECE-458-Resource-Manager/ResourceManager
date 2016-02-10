@@ -1,6 +1,40 @@
 var methods = {};
 
 
+/**
+  Query reservations, constrained by start (and optionally) end date
+
+  @param resource
+    A resource to find associated reservations
+  @param startDate
+    start date for query (JS date object)
+  @param endDate (optional)
+    end date for query (JS date object)
+  @param returnQueryParams
+    Returns the db query params instead of the processed data
+
+**/
+methods.queryReservations = function(resource, startDate, endDate, returnQueryParams){
+  var params = {
+    resource_id: resource._id,
+    cancelled: false,
+    start_date: {
+      $gt: startDate
+    }
+  };
+  if (endDate){
+    params.end_date = {
+      $lt: endDate
+    }
+  }
+  var reservations = Reservations.find(params);
+  if (returnQueryParams){
+    return params;
+  }
+
+  return reservations.fetch();
+}
+
 
 /**
   Get a stream of reservations given a resource, constained by start and end date.
@@ -11,29 +45,13 @@ var methods = {};
     start date for query (JS date object)
   @param endDate
     end date for query (JS date object)
-  @param returnQueryParams
-    Returns the db query params instead of the processed data
 
   @return
     An array of objects formatted for use with full calendar
 **/
-methods.getReservationStream = function(resource, startDate, endDate, returnQueryParams){
-  var params = {
-    resource_id: resource._id,
-    cancelled: false,
-    start_date: {
-      $gt: startDate
-    },
-    end_date: {
-      $lt: endDate
-    }
-  };
-  var reservations = Reservations.find(params);
-  if (returnQueryParams){
-    return params;
-  }
+methods.getReservationStream = function(resource, startDate, endDate){
 
-  var reservationData = reservations.fetch();
+  var reservationData = methods.queryReservations(resource, startDate, endDate);
   var calendarEventObjects = [];
   
   for (var i = 0; i < reservationData.length; i++) {
@@ -136,6 +154,18 @@ methods.createAccount = function(username, email){
     'email': email
   });
   Accounts.sendEnrollmentEmail(accountId);
+}
+
+methods.getAllTags = function(){
+  if (!Meteor.userId()){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+  var tagArrays = Resources.find({}, {fields: {tags: 1}}).map(function (obj) {
+    return obj.tags;
+  });
+  var tags = _.uniq([].concat.apply([], tagArrays), false); // flatten tag arrays and get unique values
+  return tags;
 }
 
 /**
