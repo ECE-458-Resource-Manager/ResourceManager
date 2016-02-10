@@ -107,7 +107,7 @@ function listenForChanges(startDate, endDate){
   }
 
   //we need to find the query paramaters, which we'll be observing for changes
-  Meteor.call('getReservationStream', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
+  Meteor.call('queryReservations', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
     errorHandle(error);
     var params = result;
     activeListener = Reservations.find(params).observeChanges({
@@ -155,7 +155,7 @@ function getCalendarEvents(start, end, timezone, callback){
   var events = []
   //are we linked to a resource?
   if (attachedResource){
-    Meteor.call('getReservationStream', attachedResource, start.toDate(), end.toDate(), false, function(error, result){
+    Meteor.call('getReservationStream', attachedResource, start.toDate(), end.toDate(), function(error, result){
       errorHandle(error);
       //initialize dates as moments, can't send moments via server
       for (var i = 0; i < result.length; i++) {
