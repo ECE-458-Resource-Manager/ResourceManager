@@ -28,6 +28,15 @@ Template.selectTags.events({
         selectedTags.splice(selectedTags.indexOf(tag), 1);
         Session.set(selectedTagsKey, selectedTags);
     },
+    'click .new-tag-button': function (e) {
+        var tagTextbox = $("#newTagInput")[0];
+        var tag = tagTextbox.value;
+        console.log(tag)
+        var selectedTags = Session.get(selectedTagsKey);
+        if (!selectedTags) selectedTags = [];
+        Session.set(selectedTagsKey, selectedTags.concat(tag));
+        tagTextbox.value = "";
+    },
 });
 
 var getTag = function (closeChipIcon) {

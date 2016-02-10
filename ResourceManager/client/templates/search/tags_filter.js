@@ -1,10 +1,11 @@
 var requiredTagsKey = 'requiredTags';
 var excludedTagsKey = 'excludedTags';
+var availableTagsKey = 'availableTags';
 searchEntryKey = 'searchEntryKey'; // global var used in search.js
 
 Template.tagsFilter.helpers({
     availableTags: function () {
-        var tags = getAvailableTags(); // Used global helper
+        var tags = Session.get(availableTagsKey); //getAvailableTags(); // Used global helper
         return _.difference(tags, Session.get(requiredTagsKey), Session.get(excludedTagsKey));
     },
 
@@ -103,5 +104,9 @@ Template.tagsFilter.rendered = function () {
         gutter: 0, // Spacing from edge
         belowOrigin: false, // Displays dropdown below the button
         alignment: 'left' // Displays dropdown with edge aligned to the left of button
+    });
+    // TODO(sam): Make this reactive to added tags - maybe use a new 'Tags' collection?
+    Meteor.call("getAllTags", function(error, result){
+        Session.set(availableTagsKey, result);
     });
 };
