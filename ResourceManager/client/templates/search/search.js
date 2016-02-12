@@ -49,37 +49,45 @@ Template.search.rendered = function () {
 };
 
 Template.search.helpers({
-    available: function (resource) {
-        checkAvailability(resource); // will update _id session variable asynchronously
-        return Session.get(resource._id);
+    /**
+     * This method checks whether a resource is available between given start and end dates
+     * @param resource
+     * @returns {boolean} true if there are no reservations within the given period
+     */
+    isAvailable: function (resource) {
+        var startDate = Session.get(startDateKey);
+        var endDate = Session.get(endDateKey);
+
+        var startTime = Session.get(startTimeKey);
+        var endTime = Session.get(endTimeKey);
+
+        // ignore invalid dates/times
+        if (!startDate || !endDate || !startTime || !endTime) return true;
+
+        // Create date objects
+        var start = new Date(startDate + ' ' + startTime);
+        var end = new Date(endDate + ' ' + endTime);
+
+        // TODO: View date object properties
+        console.log('start:' + start.toDateString() + ' ' + start.toTimeString());
+        console.log('end: ' + end.toDateString() + ' ' + end.toTimeString());
+
+        // TODO: View resource properties
+        console.log(resource);
+
+        // Get resource's reservations from start to end date
+        var reservations = [];
+        Meteor.call('getReservationStream', resource, start, end, false, function (error, result) {
+                reservations = result;
+            }
+        );
+
+        // TODO: View reservations count for resource
+        console.log(resource.name + ' :: reservations count = ' + reservations.length);
+
+        return (reservations.length === 0);
     }
 });
-
-/**
- * This method checks whether a resource is available between given start and end dates
- * It then writes the availability status to a session variable
- */
-var checkAvailability = function (resource) {
-    var startDate = Session.get(startDateKey);
-    var endDate = Session.get(endDateKey);
-
-    var startTime = Session.get(startTimeKey);
-    var endTime = Session.get(endTimeKey);
-
-    // ignore invalid dates/times
-    if (!startDate || !endDate || !startTime || !endTime) return true;
-
-    // Create date objects
-    var start = new Date(startDate + ' ' + startTime);
-    var end = new Date(endDate + ' ' + endTime);
-
-    // Get resource's reservations from start to end date
-    Meteor.call('getReservationStream', resource, start, end, false, function (error, result) {
-        Session.set(resource._id, result.length === 0);
-        // TODO: Remove
-        console.log(resource.name + ' :: reservations length = ' + result.length);
-    });
-};
 
 
 

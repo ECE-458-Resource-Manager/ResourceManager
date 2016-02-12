@@ -49,7 +49,7 @@
         </a>
         <ul class="collection">
             {{#each fcResults}}
-                {{#if available this}}
+                {{#if isAvailable this}}
                    {{> resourceItem }}
                 {{/if}}
             {{/each}}
