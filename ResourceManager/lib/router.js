@@ -46,5 +46,5 @@ AccountsTemplates.configureRoute('signIn');
 // AccountsTemplates.configureRoute('verifyEmail');
 
 Router.plugin('ensureSignedIn', {
-    except: ['signIn']
+    except: ['signIn', 'enrollAccount']
 });
