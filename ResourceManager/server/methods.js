@@ -18,12 +18,12 @@ methods.queryReservations = function(resource, startDate, endDate, returnQueryPa
   var params = {
     resource_id: resource._id,
     cancelled: false,
-    start_date: {
+    end_date: {
       $gt: startDate
     }
   };
   if (endDate){
-    params.end_date = {
+    params.start_date = {
       $lt: endDate
     }
   }
