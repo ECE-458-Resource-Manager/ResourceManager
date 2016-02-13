@@ -1,5 +1,20 @@
 var methods = {};
 
+/**
+Methods we've chosen to expose to the API
+**/
+var externalizedMethods = ['queryReservations'];
+methods.externalizedMethods = function(){ return externalizedMethods; }
+
+
+/********************************************************************************
+*****
+*
+* Reservations
+*
+*****
+********************************************************************************/
+
 
 /**
   Query reservations, constrained by start (and optionally) end date
@@ -140,6 +155,17 @@ methods.cancelReservation = function(reservation){
   }
 }
 
+
+/********************************************************************************
+*****
+*
+* Users
+*
+*****
+********************************************************************************/
+
+
+
 /**
 Create/enroll a new user account.
 Sends an email to the user linking to a page to set their password.
@@ -156,6 +182,28 @@ methods.createAccount = function(username, email){
   Accounts.sendEnrollmentEmail(accountId);
 }
 
+/**
+Find an apiKey for a user, creating a new one if needed.
+
+
+**/
+methods.getApiKey = function(){
+  console.log(Meteor.user().api_key);
+  if (!Meteor.user().api_key){
+    console.log('updating');
+    Meteor.users.update(Meteor.userId(), {
+      $set: {
+        api_key: Meteor.uuid()
+      }
+    }, function(error){
+      return Meteor.user().api_key;
+    });
+  }
+  else{
+    return Meteor.user().api_key;
+  }
+}
+
 methods.getAllTags = function(){
   if (!Meteor.userId()){
     //TODO: or not privileged
@@ -168,11 +216,15 @@ methods.getAllTags = function(){
   return tags;
 }
 
-/**
+
+/********************************************************************************
+*****
 *
 * Helpers
 *
-**/
+*****
+********************************************************************************/
+
 
 /**
 Build a calendar object for use with full calendar.
