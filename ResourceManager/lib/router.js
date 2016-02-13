@@ -5,8 +5,10 @@ Router.configure({
 });
 
 Router.route('/', {
-    name: 'mainPage'
-    // Subscription to resources is handled by the filter-collections package
+    name: 'mainPage',
+    waitOn: function() {
+        filterResources(); // Load resources
+    }
 });
 
 Router.route('/create', {

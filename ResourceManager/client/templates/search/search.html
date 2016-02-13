@@ -31,7 +31,7 @@
 
            <div class="col s4">
               <h4>Tags</h4>
-              {{>tagsFilter}}
+              {{>tags}}
            </div>
 	</div>
 
@@ -48,10 +48,8 @@
               {{/if}}
         </a>
         <ul class="collection">
-            {{#each fcResults}}
-                {{#if isAvailable this}}
+            {{#each filteredFcResults}}
                    {{> resourceItem }}
-                {{/if}}
             {{/each}}
         </ul>
     </div>

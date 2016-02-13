@@ -1,9 +1,4 @@
-var requiredTagsKey = 'requiredTags';
-var excludedTagsKey = 'excludedTags';
-var availableTagsKey = 'availableTags';
-searchEntryKey = 'searchEntryKey'; // global var used in search.js
-
-Template.tagsFilter.helpers({
+Template.tags.helpers({
     availableTags: function () {
         var tags = Session.get(availableTagsKey); //getAvailableTags(); // Used global helper
         return _.difference(tags, Session.get(requiredTagsKey), Session.get(excludedTagsKey));
@@ -22,21 +17,21 @@ Template.tagsFilter.helpers({
     }
 });
 
-Template.tagsFilter.events({
+Template.tags.events({
 
     // Add selected tags to Session
     'click .required-tag': function (e) {
         var requiredTags = Session.get(requiredTagsKey);
         if (!requiredTags) requiredTags = [];
         Session.set(requiredTagsKey, requiredTags.concat(e.target.innerText));
-        runFilters();
+        filterResources();
     },
 
     'click .excluded-tag': function (e) {
         var excludedTags = Session.get(excludedTagsKey);
         if (!excludedTags) excludedTags = [];
         Session.set(excludedTagsKey, excludedTags.concat(e.target.innerText));
-        runFilters();
+        filterResources();
     },
 
     // Remove closed tags from Session
@@ -47,7 +42,7 @@ Template.tagsFilter.events({
         // remove tag from requiredTags (modifies array in place)
         requiredTags.splice(requiredTags.indexOf(tag), 1);
         Session.set(requiredTagsKey, requiredTags);
-        runFilters();
+        filterResources();
     },
 
     'click .close-excluded-tag-chip': function (e) {
@@ -57,45 +52,12 @@ Template.tagsFilter.events({
         // remove tag from excludedTags (modifies array in place)
         excludedTags.splice(excludedTags.indexOf(tag), 1);
         Session.set(excludedTagsKey, excludedTags);
-        runFilters();
+        filterResources();
     }
 });
 
-var getTag = function (closeChipIcon) {
-    return closeChipIcon.currentTarget.parentElement.firstChild.wholeText.trim();
-}
-
-runFilters = function () {
-    ResourcesFilter.filter.clear();
-
-    // TODO: Figure out how to make both the required tags filter and excluded tags filter work simultaneously on 'tags' field
-    // Required tags filter
-    var requiredTags = Session.get(requiredTagsKey);
-    if (requiredTags && requiredTags.length > 0)
-        ResourcesFilter.filter.set('tags', {value: requiredTags, operator: ['$all'], condition: '$and'});
-
-    // Excluded tags filter
-    var excludedTags = Session.get(excludedTagsKey);
-    if (excludedTags && excludedTags.length > 0)
-        ResourcesFilter.filter.set('tags', {value: excludedTags, operator: ['$nin'], condition: '$and'});
-
-    // Search entry filter
-    var searchEntry = Session.get(searchEntryKey);
-    if (searchEntry && searchEntry.length > 0) {
-        ResourcesFilter.filter.set('name', {value: searchEntry, operator: ['$regex', 'i'], condition: '$or'});
-        ResourcesFilter.filter.set('description', {value: searchEntry, operator: ['$regex', 'i'], condition: '$or'});
-    } else {
-        // '.*' regex will match any string
-        ResourcesFilter.filter.set('name', {value: '.*', operator: ['$regex', 'i'], condition: '$and'});
-        ResourcesFilter.filter.set('description', {value: '.*', operator: ['$regex', 'i'], condition: '$and'});
-    }
-
-    // Build query from filters and run it
-    ResourcesFilter.filter.run();
-}
-
 // Initialize dropdown buttons
-Template.tagsFilter.rendered = function () {
+Template.tags.rendered = function () {
     this.$('.dropdown-button').dropdown({
         inDuration: 300,
         outDuration: 225,
@@ -106,7 +68,14 @@ Template.tagsFilter.rendered = function () {
         alignment: 'left' // Displays dropdown with edge aligned to the left of button
     });
     // TODO(sam): Make this reactive to added tags - maybe use a new 'Tags' collection?
-    Meteor.call("getAllTags", function(error, result){
+    Meteor.call("getAllTags", function (error, result) {
         Session.set(availableTagsKey, result);
     });
 };
+
+var getTag = function (closeChipIcon) {
+    return closeChipIcon.currentTarget.parentElement.firstChild.wholeText.trim();
+};
+
+
+

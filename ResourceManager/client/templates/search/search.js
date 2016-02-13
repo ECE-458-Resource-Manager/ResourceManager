@@ -1,9 +1,3 @@
-startTimeKey = 'startTimeKey';
-endTimeKey = 'endTimeKey';
-startDateKey = 'startDateKey'
-endDateKey = 'endDateKey';
-
-
 ResourcesFilter = new FilterCollections(Resources, {
     template: 'search',
     name: 'filter-collections-resources', // should match publish name
@@ -20,24 +14,26 @@ ResourcesFilter = new FilterCollections(Resources, {
 });
 
 Template.search.events({
-    'input #search_entry': function (e) {
-        // Store search entry in Session then run filters
-        // Not using search methods (buggy)
-        Session.set(searchEntryKey, e.target.value);
-        runFilters();
-    },
     'change #start_date': function (e) {
         Session.set(startDateKey, e.target.value);
+        filterResources();
     },
     'change #end_date': function (e) {
         Session.set(endDateKey, e.target.value);
+        filterResources();
     },
     'input #start_time': function (e) {
         Session.set(startTimeKey, e.target.value);
+        filterResources();
     },
     'input #end_time': function (e) {
         Session.set(endTimeKey, e.target.value);
-    }
+        filterResources();
+    },
+    'input #search_entry': function (e) {
+        Session.set(searchEntryKey, e.target.value);
+        filterResources();
+    },
 });
 
 // Date picker initialization
@@ -49,45 +45,7 @@ Template.search.rendered = function () {
 };
 
 Template.search.helpers({
-    /**
-     * This method checks whether a resource is available between given start and end dates
-     * @param resource
-     * @returns {boolean} true if there are no reservations within the given period
-     */
-    isAvailable: function (resource) {
-        var startDate = Session.get(startDateKey);
-        var endDate = Session.get(endDateKey);
-
-        var startTime = Session.get(startTimeKey);
-        var endTime = Session.get(endTimeKey);
-
-        // ignore invalid dates/times
-        if (!startDate || !endDate || !startTime || !endTime) return true;
-
-        // Create date objects
-        var start = new Date(startDate + ' ' + startTime);
-        var end = new Date(endDate + ' ' + endTime);
-
-        // TODO: View date object properties
-        console.log('start:' + start.toDateString() + ' ' + start.toTimeString());
-        console.log('end: ' + end.toDateString() + ' ' + end.toTimeString());
-
-        // TODO: View resource properties
-        console.log(resource);
-
-        // Get resource's reservations from start to end date
-        var reservations = [];
-        Meteor.call('getReservationStream', resource, start, end, false, function (error, result) {
-                reservations = result;
-            }
-        );
-
-        // TODO: View reservations count for resource
-        console.log(resource.name + ' :: reservations count = ' + reservations.length);
-
-        return (reservations.length === 0);
+    filteredFcResults: function () {
+        return Session.get(filteredFcResultsKey);
     }
 });
-
-
-
