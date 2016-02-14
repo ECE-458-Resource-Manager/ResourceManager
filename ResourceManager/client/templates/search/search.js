@@ -14,26 +14,24 @@ ResourcesFilter = new FilterCollections(Resources, {
 });
 
 Template.search.events({
+    // Note how filterResources() isn't called explicitly
+    // It is invoked automatically when data it depends on is changed
+
     'change #start_date': function (e) {
         Session.set(startDateKey, e.target.value);
-        filterResources();
     },
     'change #end_date': function (e) {
         Session.set(endDateKey, e.target.value);
-        filterResources();
     },
     'input #start_time': function (e) {
         Session.set(startTimeKey, e.target.value);
-        filterResources();
     },
     'input #end_time': function (e) {
         Session.set(endTimeKey, e.target.value);
-        filterResources();
     },
     'input #search_entry': function (e) {
         Session.set(searchEntryKey, e.target.value);
-        filterResources();
-    },
+    }
 });
 
 // Date picker initialization

@@ -18,20 +18,20 @@ Template.tags.helpers({
 });
 
 Template.tags.events({
+    // Note how filterResources() isn't called explicitly
+    // It is invoked automatically when data it depends on is changed
 
     // Add selected tags to Session
     'click .required-tag': function (e) {
         var requiredTags = Session.get(requiredTagsKey);
         if (!requiredTags) requiredTags = [];
         Session.set(requiredTagsKey, requiredTags.concat(e.target.innerText));
-        filterResources();
     },
 
     'click .excluded-tag': function (e) {
         var excludedTags = Session.get(excludedTagsKey);
         if (!excludedTags) excludedTags = [];
         Session.set(excludedTagsKey, excludedTags.concat(e.target.innerText));
-        filterResources();
     },
 
     // Remove closed tags from Session
@@ -42,7 +42,6 @@ Template.tags.events({
         // remove tag from requiredTags (modifies array in place)
         requiredTags.splice(requiredTags.indexOf(tag), 1);
         Session.set(requiredTagsKey, requiredTags);
-        filterResources();
     },
 
     'click .close-excluded-tag-chip': function (e) {
@@ -52,7 +51,6 @@ Template.tags.events({
         // remove tag from excludedTags (modifies array in place)
         excludedTags.splice(excludedTags.indexOf(tag), 1);
         Session.set(excludedTagsKey, excludedTags);
-        filterResources();
     }
 });
 
