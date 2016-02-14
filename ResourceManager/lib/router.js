@@ -74,9 +74,29 @@ Router.map(function() {
                 if (!user){
                     webResponse.end("Unable to authenticate, please check your API key.  You provided " + this.request.body.key + '\n');
                 }
+                //make sure we have exposed the requested method
                 Meteor.call('externalizedMethods', function(error, response){
-                    if (response.indexOf(body.method) < 0){
+                    if (!response[body.method]){
                         webResponse.end("Method: '"+ body.method +"' is not supported by the API.\n");
+                        return;
+                    }
+                    else{
+                        functionParams = response[body.method];
+                        var paramArray = []
+                        for (var i = 0; i < functionParams.length; i++) {
+                            var param = functionParams[i];
+                            if (!body[param.name]){
+                                webResponse.end("Required parameter '"+ param.name + "' not found.");
+                                return;
+                            }
+                            if (param.type == 'Date'){
+                                body[param.name] = new Date(body[param.name]);
+                            }
+                            paramArray.push(body[param.name]);
+                        };
+                        Meteor.apply(body.method, paramArray, true, function(error, result){
+                            webResponse.end(JSON.stringify(result));
+                        });
                     };
                 });
                 //this.response.end(JSON.stringify('success'));

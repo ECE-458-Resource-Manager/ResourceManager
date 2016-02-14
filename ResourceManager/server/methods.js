@@ -3,8 +3,22 @@ var methods = {};
 /**
 Methods we've chosen to expose to the API
 **/
-var externalizedMethods = ['queryReservations'];
+var externalizedMethods = {};
 methods.externalizedMethods = function(){ return externalizedMethods; }
+
+
+/********************************************************************************
+*****
+*
+* Resources
+*
+*****
+********************************************************************************/
+
+externalizedMethods.getResources = [{name: 'name', type: 'String'}];
+methods.getResources = function(name){
+  return name;
+}
 
 
 /********************************************************************************
@@ -20,7 +34,7 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
   Query reservations, constrained by start (and optionally) end date
 
   @param resource
-    A resource to find associated reservations
+    A resource to find associated reservations, either the object or ID
   @param startDate
     start date for query (JS date object)
   @param endDate (optional)
@@ -29,9 +43,20 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
     Returns the db query params instead of the processed data
 
 **/
+externalizedMethods.queryReservations = [{name: "resource", type: "String"}, 
+                                         {name: "startDate", type: "Date"},
+                                         {name: "endDate", type: "Date"}];
 methods.queryReservations = function(resource, startDate, endDate, returnQueryParams){
+  var resourceId;
+  //determine if we were given the resource or resource ID
+  if (resource._id){
+    resourceId = resource._id;
+  }
+  else{
+    resourceId = resource
+  }
   var params = {
-    resource_id: resource._id,
+    resource_id: resourceId,
     cancelled: false,
     end_date: {
       $gt: startDate
@@ -52,7 +77,7 @@ methods.queryReservations = function(resource, startDate, endDate, returnQueryPa
 
 
 /**
-  Get a stream of reservations given a resource, constained by start and end date.
+  Get a stream of full calendar reservation objects given a resource, constained by start and end date.
 
   @param resource
     A resource to find associated reservations
