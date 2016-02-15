@@ -62,9 +62,10 @@ Router.map(function() {
     this.route("apiRoute", {path: "/api/",
         where: "server",
         action: function(){
+            var webResponse = this.response;
+
             if (this.request.method == 'POST') {
                 var body = this.request.body
-                var webResponse = this.response
                 webResponse.writeHead(200, {
                     'Content-Type': 'text/html',
                     'Access-Control-Allow-Origin': '*'
@@ -102,7 +103,10 @@ Router.map(function() {
                 //this.response.end(JSON.stringify('success'));
             }
             else {
-                webResponse.end("POST is required.\n")
+                this.response.writeHead(302, {
+                    'Location': '/api_docs/out/methods.html'
+                });
+                this.response.end();
             }
         }
     });
