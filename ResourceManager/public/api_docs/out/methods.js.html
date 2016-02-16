@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: methods.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: methods.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
 @namespace methods
 **/
 var methods = {};
@@ -44,21 +72,11 @@ methods.getResources = function(name){
     Start date for query
   @param {date} endDate (optional)
     End date for query
+  @private {bool} returnQueryParams
+    Returns the db query params instead of the processed data
 
 */
-methods.queryReservations = function(resource, startDate, endDate){
-  return methods.queryReservationsWithListener(resource, startDate, endDate, false);
-}
-externalizedMethods.queryReservations = [{name: "resource", type: "String"}, 
-                                         {name: "startDate", type: "Date"},
-                                         {name: "endDate", type: "Date"}];
-
-/**
-  @ignore
-
-  See queryReservations, this includes the option to return the query paramaters used by the calendar change listener.
-*/
-methods.queryReservationsWithListener = function(resource, startDate, endDate, returnQueryParams){
+methods.queryReservations = function(resource, startDate, endDate, returnQueryParams){
   var resourceId = getCollectionId(resource);
 
   var params = {
@@ -80,6 +98,9 @@ methods.queryReservationsWithListener = function(resource, startDate, endDate, r
 
   return reservations.fetch();
 }
+externalizedMethods.queryReservations = [{name: "resource", type: "String"}, 
+                                         {name: "startDate", type: "Date"},
+                                         {name: "endDate", type: "Date"}];
 
 
 /**
@@ -101,7 +122,7 @@ methods.getReservationStream = function(resource, startDate, endDate){
   var reservationData = methods.queryReservations(resource, startDate, endDate);
   var calendarEventObjects = [];
   
-  for (var i = 0; i < reservationData.length; i++) {
+  for (var i = 0; i &lt; reservationData.length; i++) {
     var reservation = reservationData[i]
     calendarEventObjects.push(buildCalObject(reservation));
   };
@@ -118,21 +139,19 @@ methods.getReservationStream = function(resource, startDate, endDate){
   @param {date} endDate
     New reservation end date
 **/
-methods.createReservation = function(resource, startDate, endDate, apiSecret){
-  var resourceId = getCollectionId(resource);
-  var userId = currentUserOrWithKey(apiSecret, false);
-  if (conflictingReservationCount(null, resourceId, startDate, endDate)){
+methods.createReservation = function(resource, startDate, endDate){
+  if (conflictingReservationCount(null, resource, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  else if (!userId){
+  else if (!Meteor.userId()){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
       Reservations.insert({
-        owner_id: [userId],
-        attending_user_id: [userId],
-        resource_id: resourceId,
+        owner_id: [Meteor.userId()],
+        attending_user_id: [Meteor.userId()],
+        resource_id: resource._id,
         start_date: startDate,
         end_date: endDate,
         cancelled: false,
@@ -140,9 +159,6 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
       })
   }
 }
-externalizedMethods.createReservation = [{name: "resource", type: "String"}, 
-                                         {name: "startDate", type: "Date"},
-                                         {name: "endDate", type: "Date"}];
 
 /**
   Change a reservation's start and/or end datetime
@@ -232,23 +248,22 @@ methods.createAccount = function(username, email){
 /**
 @ignore
 
-Find the API secret for a user, creating a new one if needed.
-
-@param forceNew
-  Generates a new key
+Find an apiKey for a user, creating a new one if needed.
 **/
-methods.getApiSecret = function(forceNew){
-  if (!Meteor.user().api_secret || forceNew){
-    var UUID = Meteor.uuid();
+methods.getApiKey = function(){
+  console.log(Meteor.user().api_key);
+  if (!Meteor.user().api_key){
+    console.log('updating');
     Meteor.users.update(Meteor.userId(), {
       $set: {
-        api_secret: UUID
+        api_key: Meteor.uuid()
       }
+    }, function(error){
+      return Meteor.user().api_key;
     });
-    return UUID;
   }
   else{
-    return Meteor.user().api_secret;
+    return Meteor.user().api_key;
   }
 }
 
@@ -319,40 +334,13 @@ function conflictingReservationCount(reservationId, resourceId, startDate, endDa
       $gt: startDate
     }
   };
-  if (reservationId){
+  if (reservation){
     params._id = {
       $ne: reservationId
     }
   }
   var conflictingReservations = Reservations.find(params);
   return conflictingReservations.count();
-}
-
-/**
-@ignore
-
-Returns the user belonging to the provided apiKey, or the current user if no apiKey provided
-
-@param apiSecret
-  apiSecret for lookup
-@param needObj
-  whether the entire user object should be returned
-*/
-function currentUserOrWithKey(apiSecret, needObj){
-  if (apiSecret){
-    if (needObj){
-      return Meteor.users.findOne({api_secret:apiSecret});
-    }
-    else{
-      return Meteor.users.findOne({api_secret:apiSecret})._id;
-    }
-  }
-  else{
-    if (needObj){
-      return Meteor.user();
-    }
-    return Meteor.userId();
-  }
 }
 
 function isAdmin(){
@@ -370,7 +358,7 @@ function isOwner(reservation){
     var reservation = Reservations.findOne({_id: reservation});
   }
   var found = false;
-  for (var i = 0; i < reservation.owner_id.length; i++) {
+  for (var i = 0; i &lt; reservation.owner_id.length; i++) {
     var ownerId = reservation.owner_id[i];
     if (ownerId == Meteor.userId()){
       found = true;
@@ -385,7 +373,7 @@ Look through some array of objects and build an array of the object's IDs
 */
 objectArrayToIdArray = function(objects){
   var objectIds = []
-  for (var i = 0; i < objects.length; i++) {
+  for (var i = 0; i &lt; objects.length; i++) {
     var object = objects[i]
     objectIds.push(object._id);
   };
@@ -406,3 +394,26 @@ getCollectionId = function(item){
 
 //pass methods to Meteor.methods
 Meteor.methods(methods);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="methods.html">methods</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-API Usage Instructions.html">API Usage Instructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Feb 15 2016 12:32:22 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
