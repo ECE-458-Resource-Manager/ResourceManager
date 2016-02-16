@@ -70,10 +70,9 @@ Router.map(function() {
                     'Content-Type': 'text/html',
                     'Access-Control-Allow-Origin': '*'
                 });
-                //locate a user with the api key provided
-                var user = Meteor.users.findOne({api_key: body.key});
-                if (!user){
-                    webResponse.end("Unable to authenticate, please check your API key.  You provided " + this.request.body.key + '\n');
+                //sign in using the API secret
+                if (!Meteor.users.findOne({api_secret:body.secret})){
+                    webResponse.end("Unable to authenticate, please check your API secret.  You provided " + this.request.body.secret + '\n');
                 }
                 //make sure we have exposed the requested method
                 Meteor.call('externalizedMethods', function(error, response){
@@ -82,6 +81,7 @@ Router.map(function() {
                         return;
                     }
                     else{
+                        //build param list based on those given in 'externalizedMethods'
                         functionParams = response[body.method];
                         var paramArray = []
                         for (var i = 0; i < functionParams.length; i++) {
@@ -95,7 +95,12 @@ Router.map(function() {
                             }
                             paramArray.push(body[param.name]);
                         };
+                        //include api secret as the last param of the method call
+                        paramArray.push(body.secret);
                         Meteor.apply(body.method, paramArray, true, function(error, result){
+                            if(error){
+                                webResponse.end(JSON.stringify(error.reason));
+                            }
                             webResponse.end(JSON.stringify(result));
                         });
                     };
