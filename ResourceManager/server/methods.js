@@ -129,7 +129,7 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
-      Reservations.insert({
+      return Reservations.insert({
         owner_id: [userId],
         attending_user_id: [userId],
         resource_id: resourceId,
@@ -137,7 +137,7 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
         end_date: endDate,
         cancelled: false,
         reminder_sent: false
-      })
+      });
   }
 }
 externalizedMethods.createReservation = [{name: "resource", type: "String"}, 
@@ -154,14 +154,14 @@ externalizedMethods.createReservation = [{name: "resource", type: "String"},
   @param {date} endDate
     New reservation end date
 **/
-methods.changeReservationTime = function(reservation, startDate, endDate){
+methods.changeReservationTime = function(reservation, startDate, endDate, apiSecret){
   if (!reservation._id){
     reservation = Reservations.findOne({_id:reservation});
   }
   if (conflictingReservationCount(reservation._id, reservation.resource._id, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  if (!(isOwner(reservation) || isAdmin())){
+  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret))){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -172,8 +172,12 @@ methods.changeReservationTime = function(reservation, startDate, endDate){
         end_date: endDate
       }
     })
+    return "Reservation " + reservation._id + " time was changed successfully.";
   }
 }
+externalizedMethods.changeReservationTime = [{name: "reservation", type: "String"},
+                                             {name: "startDate", type: "Date"},
+                                             {name: "endDate", type: "Date"}];
 
 /**
   Cancel a reservation
@@ -181,10 +185,10 @@ methods.changeReservationTime = function(reservation, startDate, endDate){
   @param reservation
     Reservation collection object or ID
 **/
-methods.cancelReservation = function(reservation){
+methods.cancelReservation = function(reservation, apiSecret){
   var reservationId = getCollectionId(reservation);
 
-  if (!(isOwner(reservation) || isAdmin())){
+  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret))){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -194,8 +198,10 @@ methods.cancelReservation = function(reservation){
         cancelled: true
       }
     })
+    return "Reservation " + reservationId + " was successfully cancelled."
   }
 }
+externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
 
 
 /********************************************************************************
@@ -217,8 +223,8 @@ Sends an email to the user linking to a page to set their password.
 @param email
   Email for new user
 **/
-methods.createAccount = function(username, email){
-  if (!Meteor.userId()){
+methods.createAccount = function(username, email, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -228,6 +234,8 @@ methods.createAccount = function(username, email){
   });
   Accounts.sendEnrollmentEmail(accountId);
 }
+externalizedMethods.createAccount = [{name: "username", type: "String"},
+                                         {name: "email", type: "email"}];
 
 /**
 @ignore
@@ -355,24 +363,21 @@ function currentUserOrWithKey(apiSecret, needObj){
   }
 }
 
-function isAdmin(){
-  if (!Meteor.user()){
-    return false;
-  }
-  return Meteor.user().username == 'admin';
+function isAdmin(apiSecret){
+  var currentUser = currentUserOrWithKey(apiSecret, true);
+  return currentUser.username == 'admin';
 }
 
-function isOwner(reservation){
-  if (!Meteor.user()){
-    return false;
-  }
+function isOwner(reservation, apiSecret){
+  var currentUser = currentUserOrWithKey(apiSecret, true);
+
   if (!reservation._id){
     var reservation = Reservations.findOne({_id: reservation});
   }
   var found = false;
   for (var i = 0; i < reservation.owner_id.length; i++) {
     var ownerId = reservation.owner_id[i];
-    if (ownerId == Meteor.userId()){
+    if (ownerId == currentUser._id){
       found = true;
     }
   };
