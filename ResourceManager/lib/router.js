@@ -48,3 +48,7 @@ AccountsTemplates.configureRoute('signIn');
 Router.plugin('ensureSignedIn', {
     except: ['signIn', 'enrollAccount']
 });
+
+Router.route('/loginShib', {
+    name: 'loginShib'
+});
