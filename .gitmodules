@@ -4,3 +4,6 @@
 [submodule "ResourceManager/packages/filter-collections"]
 	path = ResourceManager/packages/filter-collections
 	url = https://github.com/ECE-458-Resource-Manager/filter-collections
+[submodule "ResourceManager/packages/accounts-saml-shibboleth"]
+	path = ResourceManager/packages/accounts-saml-shibboleth
+	url = https://github.com/tvoglund/accounts-saml-shibboleth.git
