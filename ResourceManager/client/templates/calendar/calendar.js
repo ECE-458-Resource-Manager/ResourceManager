@@ -107,7 +107,7 @@ function listenForChanges(startDate, endDate){
   }
 
   //we need to find the query paramaters, which we'll be observing for changes
-  Meteor.call('queryReservations', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
+  Meteor.call('queryReservationsWithListener', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
     errorHandle(error);
     var params = result;
     activeListener = Reservations.find(params).observeChanges({

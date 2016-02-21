@@ -35,4 +35,5 @@ ece458:filter-collections
 meteorstuff:materialize-modal
 meteorhacks:kadira
 percolate:synced-cron
+force-ssl
 tvoglund:accounts-saml-shibboleth
