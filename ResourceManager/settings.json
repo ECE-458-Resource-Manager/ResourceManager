@@ -1,5 +1,19 @@
 {
   "public": {
-
-  }
+  },
+  "bUseTestShib": true,
+  "saml":[{
+    "provider":"shib",
+    "profile": {
+      "firstName": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname",
+      "lastName" : "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
+    },
+    "authFields":{
+      "fname": "uid",
+      "dbField": "username"
+    },
+    "pem": "-----BEGIN RSA PRIVATE KEY-----SomeKeyHere-----END RSA PRIVATE KEY-----",
+    "entryPoint":"https://shib.oit.duke.edu/idp/profile/SAML2/Redirect/SSO",
+    "issuer": "https://resourcemanage.xyz"
+ }]
 }
