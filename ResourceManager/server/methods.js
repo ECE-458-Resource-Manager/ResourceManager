@@ -20,10 +20,29 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
 *****
 ********************************************************************************/
 
-externalizedMethods.getResources = [{name: 'name', type: 'String'}];
-methods.getResources = function(name){
-  return name;
+/**
+  Add a resource
+
+  @param name
+    Name for the resource
+  @param description
+    Description for the resource
+  @param {array} tags
+    Tags to associate with the resource, as a comma-separated array of strings
+*/
+methods.addResource = function(name, description, tags, apiSecret){
+  if (!isAdmin(apiSecret)){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+  return Resources.insert({
+    name: name,
+    description: description,
+    tags: tags
+  });
 }
+externalizedMethods.addResource = [{name: "name", type: "String"},
+                                   {name: "description", type: "String"},
+                                   {name: "tags", type: "Array"}];
 
 
 /********************************************************************************

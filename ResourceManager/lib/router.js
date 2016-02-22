@@ -76,8 +76,8 @@ Router.map(function() {
                 if (!Meteor.users.findOne({api_secret:body.secret})){
                     webResponse.end("Unable to authenticate, please check your API secret.  You provided " + this.request.body.secret + '\n');
                 }
-                //make sure we have exposed the requested method
                 Meteor.call('externalizedMethods', function(error, response){
+                    //make sure we have exposed the requested method
                     if (!response[body.method]){
                         webResponse.end("Method: '"+ body.method +"' is not supported by the API.\n");
                         return;
@@ -93,11 +93,17 @@ Router.map(function() {
                                 return;
                             }
                             if (param.type == 'Date'){
+                                //turn string into a date
                                 body[param.name] = new Date(body[param.name]);
+                            }
+                            else if (param.type == 'Array'){
+                                //turn CSV into an array
+                                body[param.name] = body[param.name].split(",");
                             }
                             paramArray.push(body[param.name]);
                         };
                         //include api secret as the last param of the method call
+                        //this should be the last param of all exposed methods
                         paramArray.push(body.secret);
                         Meteor.apply(body.method, paramArray, true, function(error, result){
                             if(error){
@@ -107,7 +113,6 @@ Router.map(function() {
                         });
                     };
                 });
-                //this.response.end(JSON.stringify('success'));
             }
             else {
                 this.response.writeHead(302, {

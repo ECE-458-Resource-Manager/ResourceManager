@@ -10,19 +10,13 @@ Template.createResources.events({
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
-		Resources.insert({
-			name: resourceName,
-			description: resourceDescription,
-			tags: selectedTags,
-		}, function(err, _id) { 
-			console.log("created resource");
+
+		Meteor.call('addResource', resourceName, resourceDescription, selectedTags, function(error, result){
+			console.log('created resource');
 		});
 
 		// Clear form
 		clearCreateResourceForm(event);
-		// event.target.resourceName.value = "";
-		// event.target.resourceDescription.value = "";
-		// Session.set(selectedTagsKey, []);
 
 		// Prevent default form submit
 		return false;
