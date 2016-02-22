@@ -19,21 +19,12 @@ Template.editResource.events({
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
-		Resources.update(
-			{_id: resource._id},
-			{ $set:{
-				_id: resource._id,
-				name: resourceName,
-				description: resourceDescription,
-				tags: selectedTags,
-			}},
-		);
+		Meteor.call('modifyResource', resource, resourceName, resourceDescription, selectedTags, function(error, result){
+			//error handle?
+		});
 
 		// Clear form
 		clearEditResourceForm(event);
-		// event.target.resourceName.value = "";
-		// event.target.resourceDescription.value = "";
-		// Session.set(selectedTagsKey, []);
 
 		Router.go('mainPage');
 
@@ -52,14 +43,18 @@ Template.editResource.events({
 			    message: "This resource has reservations which haven't occurred yet.  Are you sure you want to delete it?",
 			    callback: function(error, response){
 			      if (response.submit){
-			        Resources.remove({_id: resource._id});
+			        Meteor.call('removeResource', resource, function(error, result){
+								//error handle?
+							});
 			        Router.go('mainPage');
 			      }
 			    }
 			  });
 			}
 			else{
-				Resources.remove({_id: resource._id});
+				Meteor.call('removeResource', resource, function(error, result){
+					//error handle?
+				});
 			  Router.go('mainPage');
 			}
 		});

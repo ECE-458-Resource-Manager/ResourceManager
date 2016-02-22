@@ -44,6 +44,55 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
                                    {name: "description", type: "String"},
                                    {name: "tags", type: "Array"}];
 
+/**
+  Modify a resource
+
+  @param {string} resource
+    Resource collection object or ID to modify 
+  @param name
+    Name for the resource
+  @param description
+    Description for the resource
+  @param {array} tags
+    Tags to associate with the resource, as a comma-separated array of strings
+*/
+methods.modifyResource = function(resource, name, description, tags, apiSecret){
+  if (!isAdmin(apiSecret)){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+  var resourceId = getCollectionId(resource);
+  return Resources.update(
+    {_id: resourceId},
+    { $set:{
+      _id: resourceId,
+      name: name,
+      description: description,
+      tags: tags,
+    }},
+  );
+}
+externalizedMethods.modifyResource = [{name: "resource", type: "String"},
+                                     {name: "name", type: "String"},
+                                     {name: "description", type: "String"},
+                                     {name: "tags", type: "Array"}];
+
+
+/**
+  Delete a resource
+
+  @param {string} resource
+    Resource collection object or ID to delete
+*/
+methods.removeResource = function(resource, apiSecret){
+  if (!isAdmin(apiSecret)){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+  var resourceId = getCollectionId(resource);
+  return Resources.remove({_id: resourceId});
+}
+externalizedMethods.removeResource = [{name: "resource", type: "String"}];
+
+
 
 /********************************************************************************
 *****
