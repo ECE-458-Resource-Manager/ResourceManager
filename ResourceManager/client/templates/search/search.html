@@ -12,7 +12,7 @@
             </div>
         </div>
 
-	<div class="row">
+        <div class="row">
             <div class="input-field col s4">
                 <input type="time" id="start_time">
                 <label class="active" for="start_time">Start time</label>
@@ -21,35 +21,35 @@
                 <input type="time" id="end_time">
                 <label class="active" for="end_time">End time</label>
             </div>
-	</div>
+        </div>
 
         <div class="row">
-           <div class="input-field col s6">
-              <h4>Search Resources</h4>
-              <input placeholder="Enter resource name/description" id="search_entry" type="text" class="validate">
-           </div>
+            <div class="input-field col s6">
+                <h4>Search Resources</h4>
+                <input placeholder="Enter resource name/description" id="search_entry" type="text" class="validate">
+            </div>
 
-           <div class="col s4">
-              <h4>Tags</h4>
-              {{>tags}}
-           </div>
-	</div>
+            <div class="col s4">
+                <h4>Tags</h4>
+                {{>tags}}
+            </div>
+        </div>
 
         <!-- Sort button -->
         <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
-              {{#if fcSort.name.desc}}
+            {{#if fcSort.name.desc}}
                 Sorted desc
-              {{else}}
-                  {{#if fcSort.name.asc}}
+            {{else}}
+                {{#if fcSort.name.asc}}
                     Sorted asc
-                  {{else}}
+                {{else}}
                     Unsorted
-                  {{/if}}
-              {{/if}}
+                {{/if}}
+            {{/if}}
         </a>
         <ul class="collection">
             {{#each filteredFcResults}}
-                   {{> resourceItem }}
+                {{> resourceItem }}
             {{/each}}
         </ul>
     </div>
