@@ -61,13 +61,14 @@ API
 ******/
 
 Router.map(function() {
-    this.route("apiRoute", {path: "/api/",
+    this.route("apiRoute", {path: "/api/:method",
         where: "server",
         action: function(){
             var webResponse = this.response;
 
             if (this.request.method == 'POST') {
                 var body = this.request.body
+                var method = this.params.method
                 webResponse.writeHead(200, {
                     'Content-Type': 'text/html',
                     'Access-Control-Allow-Origin': '*'
@@ -78,13 +79,13 @@ Router.map(function() {
                 }
                 Meteor.call('externalizedMethods', function(error, response){
                     //make sure we have exposed the requested method
-                    if (!response[body.method]){
-                        webResponse.end("Method: '"+ body.method +"' is not supported by the API.\n");
+                    if (!response[method]){
+                        webResponse.end("Method: '"+ method +"' is not supported by the API.\n");
                         return;
                     }
                     else{
                         //build param list based on those given in 'externalizedMethods'
-                        functionParams = response[body.method];
+                        functionParams = response[method];
                         var paramArray = []
                         for (var i = 0; i < functionParams.length; i++) {
                             var param = functionParams[i];
