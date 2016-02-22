@@ -54,15 +54,15 @@ filterResources = function () {
  * @param array1
  * @param array2
  */
-intersection = function(array1, array2) {
+intersection = function (array1, array2) {
     var result = [];
     var set = new Set();
 
-    array1.forEach(function(item) {
+    array1.forEach(function (item) {
         set.add(item._id);
     });
 
-    array2.forEach(function(item) {
+    array2.forEach(function (item) {
         if (set.has(item._id)) {
             result = result.concat(item);
         }
@@ -71,9 +71,8 @@ intersection = function(array1, array2) {
     return result;
 };
 
-var contains = function(array, item) {
+var contains = function (array, item) {
     var temp = array.indexOf(item) > -1;
-    console.log(temp);
     return temp;
 };
 
