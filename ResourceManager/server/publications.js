@@ -1,12 +1,20 @@
 Meteor.publish('resources', function () {
-    return Resources.find();
+	return Resources.find();
 });
 
 Meteor.publish('reservations', function () {
-    return Reservations.find();
+	return Reservations.find();
 });
 
 // filter-collections publication for the search page
 FilterCollections.publish(Resources, {
-    name: 'filter-collections-resources'
+	name: 'filter-collections-resources'
+});
+
+Meteor.publish('allUsers', function(){
+	var result = [];
+	if (Roles.userIsInRole(this.userId, ['admin', 'manage-users'])) {
+		return Meteor.users.find();
+	}
+	return null;
 });

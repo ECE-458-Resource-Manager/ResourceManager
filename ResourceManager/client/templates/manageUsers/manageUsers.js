@@ -1,3 +1,9 @@
+Template.manageUsers.helpers({
+    allUsers: function () {
+        return Meteor.users.find();
+    }
+});
+
 Template.manageUsers.events({
 	"submit form": function (event) {
 		event.preventDefault();
@@ -19,3 +25,7 @@ Template.manageUsers.events({
 		return false;
 	}
 });
+
+Template.manageUsers.rendered = function() {
+	$('ul.tabs').tabs();
+}

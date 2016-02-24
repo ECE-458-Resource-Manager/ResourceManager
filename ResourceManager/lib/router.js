@@ -35,7 +35,10 @@ Router.route('/calendar/:_id', {
 });
 
 Router.route('/manageUsers', {
-    name: 'manageUsers'
+    name: 'manageUsers',
+    waitOn: function() {
+        return Meteor.subscribe('allUsers');
+    }
 });
 
 Router.route('/accountInfo', {
