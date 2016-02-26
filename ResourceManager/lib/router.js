@@ -35,7 +35,10 @@ Router.route('/calendar/:_id', {
 });
 
 Router.route('/manageUsers', {
-    name: 'manageUsers'
+    name: 'manageUsers',
+    waitOn: function() {
+        return Meteor.subscribe('allUsers');
+    }
 });
 
 Router.route('/accountInfo', {
@@ -52,7 +55,7 @@ AccountsTemplates.configureRoute('signIn');
 // AccountsTemplates.configureRoute('verifyEmail');
 
 Router.plugin('ensureSignedIn', {
-    except: ['signIn', 'enrollAccount']
+    except: ['signIn', 'atEnrollAccount']
 });
 
 

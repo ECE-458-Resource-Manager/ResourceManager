@@ -1,0 +1,12 @@
+<template name="userItem">
+		<li class="collection-item">
+			<div class="row" style="margin-bottom: 0;">
+				<span class="col s4">{{username}}</span>
+				<span class="col s8">
+					{{#each userPermissions}}
+						{{> tagChipNoX}}
+					{{/each}}
+				</span>
+			</div>
+		</li>
+</template>
