@@ -234,13 +234,12 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   else{
-    Reservations.update(reservation._id, {
+    return Reservations.update(reservation._id, {
       $set: {
         start_date: startDate,
         end_date: endDate
       }
-    })
-    return "Reservation " + reservation._id + " time was changed successfully.";
+    });
   }
 }
 externalizedMethods.changeReservationTime = [{name: "reservation", type: "String"},
@@ -266,7 +265,6 @@ methods.cancelReservation = function(reservation, apiSecret){
         cancelled: true
       }
     })
-    return "Reservation " + reservationId + " was successfully cancelled."
   }
 }
 externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
