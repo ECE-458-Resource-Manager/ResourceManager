@@ -26,6 +26,14 @@ Router.route('/editResource/:_id', {
     }
 });
 
+Router.route('/editGroup/:_id', {
+    name: 'editGroup',
+    data: function() { return Group.findOne(this.params._id); },
+    waitOn: function() {
+        return Meteor.subscribe('groups');
+    }
+});
+
 Router.route('/calendar/:_id', {
     name: 'calendar',
     data: function() { return Resources.findOne(this.params._id); },
@@ -37,7 +45,7 @@ Router.route('/calendar/:_id', {
 Router.route('/manageUsers', {
     name: 'manageUsers',
     waitOn: function() {
-        return Meteor.subscribe('allUsers');
+        return [Meteor.subscribe('allUsers'), Meteor.subscribe('groups')];
     }
 });
 

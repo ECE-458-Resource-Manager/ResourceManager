@@ -306,6 +306,27 @@ externalizedMethods.createAccount = [{name: "username", type: "String"},
                                          {name: "email", type: "email"}];
 
 /**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.createGroup = function(groupName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  return Groups.insert({
+    name: groupName,
+    roles: [groupName],
+    member_ids: []
+  });
+}
+externalizedMethods.createGroup = [{name: "groupName", type: "String"}];
+
+/**
 @ignore
 
 Find the API secret for a user, creating a new one if needed.

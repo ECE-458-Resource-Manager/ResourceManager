@@ -3,31 +3,14 @@
 	<div class="row">
 		<div class="col s12">
 			<ul class="tabs">
-				<li class="tab col s4"><a class="active" href="#tab1">Enroll New User</a></li>
-				<li class="tab col s4"><a href="#tab2">User Permissions</a></li>
-				<li class="tab col s4"><a href="#tab3">Groups</a></li>
+				<li class="tab col s3"><a class="active" href="#tab1">User Permissions</a></li>
+				<li class="tab col s3"><a href="#tab2">Enroll New User</a></li>
+				<li class="tab col s3"><a href="#tab3">Groups</a></li>
+				<li class="tab col s3"><a href="#tab4">New Group</a></li>
 			</ul>
 		</div>
 
 		<div id="tab1" class="col s12">
-			<h4>Enroll New User</h4>
-			<form>
-
-				<div class="input-field">
-					<label for="newUsernameInput">Username</label>
-					<input type="text" name="newUsername" id="newUsernameInput" required>
-				</div>
-
-				<div class="input-field">
-					<label for="newUserEmailInput">Email</label>
-					<input type="text" name="newUserEmail" id="newUserEmailInput" required>
-				</div>
-
-				<button type="submit" class="btn btn-default">Create Account<i class="material-icons right">send</i></button>
-			</form>
-		</div>
-
-		<div id="tab2" class="col s12">
 			<h4>User Permissions</h4>
 			<ul class="collection">
 				{{#each allUsers}}
@@ -36,9 +19,59 @@
 			</ul>
 		</div>
 
+		<div id="tab2" class="col s12">
+			{{> addUser}}
+		</div>
+
 		<div id="tab3" class="col s12">
-			<p>Groups</p>
+			<h4>Groups</h4>
+			<ul class="collection">
+				{{#each groups}}
+					<a href="/editGroup/{{_id}}" class="collection-item">{{name}}</a>
+				{{/each}}
+			</ul>
+		</div>
+
+		<div id="tab4" class="col s12">
+			{{> addGroup}}
 		</div>
 	</div>
 
+</template>
+
+
+<template name="addUser">
+	<h4>Enroll New User</h4>
+	<form>
+
+		<div class="input-field">
+			<label for="newUsernameInput">Username</label>
+			<input type="text" name="newUsername" id="newUsernameInput" required>
+		</div>
+
+		<div class="input-field">
+			<label for="newUserEmailInput">Email</label>
+			<input type="text" name="newUserEmail" id="newUserEmailInput" required>
+		</div>
+
+		<button type="submit" class="btn btn-default">Create Account<i class="material-icons right">send</i></button>
+	</form>
+</template>
+
+<template name="addGroup">
+	<h4>Create New Group</h4>
+	<form>
+
+		<div class="input-field">
+			<label for="groupNameInput">Group Name</label>
+			<input type="text" name="groupName" id="groupNameInput" required>
+		</div>
+
+		<!-- <div class="input-field">
+			<label for="newUserEmailInput">Members</label>
+			<input type="text" name="newUserEmail" id="newUserEmailInput" required>
+		</div> -->
+
+		<button type="submit" class="btn btn-default">Create Group<i class="material-icons right">send</i></button>
+	</form>
 </template>
