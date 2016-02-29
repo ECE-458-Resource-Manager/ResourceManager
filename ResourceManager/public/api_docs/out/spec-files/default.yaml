@@ -1,0 +1,218 @@
+swagger: '2.0'
+info:
+  title: Resource Manager API
+  version: 1.0.0
+schemes:
+  - http
+basePath: /api
+produces:
+  - application/json
+securityDefinitions:
+  key:
+    type: apiKey
+    description: The API key can be retreived from your user page and is required for all API calls.
+    in: query
+    name: secret
+paths:
+  /addResource:
+    post:
+      summary: Add a resource
+      parameters:
+        - name: name
+          in: formData
+          description: Name for the resource
+          required: true
+          type: string
+        - name: description
+          in: formData
+          description: Description for the resource
+          required: true
+          type: string
+        - name: tags
+          in: formData
+          description: 'Tags for the resource, as a comma-separated array of strings'
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Resources
+      responses:
+        '200':
+          description: The ID of the created resource
+          schema:
+            type: string
+  /modifyResource:
+    post:
+      summary: Modify an existing resource
+      parameters:
+        - name: resource
+          in: formData
+          description: Resource collection ID to modify
+          required: true
+          type: string
+        - name: name
+          in: formData
+          description: Name for the resource
+          required: true
+          type: string
+        - name: description
+          in: formData
+          description: Description for the resource
+          required: true
+          type: string
+        - name: tags
+          in: formData
+          description: 'Tags for the resource, as a comma-separated array of strings'
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Resources
+      responses:
+        '200':
+          description: 'The number of documents updated, in this case 1'
+          schema:
+            type: string
+  /removeResource:
+    post:
+      summary: Remove an existing resource
+      parameters:
+        - name: resource
+          in: formData
+          description: Resource collection ID to remove
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Resources
+      responses:
+        '200':
+          description: No text returned
+  /queryReservations:
+    post:
+      summary: 'Query reservations, constrained by start (and optionally) end date'
+      parameters:
+        - name: resource
+          in: formData
+          description: Resource collection ID
+          required: true
+          type: string
+        - name: startDate
+          in: formData
+          description: 'Start date for query in ISO format YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS'
+          required: true
+          type: string
+        - name: endDate
+          in: formData
+          description: End date for query in ISO format
+          required: false
+          type: string
+      security:
+        - key: []
+      tags:
+        - Reservations
+      responses:
+        '200':
+          description: A JSON formatted array of reservation objects
+          schema:
+            type: string
+  /createReservation:
+    post:
+      summary: Create a reservation
+      parameters:
+        - name: resource
+          in: formData
+          description: Resource collection ID
+          required: true
+          type: string
+        - name: startDate
+          in: formData
+          description: 'Start date for query in ISO format YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS'
+          required: true
+          type: string
+        - name: endDate
+          in: formData
+          description: End date for query in ISO format
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Reservations
+      responses:
+        '200':
+          description: The ID of the created reservation object
+          schema:
+            type: string
+  /changeReservationTime:
+    post:
+      summary: Change the time of a reservation
+      parameters:
+        - name: reservation
+          in: formData
+          description: Reservation collection ID
+          required: true
+          type: string
+        - name: startDate
+          in: formData
+          description: 'New start date in ISO format YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS'
+          required: true
+          type: string
+        - name: endDate
+          in: formData
+          description: New end date in ISO format
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Reservations
+      responses:
+        '200':
+          description: 'The number of documents updated, in this case 1'
+          schema:
+            type: string
+  /cancelReservation:
+    post:
+      summary: Cancel a reservation
+      parameters:
+        - name: reservation
+          in: formData
+          description: Reservation collection ID
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Reservations
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string
+  /createAccount:
+    post:
+      summary: Create a new user account
+      parameters:
+        - name: username
+          in: formData
+          description: Username of new user
+          required: true
+          type: string
+        - name: email
+          in: formData
+          description: Email of new user
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Users
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string

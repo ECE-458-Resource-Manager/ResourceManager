@@ -1,0 +1,24 @@
+/*
+ * Branding CSS file. This file is intentially left blank. If you want to
+ * customize Swagger Editor you can serve this file with your CSS that overrides
+ * or extends Swagger Editor styling.
+*/
+/*
+hide the editor
+*/
+.total-wrapper > header,
+.editor.pane,
+.ui-splitbar,
+[tooltip-popup],
+.jump-to-yaml {
+    display: none !important;
+}
+
+.preview.pane {
+    position: fixed;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}

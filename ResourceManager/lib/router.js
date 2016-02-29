@@ -71,7 +71,20 @@ Router.plugin('ensureSignedIn', {
 API
 ******/
 
+/**
+    Route /api to show the swagger documentation
+    When /api/someMethod is called, query the server methods to see if it is externalized.  If it is, use Meteor's apply function to call that method, passing the appropriate parameters.
+**/
 Router.map(function() {
+    this.route("apiGetRoute", {path: "/api",
+        where: "server",
+        action: function(){
+            this.response.writeHead(302, {
+                'Location': '/api_docs/out/index.html'
+            });
+            this.response.end();
+        }
+    });
     this.route("apiRoute", {path: "/api/:method",
         where: "server",
         action: function(){
@@ -79,28 +92,45 @@ Router.map(function() {
 
             if (this.request.method == 'POST') {
                 var body = this.request.body
+                var query = this.params.query
                 var method = this.params.method
-                webResponse.writeHead(200, {
-                    'Content-Type': 'text/html',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                //sign in using the API secret
-                if (!Meteor.users.findOne({api_secret:body.secret})){
-                    webResponse.end("Unable to authenticate, please check your API secret.  You provided " + this.request.body.secret + '\n');
+                //sign in using the API secret, this can exist in the body or the query so figure out which one
+                var secret = body.secret;
+                if (!body.secret || body.secret == ''){
+                    secret = query.secret;
                 }
-                Meteor.call('externalizedMethods', function(error, response){
+                //find the user with the given secret
+                var user = Meteor.users.findOne({api_secret:secret});
+                if (!user || !secret || secret == ''){
+                    webResponse.writeHead(403, {
+                        'Content-Type': 'text/html',
+                        'Access-Control-Allow-Origin': '*'
+                    });
+                    webResponse.end("Unable to authenticate, please check your API secret.  You provided " + this.request.body.secret + '\n');
+                    return;
+                }
+                Meteor.call('externalizedMethods', function(error, externalizedMethods){
                     //make sure we have exposed the requested method
-                    if (!response[method]){
+                    if (!externalizedMethods[method]){
+                        webResponse.writeHead(400, {
+                            'Content-Type': 'text/html',
+                            'Access-Control-Allow-Origin': '*'
+                        });
                         webResponse.end("Method: '"+ method +"' is not supported by the API.\n");
                         return;
                     }
                     else{
                         //build param list based on those given in 'externalizedMethods'
-                        functionParams = response[method];
+                        //externalizedMethods[someMethod] = [{name: 'someParam', type: 'String'}]
+                        functionParams = externalizedMethods[method];
                         var paramArray = []
                         for (var i = 0; i < functionParams.length; i++) {
                             var param = functionParams[i];
                             if (!body[param.name]){
+                                webResponse.writeHead(400, {
+                                    'Content-Type': 'text/html',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
                                 webResponse.end("Required parameter '"+ param.name + "' not found.");
                                 return;
                             }
@@ -116,21 +146,28 @@ Router.map(function() {
                         };
                         //include api secret as the last param of the method call
                         //this should be the last param of all exposed methods
-                        paramArray.push(body.secret);
-                        Meteor.apply(body.method, paramArray, true, function(error, result){
+                        paramArray.push(secret);
+                        Meteor.apply(method, paramArray, true, function(error, result){
                             if(error){
+                                webResponse.writeHead(500, {
+                                    'Content-Type': 'text/html',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
                                 webResponse.end(JSON.stringify(error.reason));
                             }
-                            webResponse.end(JSON.stringify(result));
+                            else{                            
+                                webResponse.writeHead(200, {
+                                    'Content-Type': 'text/html',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
+                                webResponse.end(JSON.stringify(result));
+                            }
                         });
                     };
                 });
             }
-            else {
-                this.response.writeHead(302, {
-                    'Location': '/api_docs/out/methods.html'
-                });
-                this.response.end();
+            else{
+                webResponse.end("API requires POST.")
             }
         }
     });
