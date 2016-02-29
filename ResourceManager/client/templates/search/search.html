@@ -1,7 +1,20 @@
 <template name="search">
     <div>
-        <h5>Available in Time Span:</h5>
+
         <div class="row">
+            <div class="input-field col s6">
+                <h4>Search Resources</h4>
+                <input placeholder="Enter resource name/description" id="search_entry" type="text" class="validate">
+            </div>
+
+            <div class="col s4">
+                <h5>Tags</h5>
+                {{>tags}}
+            </div>
+        </div>
+
+        <div class="row">
+            <h5 style="margin-left: 10px;">Available in Time Span:</h5>
             <div class="input-field col s2">
                 <input type="date" class="datepicker" id="start_date">
                 <label for="start_date">Start date</label>
@@ -20,7 +33,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="input-field col s6">
                 <h4>Search Resources</h4>
                 <input placeholder="Enter resource name/description" id="search_entry" type="text" class="validate">
@@ -30,7 +43,7 @@
                 <h4>Tags</h4>
                 {{>tags}}
             </div>
-        </div>
+        </div> -->
 
         <!-- Sort button -->
         <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
