@@ -72,8 +72,7 @@ intersection = function (array1, array2) {
 };
 
 var contains = function (array, item) {
-    var temp = array.indexOf(item) > -1;
-    return temp;
+    return array.indexOf(item) > -1;
 };
 
 var filterByAvailability = function (fcResults) {

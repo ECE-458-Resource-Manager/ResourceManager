@@ -36,3 +36,4 @@ meteorstuff:materialize-modal
 meteorhacks:kadira
 percolate:synced-cron
 force-ssl
+http
