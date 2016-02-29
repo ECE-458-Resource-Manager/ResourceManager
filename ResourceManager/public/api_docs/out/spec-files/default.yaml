@@ -2,7 +2,6 @@ swagger: '2.0'
 info:
   title: Resource Manager API
   version: 1.0.0
-host: localhost:3000
 schemes:
   - http
 basePath: /api
