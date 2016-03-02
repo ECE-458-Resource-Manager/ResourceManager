@@ -18,3 +18,11 @@ Meteor.publish('allUsers', function(){
 	}
 	return null;
 });
+
+Meteor.publish('groups', function(){
+	var result = [];
+	if (Roles.userIsInRole(this.userId, ['admin', 'manage-users'])) {
+		return Groups.find();
+	}
+	return null;
+});
