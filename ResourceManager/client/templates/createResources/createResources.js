@@ -7,11 +7,13 @@ Template.createResources.events({
 		event.preventDefault();
 		var resourceName = event.target.resourceName.value;
 		var resourceDescription = event.target.resourceDescription.value;
+		var viewPermission = event.target.viewPermission
+		var reservePermission = event.target.reservePermission
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
 
-		Meteor.call('addResource', resourceName, resourceDescription, selectedTags, function(error, result){
+		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, selectedTags, function(error, result){
 			console.log('created resource');
 		});
 

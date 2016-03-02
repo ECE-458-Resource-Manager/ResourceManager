@@ -20,6 +20,16 @@ ResourceSchema = new SimpleSchema({
     tags: {
         type: [String],
         label: "Tags"
+    },
+
+    view_permission: {
+        type: String,
+        label: "View Permissions"
+    },
+
+    reserve_permission: {
+        type: String,
+        label: "Reserve Permissions"
     }
 });
 
