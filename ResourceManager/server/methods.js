@@ -31,7 +31,7 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
     Tags to associate with the resource, as a comma-separated array of strings
 */
 methods.addResource = function(name, description, viewPermission, reservePermission, tags, apiSecret){
-  if (!isAdmin(apiSecret)){
+  if (!isAdmin(apiSecret) || hasPermission("manage-resources")){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   return Resources.insert({
@@ -688,7 +688,7 @@ function isOwner(reservation, apiSecret){
 
 function hasPermission(permissionName, apiSecret){
   var currentUser = currentUserOrWithKey(apiSecret, false);
-  if Roles.userIsInRole(currentUser, permissionName){
+  if (Roles.userIsInRole(currentUser, permissionName)){
     return true;
   }
   userGroups = Groups.find({member_ids : currentUser}).fetch();
