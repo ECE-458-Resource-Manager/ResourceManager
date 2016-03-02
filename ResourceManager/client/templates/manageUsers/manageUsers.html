@@ -3,40 +3,60 @@
 	<div class="row">
 		<div class="col s12">
 			<ul class="tabs">
-				<li class="tab col s3"><a class="active" href="#tab1">User Permissions</a></li>
-				<li class="tab col s3"><a href="#tab2">Enroll New User</a></li>
-				<li class="tab col s3"><a href="#tab3">Groups</a></li>
-				<li class="tab col s3"><a href="#tab4">New Group</a></li>
+				<li class="tab col s4"><a class="active" href="#tab1">Users</a></li>
+				<li class="tab col s4"><a href="#tab2">Groups</a></li>
+				<li class="tab col s4"><a href="#tab3">Enroll New User</a></li>
 			</ul>
 		</div>
 
 		<div id="tab1" class="col s12">
-			<h4>User Permissions</h4>
-			<ul class="collection">
+			<h4>Users</h4>
+			<div class="collection">
 				{{#each allUsers}}
 					{{> userItem}}
 				{{/each}}
-			</ul>
+			</div>
 		</div>
+
 
 		<div id="tab2" class="col s12">
-			{{> addUser}}
-		</div>
-
-		<div id="tab3" class="col s12">
 			<h4>Groups</h4>
 			<ul class="collection">
 				{{#each groups}}
-					<a href="/editGroup/{{_id}}" class="collection-item">{{name}}</a>
+					{{> groupItem}}
 				{{/each}}
+				<li class="collection-item row">
+					<div class="valign-wrapper">
+						<div class="input-field col s3" style="margin-top: 0; margin-left: 0px; padding: 0px;">
+							<input type="text" name="newGroupName" id="newGroupNameInput" placeholder="New Group">
+						</div>
+						<div class="col s2" style="margin-left: 10px;">
+							<a href="#!" class="waves-effect waves-light btn-floating red createGroupButton"><i class="material-icons">add</i></a>
+						</div>
+					</div>
+				</li>
 			</ul>
 		</div>
 
-		<div id="tab4" class="col s12">
-			{{> addGroup}}
+		<div id="tab3" class="col s12">
+			{{> addUser}}
 		</div>
 	</div>
 
+</template>
+
+<template name="groupItem">
+	<!-- <a href="/editGroup/{{_id}}" class="collection-item">{{name}}</a> -->
+	<a href="/editGroup/{{_id}}" class="collection-item">
+			<div class="row" style="margin-bottom: 0;">
+				<span class="col s2">{{name}}</span>
+				<span class="col s10">
+					{{#each groupMembers}}
+						{{> tagChipNoX}}
+					{{/each}}
+				</span>
+			</div>
+		</a>
 </template>
 
 

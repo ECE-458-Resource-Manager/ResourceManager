@@ -325,6 +325,152 @@ methods.createGroup = function(groupName, apiSecret){
 externalizedMethods.createGroup = [{name: "groupName", type: "String"}];
 
 /**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.addPermissionForUser = function(user_id, permissionName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  Roles.addUsersToRoles(user_id, permissionName);
+  return true;
+}
+externalizedMethods.addPermissionForUser = [{name: "user_id", type: "String"},
+                                            {name: "permissionName", type: "String"}];
+
+/**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.removePermissionForUser = function(user_id, permissionName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  Roles.removeUsersFromRoles(user_id, permissionName);
+  return true;
+}
+externalizedMethods.removePermissionForUser = [{name: "user_id", type: "String"},
+                                               {name: "permissionName", type: "String"}];
+
+/**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.addUserToGroup = function(user_id, groupName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  foundGroup = Groups.findOne({name: groupName});
+  if (!foundGroup){
+    throw new Meteor.Error('invalid group name', 'No group exists with that name.');
+  }
+
+  Groups.update(
+    { name: groupName },
+    { $push: { member_ids: user_id } }
+  );
+  return true;
+}
+externalizedMethods.addUserToGroup = [{name: "user_id", type: "String"},
+                                      {name: "groupName", type: "String"}];
+
+/**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.removeUserFromGroup = function(user_id, groupName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  foundGroup = Groups.findOne({name: groupName});
+  if (!foundGroup){
+    throw new Meteor.Error('invalid group name', 'No group exists with that name.');
+  }
+
+  Groups.update(
+    { name: groupName },
+    { $pull: { member_ids: user_id } }
+  );
+  return true;
+}
+externalizedMethods.removeUserFromGroup = [{name: "user_id", type: "String"},
+                                           {name: "groupName", type: "String"}];
+
+/**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.addPermissionForGroup = function(groupName, permissionName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  foundGroup = Groups.findOne({name: groupName});
+  if (!foundGroup){
+    throw new Meteor.Error('invalid group name', 'No group exists with that name.');
+  }
+
+  Groups.update(
+    { name: groupName },
+    { $push: { roles: permissionName } }
+  );
+  return true;
+}
+externalizedMethods.addPermissionForGroup = [{name: "groupName", type: "String"},
+                                                {name: "permissionName", type: "String"}];
+
+/**
+Create a new group.
+Creates a new group for shared user permissions.
+
+@param groupName
+  Name for new group
+**/
+methods.removePermissionForGroup = function(groupName, permissionName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  foundGroup = Groups.findOne({name: groupName});
+  if (!foundGroup){
+    throw new Meteor.Error('invalid group name', 'No group exists with that name.');
+  }
+
+  Groups.update(
+    { name: groupName },
+    { $pull: { roles: permissionName } }
+  );
+  return true;
+}
+externalizedMethods.removePermissionForGroup = [{name: "groupName", type: "String"},
+                                                {name: "permissionName", type: "String"}];
+
+/**
 @ignore
 
 Find the API secret for a user, creating a new one if needed.

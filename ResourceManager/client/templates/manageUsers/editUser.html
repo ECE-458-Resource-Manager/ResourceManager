@@ -1,9 +1,9 @@
-<template name="editGroup">
-	<h3>{{name}}</h3>
+<template name="editUser">
+	<h3>{{username}}</h3>
 	<div class="row">
 		<ul class="collection with-header col s5">
 			<li class="collection-header"><h4>Permissions</h4></li>
-			{{#each groupPermissions}}
+			{{#each userPermissions}}
 				<li class="collection-item"><div><span>{{this}}</span><a href="#!" class="secondary-content deletePermissionButton"><i class="material-icons">delete</i></a></div></li>
 			{{/each}}
 			<li class="collection-item row">
@@ -19,17 +19,17 @@
 		</ul>
 
 		<ul class="collection with-header col s5 offset-s1">
-			<li class="collection-header"><h4>Members</h4></li>
-			{{#each groupMembers}}
-				<li class="collection-item"><div><span>{{this}}</span><a href="#!" class="secondary-content removeMemberButton"><i class="material-icons">delete</i></a></div></li>
+			<li class="collection-header"><h4>Groups</h4></li>
+			{{#each userGroups}}
+				<li class="collection-item"><div><span>{{name}}</span><a href="#!" class="secondary-content removeGroupButton"><i class="material-icons">delete</i></a></div></li>
 			{{/each}}
 			<li class="collection-item row">
 				<div class="valign-wrapper">
 					<div class="input-field col s10" style="margin-top: 0; margin-left: 0px; padding: 0px;">
-						<input type="text" name="newMemberName" id="newMemberNameInput" placeholder="New Member Username">
+						<input type="text" name="joinGroupName" id="joinGroupNameInput" placeholder="New Group for User">
 					</div>
 					<div class="col s2">
-						<a href="#!" class="secondary-content waves-effect waves-light btn-floating red addMemberButton"><i class="material-icons">group_add</i></a>
+						<a href="#!" class="secondary-content waves-effect waves-light btn-floating red addGroupButton"><i class="material-icons">group_add</i></a>
 					</div>
 				</div>
 			</li>

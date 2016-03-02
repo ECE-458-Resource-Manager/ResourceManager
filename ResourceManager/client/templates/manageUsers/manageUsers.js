@@ -7,6 +7,16 @@ Template.manageUsers.helpers({
     }
 });
 
+Template.groupItem.helpers({
+    groupMembers: function () {
+    	foundIDs = this.member_ids;
+    	foundMembers = Meteor.users.find({ _id: { $in: foundIDs } });
+    	return foundMembers.map(function(memberObj){
+        	return memberObj.username;
+        });
+    }
+});
+
 Template.addUser.events({
 	"submit form": function (event) {
 		event.preventDefault();
@@ -29,24 +39,14 @@ Template.addUser.events({
 	}
 });
 
-Template.addGroup.events({
-	"submit form": function (event) {
+Template.manageUsers.events({
+	"click .createGroupButton": function (event, template) {
 		event.preventDefault();
-		var name = event.target.groupName.value;
-
-		Meteor.call("createGroup", name, function(error){
-			if(error) {
-				console.log(error);
-			}else {
-				console.log("created new group, " + name)
-				// Clear form
-				event.target.groupName.value = "";
-			}
-		});
-
-		// Prevent default form submit
+		groupName = template.$("#newGroupNameInput")[0].value;
+		Meteor.call('createGroup', groupName);
+		template.$("#newGroupNameInput")[0].value = "";
 		return false;
-	}
+	},
 });
 
 Template.manageUsers.rendered = function() {

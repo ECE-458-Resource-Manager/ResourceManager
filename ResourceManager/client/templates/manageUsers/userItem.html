@@ -1,12 +1,17 @@
 <template name="userItem">
-		<li class="collection-item">
+		<a href="/editUser/{{_id}}" class="collection-item">
 			<div class="row" style="margin-bottom: 0;">
-				<span class="col s4">{{username}}</span>
-				<span class="col s8">
+				<span class="col s2">{{username}}</span>
+				<span class="col s6" style="min-height: 1px;">
 					{{#each userPermissions}}
 						{{> tagChipNoX}}
 					{{/each}}
 				</span>
+				<span class="col s4">
+					{{#each userGroups}}
+						{{> tagChipNoX}}
+					{{/each}}
+				</span>
 			</div>
-		</li>
+		</a>
 </template>

@@ -3,18 +3,21 @@
     <!-- Required tags section -->
     <div class="col s10">
         <!-- Dropdown Trigger -->
-        <a class='dropdown-button btn' href='#' data-activates='required-tags-dropdown'>Choose required tags</a>
-        <!-- Dropdown Structure -->
-        <ul id='required-tags-dropdown' class='dropdown-content'>
-            {{#each availableTags}}
-                <li><a class="required-tag" href="#!">{{this}}</a></li>
-            {{/each}}
-        </ul>
+        <div class="row">
+            <a class='dropdown-button btn col s12' href='#' data-activates='required-tags-dropdown'>Choose required tags</a>
 
-        <div>
-            {{#each requiredTags}}
-                {{> requiredTagChip}}
-            {{/each}}
+            <!-- Dropdown Structure -->
+            <ul id='required-tags-dropdown' class='dropdown-content'>
+                {{#each availableTags}}
+                    <li><a class="required-tag" href="#!">{{this}}</a></li>
+                {{/each}}
+            </ul>
+
+            <div>
+                {{#each requiredTags}}
+                    {{> requiredTagChip}}
+                {{/each}}
+            </div>
         </div>
     </div>
 
@@ -23,18 +26,21 @@
     <!-- Excluded tags section -->
     <div class="col s10">
         <!-- Dropdown Trigger -->
-        <a class='dropdown-button btn' href='#' data-activates='excluded-tags-dropdown'>Choose excluded tags</a>
-        <!-- Dropdown Structure -->
-        <ul id='excluded-tags-dropdown' class='dropdown-content'>
-            {{#each availableTags}}
-                <li><a class="excluded-tag" href="#!">{{this}}</a></li>
-            {{/each}}
-        </ul>
+        <div class="row">
+            <a class='dropdown-button btn col s12' href='#' data-activates='excluded-tags-dropdown'>Choose excluded tags</a>
+        
+            <!-- Dropdown Structure -->
+            <ul id='excluded-tags-dropdown' class='dropdown-content'>
+                {{#each availableTags}}
+                    <li><a class="excluded-tag" href="#!">{{this}}</a></li>
+                {{/each}}
+            </ul>
 
-        <div>
-            {{#each excludedTags}}
-                {{> excludedTagChip}}
-            {{/each}}
+            <div>
+                {{#each excludedTags}}
+                    {{> excludedTagChip}}
+                {{/each}}
+            </div>
         </div>
     </div>
 </div>
