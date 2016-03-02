@@ -3,8 +3,8 @@ info:
   title: Resource Manager API
   version: 1.0.0
 schemes:
-  - http
   - https
+  - http
 basePath: /api
 produces:
   - application/json
