@@ -3,6 +3,7 @@ info:
   title: Resource Manager API
   version: 1.0.0
 schemes:
+  - https
   - http
 basePath: /api
 produces:

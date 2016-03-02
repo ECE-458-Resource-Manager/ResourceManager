@@ -61,6 +61,10 @@ Router.route('/accountInfo', {
     name: 'accountInfo'
 });
 
+Router.route('/oauth', {
+    name: 'oauth'
+});
+
 //Routes
 AccountsTemplates.configureRoute('changePwd');
 AccountsTemplates.configureRoute('enrollAccount');
@@ -71,7 +75,7 @@ AccountsTemplates.configureRoute('signIn');
 // AccountsTemplates.configureRoute('verifyEmail');
 
 Router.plugin('ensureSignedIn', {
-    except: ['signIn', 'atEnrollAccount']
+    except: ['signIn', 'atEnrollAccount', 'oauth']
 });
 
 

@@ -506,6 +506,32 @@ methods.getAllTags = function(){
 }
 
 
+// TODO (allan): Find better way of doing oauth that doesn't involve assigning passwords to each NetId user
+// Password constant for all NetId users
+var netIdUserPassword = 'viCI0wBz534Vy41rw2WPzlExJn2EAFAtEeN4GoCb';
+
+/**
+ * Synchronously gets the user's NetId from the Duke Oauth server and returns credentials for the client to use for signing in.
+ * The call to the Duke Oauth server must be done on server side to avoid the CORS 'Access-Control-Allow-Origin' error)
+ * @param accessToken Oauth Access token obtained from Duke server
+ * @returns {{email: *, password: string}}
+ */
+methods.getNetIdSignInCredentials = function(accessToken){
+  var result = HTTP.call('GET', 'https://oauth.oit.duke.edu/oauth/resource.php?access_token=' + accessToken, {});
+  var netIdEmail = JSON.parse(result.content).eppn;
+
+  if (!Accounts.findUserByEmail(netIdEmail)) {
+    Accounts.createUser({
+      username: netIdEmail,
+      email: netIdEmail,
+      password: netIdUserPassword,
+      profile: {}
+    });
+  }
+
+  return {email: netIdEmail, password: netIdUserPassword};
+};
+
 /********************************************************************************
 *****
 *
