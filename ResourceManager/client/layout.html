@@ -1,35 +1,37 @@
 <template name="layout">
-	<header>
-		<div class="navbar-fixed">
-			<nav>
-				<div class="nav-wrapper" style="margin-left:50px; margin-right:50px;">
-					<ul class="left">
-						<li><a class="brand-logo" style="padding:0 15px 0 15px;" href="/">Resource Manager</a></li>
-					</ul>
-					<ul class="right">
-					{{#if isInRole 'admin'}}
-						<li><a href="/create"><i class="mdi-content-add-circle"></i></a></li>
-						<li><a href="/manageUsers"><i class="mdi-social-people"></i></a></li>
-					{{/if}}
-						<li><a href="/accountInfo">{{currentUser.username}}</a></li>
-						<li>{{> atNavButton}}</li>
-                        <li>{{> dukeOauthButton}}</li>
-					</ul>
-				</div>
-			</nav>
-		</div>
-	</header>
+    <header>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper" style="margin-left:50px; margin-right:50px;">
+                    <ul class="left">
+                        <li><a class="brand-logo" style="padding:0 15px 0 15px;" href="/">Resource Manager</a></li>
+                    </ul>
+                    <ul class="right">
+                        {{#if isInRole 'admin'}}
+                            <li><a href="/create"><i class="mdi-content-add-circle"></i></a></li>
+                            <li><a href="/manageUsers"><i class="mdi-social-people"></i></a></li>
+                        {{/if}}
+                        <li><a href="/accountInfo">{{currentUser.username}}</a></li>
+                        <li>{{> atNavButton}}</li>
+                        {{#unless currentUser}}
+                            <li>{{> dukeOauthButton}}</li>
+                        {{/unless}}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-	<main id="main" style="margin-bottom:50px; margin-left:50px; margin-right:50px; margin-top: 20px;">
-		{{> yield}}
-	</main>
+    <main id="main" style="margin-bottom:50px; margin-left:50px; margin-right:50px; margin-top: 20px;">
+        {{> yield}}
+    </main>
 
-	<footer class="page-footer" style="padding-top:0px;">
-		<div class="footer-copyright">
-			<div style="margin-left:50px; margin-right:50px;">
-				© 2016 Hypotheticorp, LLC
-				<span class="grey-text text-lighten-4 right">Allan Kiplagat, Davis Gossage, Emmanuel Shiferaw, and Sam Ginsburg</span>
-			</div>
-		</div>
-	</footer>
+    <footer class="page-footer" style="padding-top:0px;">
+        <div class="footer-copyright">
+            <div style="margin-left:50px; margin-right:50px;">
+                © 2016 Hypotheticorp, LLC
+                <span class="grey-text text-lighten-4 right">Allan Kiplagat, Davis Gossage, Emmanuel Shiferaw, and Sam Ginsburg</span>
+            </div>
+        </div>
+    </footer>
 </template>
