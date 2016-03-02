@@ -30,13 +30,15 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
   @param {array} tags
     Tags to associate with the resource, as a comma-separated array of strings
 */
-methods.addResource = function(name, description, tags, apiSecret){
+methods.addResource = function(name, description, viewPermission, reservePermission, tags, apiSecret){
   if (!isAdmin(apiSecret)){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   return Resources.insert({
     name: name,
     description: description,
+    view_permission: viewPermission,
+    reserve_permission: reservePermission,
     tags: tags
   });
 }
@@ -67,7 +69,7 @@ methods.modifyResource = function(resource, name, description, tags, apiSecret){
       _id: resourceId,
       name: name,
       description: description,
-      tags: tags,
+      tags: tags
     }},
   );
 }
