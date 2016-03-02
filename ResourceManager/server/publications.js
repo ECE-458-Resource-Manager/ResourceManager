@@ -1,5 +1,12 @@
 Meteor.publish('resources', function () {
-	return Resources.find();
+	foundResources = Resources.find();
+	if (hasPermission("admin") || hasPermission("manage-resources")) {
+		return foundResources;
+	}
+	filteredResources = foundResources.filter(function(curResource) {
+		return hasPermission(curResource.view_permission);
+	});
+	return filteredResources
 });
 
 Meteor.publish('reservations', function () {

@@ -57,7 +57,7 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
     Tags to associate with the resource, as a comma-separated array of strings
 */
 methods.modifyResource = function(resource, name, description, tags, apiSecret){
-  if (!isAdmin(apiSecret)){
+  if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   var resourceId = getCollectionId(resource);
@@ -84,7 +84,7 @@ externalizedMethods.modifyResource = [{name: "resource", type: "String"},
     Resource collection object or ID to delete
 */
 methods.removeResource = function(resource, apiSecret){
-  if (!isAdmin(apiSecret)){
+  if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
   var resourceId = getCollectionId(resource);
@@ -196,6 +196,13 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
+
+  var currentResource = Resources.findOne(resourceId);
+
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
   else{
       return Reservations.insert({
         owner_id: [userId],
@@ -229,10 +236,11 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (conflictingReservationCount(reservation._id, reservation.resource._id, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret))){
+  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
+
   else{
     return Reservations.update(reservation._id, {
       $set: {
@@ -294,6 +302,11 @@ methods.createAccount = function(username, email, apiSecret){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
+
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
   var accountId = Accounts.createUser({
     'username': username,
     'email': email
@@ -313,6 +326,10 @@ Creates a new group for shared user permissions.
 methods.createGroup = function(groupName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
     //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
@@ -337,6 +354,10 @@ methods.addPermissionForUser = function(user_id, permissionName, apiSecret){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
   Roles.addUsersToRoles(user_id, permissionName);
   return true;
 }
@@ -356,6 +377,10 @@ methods.removePermissionForUser = function(user_id, permissionName, apiSecret){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
   Roles.removeUsersFromRoles(user_id, permissionName);
   return true;
 }
@@ -372,6 +397,10 @@ Creates a new group for shared user permissions.
 methods.addUserToGroup = function(user_id, groupName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
     //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
@@ -402,6 +431,10 @@ methods.removeUserFromGroup = function(user_id, groupName, apiSecret){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
   foundGroup = Groups.findOne({name: groupName});
   if (!foundGroup){
     throw new Meteor.Error('invalid group name', 'No group exists with that name.');
@@ -429,6 +462,10 @@ methods.addPermissionForGroup = function(groupName, permissionName, apiSecret){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
   foundGroup = Groups.findOne({name: groupName});
   if (!foundGroup){
     throw new Meteor.Error('invalid group name', 'No group exists with that name.');
@@ -452,7 +489,10 @@ Creates a new group for shared user permissions.
 **/
 methods.removePermissionForGroup = function(groupName, permissionName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
-    //TODO: or not privileged
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
@@ -623,8 +663,9 @@ function currentUserOrWithKey(apiSecret, needObj){
 }
 
 function isAdmin(apiSecret){
-  var currentUser = currentUserOrWithKey(apiSecret, true);
-  return currentUser.username == 'admin';
+  return hasPermission("admin", apiSecret);
+  // var currentUser = currentUserOrWithKey(apiSecret, true);
+  // return currentUser.username == 'admin';
 }
 
 function isOwner(reservation, apiSecret){
@@ -641,6 +682,21 @@ function isOwner(reservation, apiSecret){
     }
   };
   return found;
+}
+
+function hasPermission(permissionName, apiSecret){
+  var currentUser = currentUserOrWithKey(apiSecret, false);
+  if Roles.userIsInRole(currentUser, permissionName){
+    return true;
+  }
+  userGroups = Groups.find({member_ids : currentUser}).fetch();
+  for (i = 0; i < userGroups.length; i++) { 
+    var curGroupRoles = userGroups[i].roles;
+    if (curGroupRoles.indexOf(permissionName) > -1){
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
