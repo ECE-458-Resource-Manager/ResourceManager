@@ -1,12 +1,14 @@
 Meteor.publish('resources', function () {
 	foundResources = Resources.find();
-	if (hasPermission("admin") || hasPermission("manage-resources")) {
-		return foundResources;
-	}
-	filteredResources = foundResources.filter(function(curResource) {
-		return hasPermission(curResource.view_permission);
-	});
-	return filteredResources
+	return foundResources;
+	// if (Meteor.call('hasPermission', "admin") || Meteor.call('hasPermission', "manage-resources")) {
+	// 	return foundResources;
+	// }
+	// filteredResources = foundResources.filter(function(curResource) {
+	// 	return Meteor.call('hasPermission', curResource.view_permission);
+	// 	// return hasPermission(curResource.view_permission);
+	// });
+	// return filteredResources
 });
 
 Meteor.publish('reservations', function () {
