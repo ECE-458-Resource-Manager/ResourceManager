@@ -44,6 +44,8 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
 }
 externalizedMethods.addResource = [{name: "name", type: "String"},
                                    {name: "description", type: "String"},
+                                   {name: "viewPermission", type: "String"},
+                                   {name: "reservePermission", type: "String"},
                                    {name: "tags", type: "Array"}];
 
 /**
