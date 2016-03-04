@@ -350,11 +350,12 @@ methods.createGroup = function(groupName, apiSecret){
 externalizedMethods.createGroup = [{name: "groupName", type: "String"}];
 
 /**
-Create a new group.
-Creates a new group for shared user permissions.
+Add a new permission string to a user
 
-@param groupName
-  Name for new group
+@param user_id
+  User to apply the permission to
+@param permissionName
+  Name for new permission
 **/
 methods.addPermissionForUser = function(user_id, permissionName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
@@ -373,11 +374,12 @@ externalizedMethods.addPermissionForUser = [{name: "user_id", type: "String"},
                                             {name: "permissionName", type: "String"}];
 
 /**
-Create a new group.
-Creates a new group for shared user permissions.
+Remove a permission string from a user
 
-@param groupName
-  Name for new group
+@param user_id
+  User to remove the permission from
+@param permissionName
+  Name for permission to remove
 **/
 methods.removePermissionForUser = function(user_id, permissionName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
@@ -396,11 +398,12 @@ externalizedMethods.removePermissionForUser = [{name: "user_id", type: "String"}
                                                {name: "permissionName", type: "String"}];
 
 /**
-Create a new group.
-Creates a new group for shared user permissions.
+Add a user to a specified group
 
+@param user_id
+  User to be added to a group
 @param groupName
-  Name for new group
+  Name of group to add user to
 **/
 methods.addUserToGroup = function(user_id, groupName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
@@ -427,11 +430,12 @@ externalizedMethods.addUserToGroup = [{name: "user_id", type: "String"},
                                       {name: "groupName", type: "String"}];
 
 /**
-Create a new group.
-Creates a new group for shared user permissions.
+Remove a user from a specified group
 
+@param user_id
+  User to be removed from a group
 @param groupName
-  Name for new group
+  Name of group to remove user from
 **/
 methods.removeUserFromGroup = function(user_id, groupName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
@@ -458,11 +462,12 @@ externalizedMethods.removeUserFromGroup = [{name: "user_id", type: "String"},
                                            {name: "groupName", type: "String"}];
 
 /**
-Create a new group.
-Creates a new group for shared user permissions.
+Adds a permission to a group
 
 @param groupName
-  Name for new group
+  Name of group to add permission to
+@param permissionName
+  Name of permission to be added to the group
 **/
 methods.addPermissionForGroup = function(groupName, permissionName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
@@ -489,11 +494,12 @@ externalizedMethods.addPermissionForGroup = [{name: "groupName", type: "String"}
                                                 {name: "permissionName", type: "String"}];
 
 /**
-Create a new group.
-Creates a new group for shared user permissions.
+Adds a permission to a group
 
 @param groupName
-  Name for new group
+  Name of group to remove permission from
+@param permissionName
+  Name of permission to be removed from the group
 **/
 methods.removePermissionForGroup = function(groupName, permissionName, apiSecret){
   if (!currentUserOrWithKey(apiSecret)){
