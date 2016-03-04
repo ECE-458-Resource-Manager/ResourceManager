@@ -6,3 +6,5 @@
 .idea/
 
 local
+
+env_variables.js
