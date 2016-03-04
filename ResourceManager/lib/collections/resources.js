@@ -9,7 +9,7 @@ Resources = new Mongo.Collection('resources');
 ResourceSchema = new SimpleSchema({
     name: {
         type: String,
-        label: "Resource Name"
+        label: "Resource Name",
     },
 
     description: {
@@ -24,12 +24,14 @@ ResourceSchema = new SimpleSchema({
 
     view_permission: {
         type: String,
-        label: "View Permissions"
+        label: "View Permissions",
+	optional: true
     },
 
     reserve_permission: {
         type: String,
-        label: "Reserve Permissions"
+        label: "Reserve Permissions",
+	optional: true
     }
 });
 

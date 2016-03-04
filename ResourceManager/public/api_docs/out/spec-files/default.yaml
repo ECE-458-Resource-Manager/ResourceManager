@@ -227,3 +227,159 @@ paths:
           description: No text returned
           schema:
             type: string
+  /createGroup:
+    post:
+      summary: Create a new group for shared user permissions
+      parameters:
+        - name: groupName
+          in: formData
+          description: Name for new group
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string
+  /addPermissionForUser:
+    post:
+      summary: Add a new permission string to a user
+      parameters:
+        - name: user_id
+          in: formData
+          description: User to apply the permission to
+          required: true
+          type: string
+        - name: permissionName
+          in: formData
+          description: Name for new permission
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string
+  /removePermissionForUser:
+    post:
+      summary: Add a new permission string to a user
+      parameters:
+        - name: user_id
+          in: formData
+          description: User to remove the permission from
+          required: true
+          type: string
+        - name: permissionName
+          in: formData
+          description: Name of permission to remove
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string
+  /addUserToGroup:
+    post:
+      summary: Add a user to a specified group
+      parameters:
+        - name: user_id
+          in: formData
+          description: User to be added to a group
+          required: true
+          type: string
+        - name: groupName
+          in: formData
+          description: Name of group to add a user to
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string
+  /removeUserFromGroup:
+    post:
+      summary: Remove a user from a specified group
+      parameters:
+        - name: user_id
+          in: formData
+          description: User to be remove from a group
+          required: true
+          type: string
+        - name: groupName
+          in: formData
+          description: Name of group to remove a user from
+          required: true
+          type: string
+      security:
+        - key: []
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: No text returned
+          schema:
+            type: string
+  /addPermissionForGroup:
+      post:
+        summary: Adds a permission to a group
+        parameters:
+          - name: groupName
+            in: formData
+            description: Name of group to add permission to
+            required: true
+            type: string
+          - name: permissionName
+            in: formData
+            description: Name of permission to be added to the group
+            required: true
+            type: string
+        security:
+          - key: []
+        tags:
+          - Permissions
+        responses:
+          '200':
+            description: No text returned
+            schema:
+              type: string
+  /removePermissionForGroup:
+      post:
+        summary: Removes a permission from a group
+        parameters:
+          - name: groupName
+            in: formData
+            description: Name of group to remove permission from
+            required: true
+            type: string
+          - name: permissionName
+            in: formData
+            description: Name of permission to be removed from the group
+            required: true
+            type: string
+        security:
+          - key: []
+        tags:
+          - Permissions
+        responses:
+          '200':
+            description: No text returned
+            schema:
+              type: string
