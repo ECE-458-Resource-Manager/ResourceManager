@@ -1,16 +1,15 @@
 selectedGroupKey = 'selectedGroup';
 
 Template.editGroup.rendered = function() {
-	// console.log(this.data)
 	Session.set(selectedGroupKey, this.data);
 };
 
 Template.editGroup.helpers({
     groupPermissions: function () {
-        return Groups.findOne({name: Session.get(selectedGroupKey).name}).roles;
+        return Groups.findOne({name: this.name}).roles;
     },
     groupMembers: function () {
-    	foundIDs = Groups.findOne({name: Session.get(selectedGroupKey).name}).member_ids;
+    	foundIDs = Groups.findOne({name: this.name}).member_ids;
     	foundMembers = Meteor.users.find({ _id: { $in: foundIDs } });
     	return foundMembers.map(function(memberObj){
         	return memberObj.username;
