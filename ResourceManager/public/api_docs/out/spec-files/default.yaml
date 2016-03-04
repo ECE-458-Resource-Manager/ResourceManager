@@ -29,6 +29,16 @@ paths:
           description: Description for the resource
           required: true
           type: string
+        - name: viewPermission
+          in: formData
+          description: View permissions for the resource
+          required: true
+          type: string
+        - name: reservePermission
+          in: formData
+          description: Reserve permissions for the resource
+          required: true
+          type: string
         - name: tags
           in: formData
           description: 'Tags for the resource, as a comma-separated array of strings'
