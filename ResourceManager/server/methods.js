@@ -44,6 +44,8 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
 }
 externalizedMethods.addResource = [{name: "name", type: "String"},
                                    {name: "description", type: "String"},
+                                   {name: "viewPermission", type: "String"},
+                                   {name: "reservePermission", type: "String"},
                                    {name: "tags", type: "Array"}];
 
 /**
@@ -58,7 +60,7 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
   @param {array} tags
     Tags to associate with the resource, as a comma-separated array of strings
 */
-methods.modifyResource = function(resource, name, description, tags, apiSecret){
+methods.modifyResource = function(resource, name, description, viewPermission, reservePermission, tags, apiSecret){
   if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -69,6 +71,8 @@ methods.modifyResource = function(resource, name, description, tags, apiSecret){
       _id: resourceId,
       name: name,
       description: description,
+      view_permission: viewPermission,
+      reserve_permission: reservePermission,
       tags: tags
     }},
   );
@@ -76,6 +80,8 @@ methods.modifyResource = function(resource, name, description, tags, apiSecret){
 externalizedMethods.modifyResource = [{name: "resource", type: "String"},
                                      {name: "name", type: "String"},
                                      {name: "description", type: "String"},
+                                     {name: "viewPermission", type: "String"},
+                                     {name: "reservePermission", type: "String"},
                                      {name: "tags", type: "Array"}];
 
 
@@ -660,7 +666,7 @@ function currentUserOrWithKey(apiSecret, needObj){
     if (needObj){
       return Meteor.user();
     }
-    return Meteor.userId();
+    return Meteor.user()._id;
   }
 }
 
@@ -686,7 +692,7 @@ function isOwner(reservation, apiSecret){
   return found;
 }
 
-function hasPermission(permissionName, apiSecret){
+hasPermission = function(permissionName, apiSecret){
   var currentUser = currentUserOrWithKey(apiSecret, false);
   if (Roles.userIsInRole(currentUser, permissionName)){
     return true;
@@ -698,6 +704,24 @@ function hasPermission(permissionName, apiSecret){
       return true;
     }
   }
+  return false;
+}
+
+hasPermissionID = function(permissionName, user_id){
+  console.log("checking permission: " + permissionName + " for id: " + user_id);
+  if (Roles.userIsInRole(user_id, permissionName)){
+    console.log("Allowed. User has correct permission.")
+    return true;
+  }
+  userGroups = Groups.find({member_ids : user_id}).fetch();
+  for (i = 0; i < userGroups.length; i++) { 
+    var curGroupRoles = userGroups[i].roles;
+    if (curGroupRoles.indexOf(permissionName) > -1){
+      console.log("Allowed. User is a member of a group with correct permission.")
+      return true;
+    }
+  }
+  console.log("Denied.")
   return false;
 }
 

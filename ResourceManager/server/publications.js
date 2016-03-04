@@ -1,14 +1,16 @@
 Meteor.publish('resources', function () {
-	foundResources = Resources.find();
-	return foundResources;
-	// if (Meteor.call('hasPermission', "admin") || Meteor.call('hasPermission', "manage-resources")) {
-	// 	return foundResources;
-	// }
-	// filteredResources = foundResources.filter(function(curResource) {
-	// 	return Meteor.call('hasPermission', curResource.view_permission);
-	// 	// return hasPermission(curResource.view_permission);
-	// });
-	// return filteredResources
+	foundResources = Resources.find().fetch();
+	if (hasPermissionID("admin") || hasPermissionID("manage-resources")) {
+		return Resources.find();
+	}
+	filteredResources = _.filter(foundResources, function(curResource) {
+		return (hasPermissionID(curResource.view_permission) || !curResource.view_permission);
+	});
+	filteredIds = _.map(filteredResources, function(resource){
+		return resource._id;
+	});
+	return Resources.find({_id: { $in: filteredIds }});
+
 });
 
 Meteor.publish('reservations', function () {
@@ -17,7 +19,26 @@ Meteor.publish('reservations', function () {
 
 // filter-collections publication for the search page
 FilterCollections.publish(Resources, {
-	name: 'filter-collections-resources'
+	name: 'filter-collections-resources',
+	callbacks: {
+    afterPublish: function(publicationtype, cursor, handler){
+    	if(publicationtype == 'results'){
+	    	foundResources = cursor.fetch();
+	    	if (hasPermissionID("admin", handler.userId) || hasPermissionID("manage-resources", handler.userId)) {
+				return cursor;
+			}
+			filteredResources = _.filter(foundResources, function(curResource) {
+				return (hasPermissionID(curResource.view_permission, handler.userId) || !curResource.view_permission);
+			});
+			filteredIds = _.map(filteredResources, function(resource){
+				return resource._id;
+			});
+			newSelector = _.extend(cursor._cursorDescription.selector, {_id: { $in: filteredIds }});
+			return Resources.find(newSelector);
+		}
+		return cursor;
+    }
+  }
 });
 
 Meteor.publish('allUsers', function(){

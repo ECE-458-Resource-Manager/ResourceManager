@@ -4,6 +4,14 @@ Template.editResource.rendered = function() {
 	Session.set(selectedTagsKey, []); // clear tags
 	$("#resourceNameInput")[0].value = this.data.name;
 	$("#resourceDescriptionInput")[0].value = this.data.description;
+	if (this.data.view_permission){
+		$("#viewPermissionInput")[0].value = this.data.view_permission;
+	}
+	if (this.data.reserve_permission){
+		$("#reservePermissionInput")[0].value = this.data.reserve_permission;
+	}
+	// $("#viewPermissionInput")[0].value = this.data.view_permission;
+	// $("#reservePermissionInput")[0].value = this.data.reserve_permission;
 	resource = this.data;
 	var selectedTags = this.data.tags;
     if (!selectedTags) selectedTags = [];
@@ -16,10 +24,12 @@ Template.editResource.events({
 		var resourceName = event.target.resourceName.value;
 		console.log(resourceName)
 		var resourceDescription = event.target.resourceDescription.value;
+		var viewPermission = event.target.viewPermission.value;
+		var reservePermission = event.target.reservePermission.value;
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
-		Meteor.call('modifyResource', resource, resourceName, resourceDescription, selectedTags, function(error, result){
+		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, selectedTags, function(error, result){
 			//error handle?
 		});
 
@@ -65,5 +75,7 @@ Template.editResource.events({
 function clearEditResourceForm(event) {
 	event.target.resourceName.value = "";
 	event.target.resourceDescription.value = "";
+	event.target.viewPermission.value = "";
+	event.target.reservePermission.value = "";
 	Session.set(selectedTagsKey, []);
 }
