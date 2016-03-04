@@ -337,49 +337,49 @@ paths:
           description: No text returned
           schema:
             type: string
-/addPermissionForGroup:
-    post:
-      summary: Adds a permission to a group
-      parameters:
-        - name: groupName
-          in: formData
-          description: Name of group to add permission to
-          required: true
-          type: string
-        - name: permissionName
-          in: formData
-          description: Name of permission to be added to the group
-          required: true
-          type: string
-      security:
-        - key: []
-      tags:
-        - Permissions
-      responses:
-        '200':
-          description: No text returned
-          schema:
+  /addPermissionForGroup:
+      post:
+        summary: Adds a permission to a group
+        parameters:
+          - name: groupName
+            in: formData
+            description: Name of group to add permission to
+            required: true
             type: string
-/removePermissionForGroup:
-    post:
-      summary: Removes a permission from a group
-      parameters:
-        - name: groupName
-          in: formData
-          description: Name of group to remove permission from
-          required: true
-          type: string
-        - name: permissionName
-          in: formData
-          description: Name of permission to be removed from the group
-          required: true
-          type: string
-      security:
-        - key: []
-      tags:
-        - Permissions
-      responses:
-        '200':
-          description: No text returned
-          schema:
+          - name: permissionName
+            in: formData
+            description: Name of permission to be added to the group
+            required: true
             type: string
+        security:
+          - key: []
+        tags:
+          - Permissions
+        responses:
+          '200':
+            description: No text returned
+            schema:
+              type: string
+  /removePermissionForGroup:
+      post:
+        summary: Removes a permission from a group
+        parameters:
+          - name: groupName
+            in: formData
+            description: Name of group to remove permission from
+            required: true
+            type: string
+          - name: permissionName
+            in: formData
+            description: Name of permission to be removed from the group
+            required: true
+            type: string
+        security:
+          - key: []
+        tags:
+          - Permissions
+        responses:
+          '200':
+            description: No text returned
+            schema:
+              type: string
