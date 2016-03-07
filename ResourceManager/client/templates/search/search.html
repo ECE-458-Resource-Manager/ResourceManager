@@ -33,6 +33,22 @@
             </div>
         </div>
 
+        {{#if selectedResources.length}}
+            <div class="center-align">
+                <h5>
+                    Selected Resources
+                </h5>
+                <a class="waves-effect waves-light btn">
+                    Create Reservation
+                </a>
+            </div>
+        {{/if}}
+        <ul class="collection">
+            {{#each selectedResources}}
+                {{> resourceItem }}
+            {{/each}}
+        </ul>
+
         <!-- Sort button -->
         <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
             {{#if fcSort.name.desc}}

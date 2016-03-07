@@ -47,5 +47,8 @@ Template.search.rendered = function () {
 Template.search.helpers({
     filteredFcResults: function () {
         return Session.get(filteredFcResultsKey);
+    },
+    selectedResources: function () {
+        return Session.get(selectedResourcesKey);
     }
 });
