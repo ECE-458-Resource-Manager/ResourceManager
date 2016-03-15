@@ -207,6 +207,8 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
 
   var currentResource = Resources.findOne(resourceId);
 
+  //TODO: Check if resource requires approval, if so return pending reservation
+
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
