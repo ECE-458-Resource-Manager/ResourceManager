@@ -207,7 +207,8 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
 
   var currentResource = Resources.findOne(resourceId);
 
-  //TODO: Check if resource requires approval, if so return pending reservation
+  //Check if resource requires approval, if so return 'incomplete' reservation
+  var needsApproval = !(currentResource.approve_permission == null);
 
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
@@ -221,7 +222,8 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
         start_date: startDate,
         end_date: endDate,
         cancelled: false,
-        reminder_sent: false
+        reminder_sent: false,
+        approve_permission: needsApproval
       });
   }
 }
