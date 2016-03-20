@@ -14,7 +14,7 @@ Template.createResources.events({
 		if (!selectedTags) selectedTags = [];
 
 
-		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, selectedTags, function(error, result){
+		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
 			console.log('created resource');
 			console.log(result);
 		});

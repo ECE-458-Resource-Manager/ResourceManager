@@ -33,7 +33,7 @@ Template.editResource.events({
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
-		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, selectedTags, function(error, result){
+		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
 			//error handle?
 		});
 
