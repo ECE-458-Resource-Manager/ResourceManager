@@ -209,7 +209,7 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
 
   //Check if resource requires approval, if so return 'incomplete' reservation
   var needsApproval = !(currentResource.approve_permission == null);
-
+  console.log("Resource needs approval: " + needsApproval);
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }

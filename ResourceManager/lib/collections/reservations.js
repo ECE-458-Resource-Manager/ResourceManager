@@ -47,7 +47,8 @@ ReservationSchema = new SimpleSchema({
     },
     incomplete: {
         type: Boolean,
-        label: "Is an incomplete reservation"
+        label: "Is an incomplete reservation",
+        optional: true
     }
 });
 
