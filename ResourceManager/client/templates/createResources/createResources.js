@@ -9,11 +9,12 @@ Template.createResources.events({
 		var resourceDescription = event.target.resourceDescription.value;
 		var viewPermission = event.target.viewPermission.value;
 		var reservePermission = event.target.reservePermission.value;
+                var approvePermission = event.target.approvePermission.value;
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
 
-		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, selectedTags, function(error, result){
+		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
 			console.log('created resource');
 			console.log(result);
 		});
@@ -31,5 +32,6 @@ function clearCreateResourceForm(event) {
 	event.target.resourceDescription.value = "";
 	event.target.viewPermission.value = "";
 	event.target.reservePermission.value = "";
+        event.target.approvePermission.value = "";
 	Session.set(selectedTagsKey, []);
 }

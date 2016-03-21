@@ -10,6 +10,9 @@ Template.editResource.rendered = function() {
 	if (this.data.reserve_permission){
 		$("#reservePermissionInput")[0].value = this.data.reserve_permission;
 	}
+        if (this.data.approve_permission){
+                $("#approvePermissionInput")[0].value = this.data.approve_permission;
+        }
 	// $("#viewPermissionInput")[0].value = this.data.view_permission;
 	// $("#reservePermissionInput")[0].value = this.data.reserve_permission;
 	resource = this.data;
@@ -26,10 +29,11 @@ Template.editResource.events({
 		var resourceDescription = event.target.resourceDescription.value;
 		var viewPermission = event.target.viewPermission.value;
 		var reservePermission = event.target.reservePermission.value;
+                var approvePermission = event.target.approvePermission.value;
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
-		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, selectedTags, function(error, result){
+		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
 			//error handle?
 		});
 
