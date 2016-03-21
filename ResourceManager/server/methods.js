@@ -115,7 +115,7 @@ externalizedMethods.removeResource = [{name: "resource", type: "String"}];
   Query reservations, constrained by start (and optionally) end date
 
   @param {string} resource
-    A resource to find associated reservations, either the object or ID
+    A resource or resources to find associated reservations, either the object or ID
   @param {date} startDate
     Start date for query
   @param {date} endDate (optional)

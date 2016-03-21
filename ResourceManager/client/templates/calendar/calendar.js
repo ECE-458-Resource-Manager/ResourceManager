@@ -80,6 +80,7 @@ Template.calendar.rendered = function(){
     events: events
   })
   attachedResource = this.data
+  console.log(this.data);
   refetchEvents();
   var view = getCalendarView();
   listenForChanges(view.intervalStart, view.intervalEnd);
