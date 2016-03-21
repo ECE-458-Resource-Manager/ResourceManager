@@ -30,7 +30,7 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
   @param {array} tags
     Tags to associate with the resource, as a comma-separated array of strings
 */
-methods.addResource = function(name, description, viewPermission, reservePermission, tags, apiSecret){
+methods.addResource = function(name, description, viewPermission, reservePermission, approvePermission, tags, apiSecret){
   if (!isAdmin(apiSecret) || hasPermission("manage-resources")){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -39,6 +39,7 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
     description: description,
     view_permission: viewPermission,
     reserve_permission: reservePermission,
+    approve_permission: approvePermission,
     tags: tags
   });
 }
@@ -46,6 +47,7 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
                                    {name: "description", type: "String"},
                                    {name: "viewPermission", type: "String"},
                                    {name: "reservePermission", type: "String"},
+                                   {name: "approvePermission", type: "String"},
                                    {name: "tags", type: "Array"}];
 
 /**
@@ -60,7 +62,7 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
   @param {array} tags
     Tags to associate with the resource, as a comma-separated array of strings
 */
-methods.modifyResource = function(resource, name, description, viewPermission, reservePermission, tags, apiSecret){
+methods.modifyResource = function(resource, name, description, viewPermission, reservePermission, approvePermission, tags, apiSecret){
   if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -73,6 +75,7 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
       description: description,
       view_permission: viewPermission,
       reserve_permission: reservePermission,
+      approve_permission: approvePermission,
       tags: tags
     }},
   );
@@ -82,6 +85,7 @@ externalizedMethods.modifyResource = [{name: "resource", type: "String"},
                                      {name: "description", type: "String"},
                                      {name: "viewPermission", type: "String"},
                                      {name: "reservePermission", type: "String"},
+                                     {name: "approvePermission", type: "String"},
                                      {name: "tags", type: "Array"}];
 
 
@@ -207,6 +211,11 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
 
   var currentResource = Resources.findOne(resourceId);
 
+  //Check if resource requires approval, if so return 'incomplete' reservation
+  var needsApproval = !(currentResource.approve_permission == null);
+  var approverGroup =  [];
+  approverGroup.push(currentResource.approve_permission);
+  console.log("Resource needs approval: " + needsApproval);
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -219,7 +228,9 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
         start_date: startDate,
         end_date: endDate,
         cancelled: false,
-        reminder_sent: false
+        reminder_sent: false,
+        incomplete: needsApproval,
+        approvers: approverGroup
       });
   }
 }
@@ -285,6 +296,7 @@ methods.cancelReservation = function(reservation, apiSecret){
 }
 externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
 
+//TODO: getIncompleteResForUser
 
 /********************************************************************************
 *****
@@ -611,6 +623,7 @@ function buildCalObject(reservation){
   calObject.start = reservation.start_date
   calObject.reservation = reservation
   calObject.end = reservation.end_date
+  calObject.incomplete = reservation.incomplete
   return calObject
 }
 
