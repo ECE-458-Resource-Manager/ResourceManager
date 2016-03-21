@@ -44,6 +44,16 @@ ReservationSchema = new SimpleSchema({
     reminder_sent: {
         type: Boolean,
         label: "Reminder Email Sent"
+    },
+    incomplete: {
+        type: Boolean,
+        label: "Is an incomplete reservation",
+        optional: true
+    },
+    approvers: {
+        type: [String],
+        label: "Roles which can approve reservation",
+        optional: true
     }
 });
 
