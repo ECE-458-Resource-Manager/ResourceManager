@@ -49,6 +49,11 @@ ReservationSchema = new SimpleSchema({
         type: Boolean,
         label: "Is an incomplete reservation",
         optional: true
+    },
+    approvers: {
+        type: [String],
+        label: "Roles which can approve reservation",
+        optional: true
     }
 });
 

@@ -83,7 +83,7 @@ Template.calendar.rendered = function(){
   refetchEvents();
   var view = getCalendarView();
   listenForChanges(view.intervalStart, view.intervalEnd);
-
+  console.log("hello");
   Meteor.subscribe("reservations");
 }
 
