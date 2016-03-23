@@ -64,6 +64,10 @@ Router.route('/manageUsers', {
     }
 });
 
+Router.route('/myReservations',{
+    name: 'myReservations'
+});
+
 Router.route('/accountInfo', {
     name: 'accountInfo'
 });

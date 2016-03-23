@@ -1,0 +1,35 @@
+<template name="myReservations">
+
+    <div class="row">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s4"><a class="active" href="#tab1">Approved</a></li>
+                <li class="tab col s4"><a href="#tab2">Pending</a></li>
+            </ul>
+        </div>
+
+        <div id="tab1" class="col s12">
+            <div class="collection">
+                {{#each completeReservations}}
+                    {{> reservationItem }}
+                {{/each}}
+            </div>
+        </div>
+
+        <div id="tab2" class="col s12">
+            <div class="collection">
+                {{#each incompleteReservations}}
+                    {{> reservationItem }}
+                {{/each}}
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<template name="reservationItem">
+    <a href="#" class="collection-item">
+        <h5>{{title}}</h5>
+        <p>{{description}}</p>
+    </a>
+</template>
