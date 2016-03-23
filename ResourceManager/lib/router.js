@@ -68,6 +68,16 @@ Router.route('/myReservations',{
     name: 'myReservations'
 });
 
+Router.route('/reservation/:_id',{
+    name: 'reservation',
+    data: function() {
+        return Reservations.findOne(this.params._id);
+    },
+    waitOn: function() {
+        return [Meteor.subscribe('reservations'),Meteor.subscribe('resources')];
+    }
+});
+
 Router.route('/accountInfo', {
     name: 'accountInfo'
 });
