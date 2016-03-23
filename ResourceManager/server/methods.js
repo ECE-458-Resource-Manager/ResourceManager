@@ -265,11 +265,19 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (conflictingReservationCount(reservation._id, reservation.resource_ids, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
+  if (!(isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-
+  else if (isOwner(reservation, apiSecret)){
+    var isExtension = (reservation.start_date.getTime() == startDate.getTime() && reservation.end_date.getTime() != endDate.getTime());
+    if (isExtension){
+      methods.createReservation(reservation.resource_ids, reservation.end_date, endDate, reservation.title, reservation.description)
+    }
+    else{
+      throw new Meteor.Error('unauthorized', 'You may not modify the start or end time of your reservations.');
+    }
+  }
   else{
     return Reservations.update(reservation._id, {
       $set: {
@@ -734,7 +742,7 @@ Find the number of conflicting reservations given a resource and a start and end
 function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
   //check for a conflicting reservation
   var params = {
-    resource_id: {$in: resourceIds},
+    resource_ids: {$in: resourceIds},
     cancelled: false,
     start_date: {
       $lt: endDate
