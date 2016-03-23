@@ -17,7 +17,7 @@
             <h5 style="margin-left: 10px;">Available in Time Span:</h5>
             <div class="input-field col s2">
                 <input type="date" class="datepicker" id="start_date">
-                <label for="start_date">Start date</label>
+                <label class="active" for="start_date">Start date</label>
             </div>
             <div class="input-field col s2">
                 <input type="time" id="start_time">
@@ -25,13 +25,29 @@
             </div>
             <div class="input-field col s2 offset-s1">
                 <input type="date" class="datepicker" id="end_date">
-                <label for="end_date">End date</label>
+                <label class="active" for="end_date">End date</label>
             </div>
             <div class="input-field col s2">
                 <input type="time" id="end_time">
                 <label class="active" for="end_time">End time</label>
             </div>
         </div>
+
+        {{#if selectedResources.length}}
+            <div class="center-align">
+                <h5>
+                    Selected Resources
+                </h5>
+                <a id="create_reservation" class="waves-effect waves-light btn">
+                    Create Reservation
+                </a>
+            </div>
+        {{/if}}
+        <ul class="collection">
+            {{#each selectedResources}}
+                {{> resourceItem }}
+            {{/each}}
+        </ul>
 
         <!-- Sort button -->
         <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">

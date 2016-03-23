@@ -119,17 +119,17 @@ externalizedMethods.removeResource = [{name: "resource", type: "String"}];
   Query reservations, constrained by start (and optionally) end date
 
   @param {string} resource
-    A resource to find associated reservations, either the object or ID
+    A comma separated listing of resource IDs to find associated reservations
   @param {date} startDate
     Start date for query
   @param {date} endDate (optional)
     End date for query
 
 */
-methods.queryReservations = function(resource, startDate, endDate){
-  return methods.queryReservationsWithListener(resource, startDate, endDate, false);
+methods.queryReservations = function(resources, startDate, endDate){
+  return methods.queryReservationsWithListener(resources, startDate, endDate, false);
 }
-externalizedMethods.queryReservations = [{name: "resource", type: "String"}, 
+externalizedMethods.queryReservations = [{name: "resources", type: "String"}, 
                                          {name: "startDate", type: "Date"},
                                          {name: "endDate", type: "Date"}];
 
@@ -138,11 +138,11 @@ externalizedMethods.queryReservations = [{name: "resource", type: "String"},
 
   See queryReservations, this includes the option to return the query paramaters used by the calendar change listener.
 */
-methods.queryReservationsWithListener = function(resource, startDate, endDate, returnQueryParams){
-  var resourceId = getCollectionId(resource);
+methods.queryReservationsWithListener = function(resources, startDate, endDate, returnQueryParams){
+  var resourceIds = getCollectionIds(resources);
 
   var params = {
-    resource_id: resourceId,
+    resource_ids: {$in: resourceIds},
     cancelled: false,
     end_date: {
       $gt: startDate
@@ -176,32 +176,34 @@ methods.queryReservationsWithListener = function(resource, startDate, endDate, r
 
   @return - An array of objects formatted for use with full calendar
 */
-methods.getReservationStream = function(resource, startDate, endDate){
+methods.getReservationStream = function(resources, startDate, endDate){
 
-  var reservationData = methods.queryReservations(resource, startDate, endDate);
+  var reservationData = methods.queryReservations(resources, startDate, endDate);
   var calendarEventObjects = [];
-  
+
   for (var i = 0; i < reservationData.length; i++) {
     var reservation = reservationData[i]
     calendarEventObjects.push(buildCalObject(reservation));
   };
+  console.log(calendarEventObjects);
   return calendarEventObjects;
 }
 
 /**
   Create a reservation
 
-  @param resource
-    Resource collection object or ID
+  @param resources
+    Resource objects or IDs, as array or CSV
   @param {date} startDate
     New reservation start date
   @param {date} endDate
     New reservation end date
 **/
-methods.createReservation = function(resource, startDate, endDate, apiSecret){
-  var resourceId = getCollectionId(resource);
+methods.createReservation = function(resources, startDate, endDate, title, description, apiSecret){
+  var resourceIds = getCollectionIds(resources);
+
   var userId = currentUserOrWithKey(apiSecret, false);
-  if (conflictingReservationCount(null, resourceId, startDate, endDate)){
+  if (conflictingReservationCount(null, resourceIds, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
   else if (!userId){
@@ -209,13 +211,19 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
 
-  var currentResource = Resources.findOne(resourceId);
 
-  //Check if resource requires approval, if so return 'incomplete' reservation
-  var needsApproval = !(currentResource.approve_permission == null);
   var approverGroup =  [];
-  approverGroup.push(currentResource.approve_permission);
-  console.log("Resource needs approval: " + needsApproval);
+  var needsApproval = false;
+  //Check if any resources requires approval, if so return 'incomplete' reservation
+  for (var i = 0; i < resourceIds.length; i++) {
+    var resourceId = resourceIds[i];
+    var currentResource = Resources.findOne(resourceId);
+    if (currentResource.approve_permission != null){
+      needsApproval = true;
+      approverGroup.push(currentResource.approve_permission);
+      console.log("Resource needs approval: " + needsApproval);
+    }
+  };
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -224,11 +232,13 @@ methods.createReservation = function(resource, startDate, endDate, apiSecret){
       return Reservations.insert({
         owner_id: [userId],
         attending_user_id: [userId],
-        resource_id: resourceId,
+        resource_ids: resourceIds,
         start_date: startDate,
         end_date: endDate,
         cancelled: false,
         reminder_sent: false,
+        title: title,
+        description: description,
         incomplete: needsApproval,
         approvers: approverGroup
       });
@@ -252,7 +262,7 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (!reservation._id){
     reservation = Reservations.findOne({_id:reservation});
   }
-  if (conflictingReservationCount(reservation._id, reservation.resource._id, startDate, endDate)){
+  if (conflictingReservationCount(reservation._id, reservation.resource_ids, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
   if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
@@ -629,7 +639,17 @@ Build a calendar object for use with full calendar.
 function buildCalObject(reservation){
   var calObject = {}
   var labelString = "Owner:\n" + reservation.owner.username
-  labelString += "\nResource:\n" + reservation.resource.name
+  if (reservation.description){
+    labelString = "Description: " + reservation.description + "\n\n" + labelString;
+  }
+  if (reservation.title){
+    labelString = "Title: " + reservation.title + "\n" + labelString;
+  }
+  labelString += "\nResources:\n"
+  for (var i = 0; i < reservation.resources.length; i++) {
+    var resource = reservation.resources[i];
+    labelString += resource.name + '\n';
+  };
   calObject.title = labelString
   calObject.start = reservation.start_date
   calObject.reservation = reservation
@@ -645,17 +665,17 @@ Find the number of conflicting reservations given a resource and a start and end
 
 @oaram reservationId
   Reservation ID to ignore as a conflict (optional)
-@param resourceId
-  Resource ID to check for conflicting reservations
+@param resourceIds
+  Resource IDs to check for conflicting reservations
 @param {date} startDate
   Start date to check for conflicts
 @param {date} endDate
   End date to check for conflicts
 */
-function conflictingReservationCount(reservationId, resourceId, startDate, endDate){
+function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
   //check for a conflicting reservation
   var params = {
-    resource_id: resourceId,
+    resource_id: {$in: resourceIds},
     cancelled: false,
     start_date: {
       $lt: endDate
@@ -779,6 +799,25 @@ getCollectionId = function(item){
   }
   return item;
 }
+
+/**
+@ignore
+
+Return the collection IDs, whether given the IDs, the objects, or CSV
+*/
+getCollectionIds = function(items){
+  //see if we are dealing with a single string (CSV) via API
+  if (typeof items === 'string'){
+    items = items.split(',');
+  }
+  var newItems = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    newItems.push(getCollectionId(item));
+  };
+  return newItems;
+}
+
 
 //pass methods to Meteor.methods
 Meteor.methods(methods);

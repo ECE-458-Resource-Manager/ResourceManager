@@ -8,6 +8,7 @@ startDateKey = 'startDateKey'
 endDateKey = 'endDateKey';
 searchEntryKey = 'searchEntryKey';
 filteredFcResultsKey = 'filteredFcResultsKey';
+selectedResourcesKey = 'selectedResourcesKey';
 
 var filteringResources = false;
 
@@ -46,7 +47,11 @@ filterResources = function () {
 
     // Combine results
     var fcResults = intersection(requiredTagsResults, excludedTagsResults);
-    filterByAvailability(fcResults);
+    var selectedResourcesIds = Session.get(selectedResourcesKey).map(function(a){return a._id});
+    var fcResultsNotSelected = fcResults.filter(function(el){
+        return selectedResourcesIds.indexOf(el._id) < 0;
+    });
+    filterByAvailability(fcResultsNotSelected);
 };
 
 /**
