@@ -1,5 +1,23 @@
 <template name="editUser">
-	<h3>{{username}}</h3>
+	<h3 class="col s4">{{username}}</h3>
+	<div class="row">
+		<p style="display: inline; margin-right: 30px;">
+			<input type="checkbox" class="filled-in" id="admin_checkbox" />
+  			<label for="admin_checkbox">Admin</label>
+		</p>
+		<p style="display: inline; margin-right: 30px;">
+			<input type="checkbox" class="filled-in" id="manage_users_checkbox" />
+  			<label for="manage_users_checkbox">Manage Users</label>
+		</p>
+		<p style="display: inline; margin-right: 30px;">
+			<input type="checkbox" class="filled-in" id="manage_resources_checkbox" />
+  			<label for="manage_resources_checkbox">Manage Resources</label>
+		</p>
+		<p style="display: inline; margin-right: 30px;">
+			<input type="checkbox" class="filled-in" id="manage_reservations_checkbox" />
+  			<label for="manage_reservations_checkbox">Manage Reservations</label>
+		</p>
+	</div>
 	<div class="row">
 		<ul class="collection with-header col s5">
 			<li class="collection-header"><h4>Permissions</h4></li>
