@@ -33,6 +33,17 @@ Template.search.events({
     'input #search_entry': function (e) {
         Session.set(searchEntryKey, e.target.value);
         filterResources();
+    },
+    'click #create_reservation': function (e) {
+        var resources = Session.get(selectedResourcesKey);
+        var newLocation = '/calendar/';
+        for (var i = 0; i < resources.length; i++) {
+            newLocation += resources[i]._id
+            if (i != resources.length-1){
+                newLocation += ","
+            }
+        };
+        window.location.href = newLocation;
     }
 });
 
@@ -69,5 +80,8 @@ Template.search.rendered = function () {
 Template.search.helpers({
     filteredFcResults: function () {
         return Session.get(filteredFcResultsKey);
+    },
+    selectedResources: function () {
+        return Session.get(selectedResourcesKey);
     }
 });
