@@ -2,11 +2,17 @@
     <div>
         <h4 id="reservationStatus"></h4>
 
+        {{#if canManageReservation}}
+            <a href="#" class="waves-effect waves-light btn-floating right red">
+                <i class="material-icons right">edit</i></a>
+        {{/if}}
         <h5>Title</h5>
         <p id="title"></p>
+        <div class="divider"></div>
 
         <h5>Description</h5>
         <p id="description"></p>
+        <div class="divider"></div>
 
         <h5>Resources</h5>
         <ul class="collection">
@@ -14,6 +20,7 @@
                 {{> resourceItem }}
             {{/each}}
         </ul>
+        <div class="divider"></div>
 
         <h5>Duration</h5>
         <div>
@@ -33,8 +40,8 @@
                 </div>
             </div>
         </div>
-
         <div class="divider"></div>
+
         <div class="section">
             <a class="waves-effect waves-light btn">Delete Reservation</a>
         </div>

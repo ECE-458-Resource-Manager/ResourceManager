@@ -308,6 +308,39 @@ externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
 
 
 /**
+ * Updates a reservation's title
+ * @param reservation Reservation collection object or id
+ * @param title New title
+ */
+methods.changeReservationTitle = function(reservation, title, apiSecret) {
+  if (!reservation._id){
+    reservation = Reservations.findOne({_id:reservation});
+  }
+
+  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  } else{
+    return Reservations.update(reservation._id, {
+      $set: {
+        title: title
+      }
+    });
+  }
+};
+
+/**
+ * Check whether the current user can manage the given reservation
+ * @param reservation Reservation collection object or id
+ */
+methods.canManageReservation = function(reservation, apiSecret) {
+  if (!reservation._id){
+    reservation = Reservations.findOne({_id:reservation});
+  }
+
+  return isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret);
+};
+
+/**
  * Get incomplete reservations for user
  */
 methods.getIncompleteReservationsForUser = function(apiSecret) {
