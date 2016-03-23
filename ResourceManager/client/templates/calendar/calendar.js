@@ -74,7 +74,6 @@ Template.calendar.rendered = function(){
     eventResize: didResizeEvent,
     eventRender: calendarEventRendered,
     viewRender: viewRendered,
-    eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
     timezone: 'local',
     //TODO: dummy static events!
     events: events
@@ -160,6 +159,14 @@ function getCalendarEvents(start, end, timezone, callback){
       for (var i = 0; i < result.length; i++) {
         result[i].start = moment(result[i].start)
         result[i].end = moment(result[i].end)
+        //event customization
+        console.log(result[i].reservation.owner)
+        if (result[i].reservation.owner._id == Meteor.userId()){
+          result[i].color = COLOR_PALETTE.BLUE_THEME_COLOR_HEX_STRING;
+        }
+        else{
+          result[i].color = COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING;
+        }
       };
       callback(result);
     });
