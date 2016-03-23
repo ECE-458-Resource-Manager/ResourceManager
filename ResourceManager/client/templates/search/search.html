@@ -49,18 +49,7 @@
             {{/each}}
         </ul>
 
-        <!-- Sort button -->
-        <a class="waves-effect waves-light btn fc-sort" data-fc-sort="name">
-            {{#if fcSort.name.desc}}
-                Sorted desc
-            {{else}}
-                {{#if fcSort.name.asc}}
-                    Sorted asc
-                {{else}}
-                    Unsorted
-                {{/if}}
-            {{/if}}
-        </a>
+        <h5>Resources</h5>
         <ul class="collection">
             {{#each filteredFcResults}}
                 {{> resourceItem }}

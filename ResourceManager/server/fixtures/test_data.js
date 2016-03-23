@@ -108,7 +108,11 @@ if (Resources.find().count() === 0) {
         start_date: now,
         end_date: new Date(now + 24 * 3600 * 1000), // 1 day later
         cancelled: false,
-        reminder_sent: false
+        reminder_sent: false,
+        title: 'First dummy reservation',
+        description: 'An incredibly detailed description of this dummy reservation',
+        incomplete: true,
+        approvers: ['role1, role2, role3']
     });
 
     Reservations.insert({
@@ -118,7 +122,11 @@ if (Resources.find().count() === 0) {
         start_date: now,
         end_date: new Date(now + 3 * 24 * 3600 * 1000), // 3 days later
         cancelled: false,
-        reminder_sent: false
+        reminder_sent: false,
+        title: 'Second dummy reservation',
+        description: 'An incredibly detailed description of this dummy reservation',
+        incomplete: true,
+        approvers: ['role1, role2, role3']
     });
 
     Reservations.insert({
@@ -128,6 +136,10 @@ if (Resources.find().count() === 0) {
         start_date: now,
         end_date: new Date(now + 7 * 24 * 3600 * 1000), // 7 days later
         cancelled: false,
-        reminder_sent: false
+        reminder_sent: false,
+        title: 'Third dummy reservation',
+        description: 'An incredibly detailed description of this dummy reservation',
+        incomplete: false,
+        approvers: ['role1, role2, role3']
     });
 }

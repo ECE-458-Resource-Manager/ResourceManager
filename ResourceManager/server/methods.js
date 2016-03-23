@@ -314,7 +314,44 @@ methods.cancelReservation = function(reservation, apiSecret){
 }
 externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
 
-//TODO: getIncompleteResForUser
+
+/**
+ * Get incomplete reservations for user
+ */
+methods.getIncompleteReservationsForUser = function(apiSecret) {
+  return methods.getReservationsForUser(true, apiSecret);
+};
+
+externalizedMethods.getIncompleteReservationsForUser = [];
+
+/**
+ * Get complete reservations for user
+ */
+methods.getCompleteReservationsForUser = function(apiSecret) {
+  return methods.getReservationsForUser(false, apiSecret);
+};
+
+externalizedMethods.getCompleteReservationsForUser = [];
+
+/**
+ * Get reservations for user
+ * @param isIncomplete set true to return incomplete reservations or false to return complete reservations
+ */
+methods.getReservationsForUser = function(isIncomplete, apiSecret){
+  var userId = currentUserOrWithKey(apiSecret, false);
+
+  if (!userId) {
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  } else {
+    var params = {
+      owner_id: userId,
+      cancelled: false,
+      incomplete: isIncomplete
+    };
+    return Reservations.find(params).fetch();
+  }
+};
+
 
 /********************************************************************************
 *****
