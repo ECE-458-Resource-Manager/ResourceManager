@@ -298,6 +298,17 @@ externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
 
 //TODO: getIncompleteResForUser
 
+methods.incompleteReservationsForApprover = function(apiSecret) {
+    var userID = currentUserOrWithKey(apiSecret, false);
+    var allPermissions = Roles.getRolesForUser(userId);
+    var incompleteData = Reservations.find({approve_permission: { $in: allPermissions } });
+    var pending = [];
+    for(var i = 0; i < incompleteData.length; i++) {
+        pending.push(incompleteData[i]);
+    }
+    return pending;
+}
+
 /********************************************************************************
 *****
 *
