@@ -1,6 +1,11 @@
 Reservations = new Mongo.Collection('reservations', {
     transform: function(doc) {
-        doc.resource = Resources.findOne({_id:doc.resource_id});
+        var resources = [];
+        for (var i = 0; i < doc.resource_ids.length; i++) {
+            var resource = Resources.findOne({_id:doc.resource_ids[i]});
+            resources.push(resource);
+        };
+        doc.resources = resources;
         doc.owner = Meteor.users.findOne({_id:doc.owner_id[0]});
         return doc;
     }
@@ -25,9 +30,9 @@ ReservationSchema = new SimpleSchema({
         type: [String],
         label: "Attending User ID"
     },
-    resource_id: {
-        type: String,
-        label: "Resource Reserved ID" 
+    resource_ids: {
+        type: [String],
+        label: "Resource Reserved IDs" 
     },
     start_date: {
         type: Date,

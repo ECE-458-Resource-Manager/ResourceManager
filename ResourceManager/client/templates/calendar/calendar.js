@@ -1,5 +1,5 @@
 var debug = false;                      //debug flag for showing dummy events
-var attachedResource;                   //resource attached to the calendar
+var attachedResources;                  //resources attached to the calendar
 var activeListener;                     //the current meteor collection listener
 
 var dummyEvents = [
@@ -79,12 +79,10 @@ Template.calendar.rendered = function(){
     //TODO: dummy static events!
     events: events
   })
-  attachedResource = this.data
-  console.log(this.data);
+  attachedResources = this.data
   refetchEvents();
   var view = getCalendarView();
   listenForChanges(view.intervalStart, view.intervalEnd);
-  console.log("hello");
   Meteor.subscribe("reservations");
 }
 
@@ -108,7 +106,7 @@ function listenForChanges(startDate, endDate){
   }
 
   //we need to find the query paramaters, which we'll be observing for changes
-  Meteor.call('queryReservationsWithListener', attachedResource, startDate.toDate(), endDate.toDate(), true, function(error, result){
+  Meteor.call('queryReservationsWithListener', attachedResources, startDate.toDate(), endDate.toDate(), true, function(error, result){
     errorHandle(error);
     var params = result;
     activeListener = Reservations.find(params).observeChanges({
@@ -128,7 +126,7 @@ function listenForChanges(startDate, endDate){
         }
       }
     });
-    initializing = false;
+    setTimeout(function() { initializing = false }, 500);
   });
 
 }
@@ -155,9 +153,12 @@ The function that is called by full calendar when it needs events for a certain 
 function getCalendarEvents(start, end, timezone, callback){
   var events = []
   //are we linked to a resource?
-  if (attachedResource){
-    Meteor.call('getReservationStream', attachedResource, start.toDate(), end.toDate(), function(error, result){
+  if (attachedResources){
+    console.log('!!');
+    Meteor.call('getReservationStream', attachedResources, start.toDate(), end.toDate(), function(error, result){
       errorHandle(error);
+      console.log('!')
+      console.log(result);
       //initialize dates as moments, can't send moments via server
       for (var i = 0; i < result.length; i++) {
         result[i].start = moment(result[i].start)
@@ -191,7 +192,7 @@ http://fullcalendar.io/docs/selection/select_callback/
   The calendar view object
 **/
 function didMakeSelection(start, end, jsEvent, view){
-  Meteor.call('createReservation', attachedResource, start.toDate(), end.toDate(), function(error, result){
+  Meteor.call('createReservation', attachedResources, start.toDate(), end.toDate(), function(error, result){
     errorHandle(error);
   })
 }
@@ -337,7 +338,7 @@ Triggered when a new date range is rendered
   The newly created jQuery element for the container of the new view
 **/
 function viewRendered(view, element){
-  if (attachedResource){
+  if (attachedResources){
     listenForChanges(view.intervalStart, view.intervalEnd);
   }
 }
