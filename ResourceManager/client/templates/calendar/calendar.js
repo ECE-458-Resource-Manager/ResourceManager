@@ -160,7 +160,6 @@ function getCalendarEvents(start, end, timezone, callback){
         result[i].start = moment(result[i].start)
         result[i].end = moment(result[i].end)
         //event customization
-        console.log(result[i].reservation.owner)
         if (result[i].reservation.owner._id == Meteor.userId()){
           result[i].color = COLOR_PALETTE.BLUE_THEME_COLOR_HEX_STRING;
         }
