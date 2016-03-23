@@ -50,6 +50,16 @@ ReservationSchema = new SimpleSchema({
         type: Boolean,
         label: "Reminder Email Sent"
     },
+    title: {
+        type: String,
+        label: "Title for compound reservation",
+        optional: true
+    },
+    description: {
+        type: String,
+        label: "Description for compound reservation",
+        optional: true
+    },
     incomplete: {
         type: Boolean,
         label: "Is an incomplete reservation",

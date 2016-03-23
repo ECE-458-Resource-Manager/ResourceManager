@@ -199,7 +199,7 @@ methods.getReservationStream = function(resources, startDate, endDate){
   @param {date} endDate
     New reservation end date
 **/
-methods.createReservation = function(resources, startDate, endDate, apiSecret){
+methods.createReservation = function(resources, startDate, endDate, title, description, apiSecret){
   var resourceIds = getCollectionIds(resources);
 
   var userId = currentUserOrWithKey(apiSecret, false);
@@ -237,6 +237,8 @@ methods.createReservation = function(resources, startDate, endDate, apiSecret){
         end_date: endDate,
         cancelled: false,
         reminder_sent: false,
+        title: title,
+        description: description,
         incomplete: needsApproval,
         approvers: approverGroup
       });
@@ -626,6 +628,12 @@ Build a calendar object for use with full calendar.
 function buildCalObject(reservation){
   var calObject = {}
   var labelString = "Owner:\n" + reservation.owner.username
+  if (reservation.description){
+    labelString = "Description: " + reservation.description + "\n\n" + labelString;
+  }
+  if (reservation.title){
+    labelString = "Title: " + reservation.title + "\n" + labelString;
+  }
   labelString += "\nResources:\n"
   for (var i = 0; i < reservation.resources.length; i++) {
     var resource = reservation.resources[i];
@@ -787,7 +795,8 @@ getCollectionId = function(item){
 Return the collection IDs, whether given the IDs, the objects, or CSV
 */
 getCollectionIds = function(items){
-  if (items.length == 1){
+  //see if we are dealing with a single string (CSV) via API
+  if (typeof items === 'string'){
     items = items.split(',');
   }
   var newItems = [];

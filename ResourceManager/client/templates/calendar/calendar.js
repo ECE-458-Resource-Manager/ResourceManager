@@ -154,11 +154,8 @@ function getCalendarEvents(start, end, timezone, callback){
   var events = []
   //are we linked to a resource?
   if (attachedResources){
-    console.log('!!');
     Meteor.call('getReservationStream', attachedResources, start.toDate(), end.toDate(), function(error, result){
       errorHandle(error);
-      console.log('!')
-      console.log(result);
       //initialize dates as moments, can't send moments via server
       for (var i = 0; i < result.length; i++) {
         result[i].start = moment(result[i].start)
@@ -192,7 +189,25 @@ http://fullcalendar.io/docs/selection/select_callback/
   The calendar view object
 **/
 function didMakeSelection(start, end, jsEvent, view){
-  Meteor.call('createReservation', attachedResources, start.toDate(), end.toDate(), function(error, result){
+  if (attachedResources.length > 1){
+    //compound reservation requires title
+    MaterializeModal.form({
+      title: "Reservation Info:",
+      bodyTemplate: "reservationForm",
+      callback: function(error, response){
+        if (response.submit){
+          createReservation(start, end, response.form['reservation-title'], response.form['reservation-description']);
+        }
+      }
+    });
+  }
+  else{
+    createReservation(start, end, null, null);
+  }
+}
+
+function createReservation(start, end, title, description){
+  Meteor.call('createReservation', attachedResources, start.toDate(), end.toDate(), title, description, function(error, result){
     errorHandle(error);
   })
 }
