@@ -237,14 +237,7 @@ function didClickEvent(event, jsEvent, view){
     shouldDeleteEvent(event, jsEvent, view);
   }
   else{
-    MaterializeModal.message({
-      title: "Reservation Details:",
-      bodyTemplate: "reservationDetailsModal",
-      reservation: event.reservation,
-      startDateFormatted: moment(event.reservation.start_date).format("ddd, MMM Do YYYY, h:mm a"),
-      endDateFormatted: moment(event.reservation.end_date).format("ddd, MMM Do YYYY, h:mm a"),
-      bottomSheet: true
-    });
+    window.location = '/reservation/'+event.reservation._id;
   }
 }
 
