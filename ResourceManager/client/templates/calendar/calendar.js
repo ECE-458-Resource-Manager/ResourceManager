@@ -318,10 +318,29 @@ A callback triggered after resizing when the event has changed duration.
   The calendar view object
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
+  if (delta > 0){
+    MaterializeModal.confirm({
+      title: "Confirm reservation extension",
+      message: "Extending this reservation will cause a new reservation to be created for the additional time.",
+      callback: function(error, response) {
+        if (response.submit) {
+          changeReservationTime(event, revertFunc);
+        } else {
+          revertFunc();
+        }
+      }
+    });
+  }
+  else{
+    changeReservationTime(event, revertFunc);
+  }
+}
+
+function changeReservationTime(event, revertFunc){
   Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
     if (error){
-      revertFunc();
       errorHandle(error);
+      revertFunc();
     }
   });
 }
