@@ -153,6 +153,8 @@ function getCalendarEvents(start, end, timezone, callback){
   var events = []
   //are we linked to a resource?
   if (attachedResources){
+    console.log("Attempting to get calendar events (client-sie)  for resources:");
+    console.log(attachedResources);
     Meteor.call('getReservationStream', attachedResources, start.toDate(), end.toDate(), function(error, result){
       errorHandle(error);
       //initialize dates as moments, can't send moments via server
