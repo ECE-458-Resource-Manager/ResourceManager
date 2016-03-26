@@ -53,3 +53,9 @@ Template.editGroup.events({
 		return false;
 	}
 });
+
+Template.editGroup.events({
+    'click .selected-permission': function (e, template) {
+        template.$("#permissionNameInput")[0].value = e.target.innerText;
+    },
+});

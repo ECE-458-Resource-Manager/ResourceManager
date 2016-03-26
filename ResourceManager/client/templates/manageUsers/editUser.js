@@ -112,3 +112,9 @@ function updatePermissionCheckboxes() {
 	$("#manage_resources_checkbox")[0].checked = _.contains(userRoles, "manage-resources");
 	$("#manage_reservations_checkbox")[0].checked = _.contains(userRoles, "manage-reservations");
 }
+
+Template.editUser.events({
+    'click .selected-permission': function (e, template) {
+        template.$("#permissionNameInput")[0].value = e.target.innerText;
+    },
+});
