@@ -335,12 +335,33 @@ methods.changeReservationTitle = function(reservation, title, apiSecret) {
     reservation = Reservations.findOne({_id:reservation});
   }
 
-  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
+  if (!(methods.canManageReservation(reservation,apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   } else{
     return Reservations.update(reservation._id, {
       $set: {
         title: title
+      }
+    });
+  }
+};
+
+/**
+ * Updates a reservation's description
+ * @param reservation Reservation collection object or id
+ * @param description New description
+ */
+methods.changeReservationDescription = function(reservation, description, apiSecret) {
+  if (!reservation._id){
+    reservation = Reservations.findOne({_id:reservation});
+  }
+
+  if (!(methods.canManageReservation(reservation,apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  } else{
+    return Reservations.update(reservation._id, {
+      $set: {
+        description: description
       }
     });
   }

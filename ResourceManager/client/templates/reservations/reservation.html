@@ -2,17 +2,64 @@
     <div>
         <h4 id="reservationStatus"></h4>
 
-        {{#if canManageReservation}}
-            <a href="#" class="waves-effect waves-light btn-floating right red">
-                <i class="material-icons right">edit</i></a>
-        {{/if}}
-        <h5>Title</h5>
-        <p id="title"></p>
+        <!-- Title -->
+        <div class="section">
+
+            {{#if canManageReservation}}
+                <a href="#editReservationTitle" class="waves-effect waves-light modal-trigger btn-floating right red">
+                    <i class="material-icons right">edit</i>
+                </a>
+            {{/if}}
+
+            <!-- Modal Structure -->
+            <div id="editReservationTitle" class="modal">
+                <div class="modal-content">
+                    <h4>Edit Reservation Title</h4>
+                    <input placeholder="New Title" id="reservation_title_entry" type="text" class="validate">
+                </div>
+                <div class="modal-footer">
+                    <a href="" id="save_reservation_title"
+                       class=" modal-action modal-close waves-effect waves-green btn-flat">Save</a>
+                </div>
+            </div>
+
+            <h5>Title</h5>
+            <p id="title"></p>
+
+        </div>
         <div class="divider"></div>
 
-        <h5>Description</h5>
-        <p id="description"></p>
+
+        <!-- Description -->
+        <div class="section">
+
+            {{#if canManageReservation}}
+                <a href="#editReservationDescription"
+                   class="waves-effect waves-light modal-trigger btn-floating right red">
+                    <i class="material-icons right">edit</i>
+                </a>
+            {{/if}}
+
+            <!-- Modal Structure -->
+            <div id="editReservationDescription" class="modal">
+                <div class="modal-content">
+                    <h4>Edit Reservation Description</h4>
+                    <input placeholder="New Description" id="reservation_description_entry" type="text"
+                           class="validate">
+                </div>
+                <div class="modal-footer">
+                    <a href="" id="save_reservation_description"
+                       class=" modal-action modal-close waves-effect waves-green btn-flat">Save</a>
+                </div>
+            </div>
+
+            <h5>Description</h5>
+            <p id="description"></p>
+
+        </div>
         <div class="divider"></div>
+
+
 
         <h5>Resources</h5>
         <ul class="collection">
