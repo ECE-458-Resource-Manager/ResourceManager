@@ -98,6 +98,7 @@ if (Resources.find().count() === 0) {
     var hpEnvyId = Resources.findOne({name: 'HP Envy Notebook'})._id;
     var macAirId = Resources.findOne({name: 'MacBook Air'})._id;
     var dellId = Resources.findOne({name: 'Dell Inspirion 15'})._id;
+    var perkinsId = Resources.findOne({name: 'Perkins B11'})._id;
 
     var now = new Date().getTime();
 
@@ -132,7 +133,7 @@ if (Resources.find().count() === 0) {
     Reservations.insert({
         owner_id: [dummy._id],
         attending_user_id: [dummy._id],
-        resource_ids: [dellId],
+        resource_ids: [dellId, perkinsId],
         start_date: now,
         end_date: new Date(now + 7 * 24 * 3600 * 1000), // 7 days later
         cancelled: false,
