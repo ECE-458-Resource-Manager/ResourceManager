@@ -1,0 +1,12 @@
+<template name="selectPermission">
+
+    <!-- Dropdown Trigger -->
+    <a class='dropdown-button btn-floating small' href='#' data-activates='dropdown1' ><i class="material-icons secondary-content" style="font-size: 35px;">arrow_drop_down</i></a>
+    <!-- Dropdown Structure -->
+    <ul id='dropdown1' class='dropdown-content'>
+        {{#each availablePermissions}}
+            <li><a class="selected-permission" href="#">{{name}}</a></li>
+        {{/each}}
+    </ul>
+
+</template>

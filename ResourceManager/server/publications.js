@@ -56,3 +56,7 @@ Meteor.publish('groups', function(){
 	}
 	return null;
 });
+
+Meteor.publish(null, function (){
+  return Meteor.roles.find({})
+})

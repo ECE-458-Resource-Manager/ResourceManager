@@ -18,8 +18,9 @@
   			<label for="manage_reservations_checkbox">Manage Reservations</label>
 		</p>
 	</div>
+	<!-- {{> selectPermission}} -->
 	<div class="row">
-		<ul class="collection with-header col s5">
+		<ul class="collection with-header col s5" style="overflow: visible">
 			<li class="collection-header"><h4>Permissions</h4></li>
 			{{#each userPermissions}}
 				<li class="collection-item"><div><span>{{this}}</span><a href="#!" class="secondary-content deletePermissionButton"><i class="material-icons">delete</i></a></div></li>
@@ -29,7 +30,10 @@
 					<div class="input-field col s10" style="margin-top: 0; margin-left: 0px; padding: 0px;">
 						<input type="text" name="permissionName" id="permissionNameInput" placeholder="New Permission">
 					</div>
-					<div class="col s2">
+					<div class="right" style="margin-left: 5px;">
+						{{> selectPermission}}
+					</div>
+					<div class="right" style="margin-left: 30px;">
 						<a href="#!" class="secondary-content waves-effect waves-light btn-floating red addPermissionButton"><i class="material-icons">add</i></a>
 					</div>
 				</div>

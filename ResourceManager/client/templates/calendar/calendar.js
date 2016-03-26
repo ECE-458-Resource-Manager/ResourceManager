@@ -74,7 +74,6 @@ Template.calendar.rendered = function(){
     eventResize: didResizeEvent,
     eventRender: calendarEventRendered,
     viewRender: viewRendered,
-    eventColor: COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING,
     timezone: 'local',
     //TODO: dummy static events!
     events: events
@@ -160,6 +159,13 @@ function getCalendarEvents(start, end, timezone, callback){
       for (var i = 0; i < result.length; i++) {
         result[i].start = moment(result[i].start)
         result[i].end = moment(result[i].end)
+        //event customization
+        if (result[i].reservation.owner._id == Meteor.userId()){
+          result[i].color = COLOR_PALETTE.BLUE_THEME_COLOR_HEX_STRING;
+        }
+        else{
+          result[i].color = COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING;
+        }
       };
       callback(result);
     });
@@ -231,14 +237,7 @@ function didClickEvent(event, jsEvent, view){
     shouldDeleteEvent(event, jsEvent, view);
   }
   else{
-    MaterializeModal.message({
-      title: "Reservation Details:",
-      bodyTemplate: "reservationDetailsModal",
-      reservation: event.reservation,
-      startDateFormatted: moment(event.reservation.start_date).format("ddd, MMM Do YYYY, h:mm a"),
-      endDateFormatted: moment(event.reservation.end_date).format("ddd, MMM Do YYYY, h:mm a"),
-      bottomSheet: true
-    });
+    window.location = '/reservation/'+event.reservation._id;
   }
 }
 
@@ -312,10 +311,29 @@ A callback triggered after resizing when the event has changed duration.
   The calendar view object
 **/
 function didResizeEvent(event, delta, revertFunc, jsEvent, ui, view){
+  if (delta > 0){
+    MaterializeModal.confirm({
+      title: "Confirm reservation extension",
+      message: "Extending this reservation will cause a new reservation to be created for the additional time.",
+      callback: function(error, response) {
+        if (response.submit) {
+          changeReservationTime(event, revertFunc);
+        } else {
+          revertFunc();
+        }
+      }
+    });
+  }
+  else{
+    changeReservationTime(event, revertFunc);
+  }
+}
+
+function changeReservationTime(event, revertFunc){
   Meteor.call('changeReservationTime', event.reservation, event.start.toDate(), event.end.toDate(), function(error, result){
     if (error){
-      revertFunc();
       errorHandle(error);
+      revertFunc();
     }
   });
 }

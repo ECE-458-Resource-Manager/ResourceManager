@@ -265,11 +265,19 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (conflictingReservationCount(reservation._id, reservation.resource_ids, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
+  if (!(isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-
+  else if (isOwner(reservation, apiSecret)){
+    var isExtension = (reservation.start_date.getTime() == startDate.getTime() && reservation.end_date.getTime() != endDate.getTime());
+    if (isExtension){
+      methods.createReservation(reservation.resource_ids, reservation.end_date, endDate, reservation.title, reservation.description)
+    }
+    else{
+      throw new Meteor.Error('unauthorized', 'You may not modify the start or end time of your reservations.');
+    }
+  }
   else{
     return Reservations.update(reservation._id, {
       $set: {
@@ -306,7 +314,77 @@ methods.cancelReservation = function(reservation, apiSecret){
 }
 externalizedMethods.cancelReservation = [{name: "reservation", type: "String"}];
 
-//TODO: getIncompleteResForUser
+
+/**
+ * Updates a reservation's title
+ * @param reservation Reservation collection object or id
+ * @param title New title
+ */
+methods.changeReservationTitle = function(reservation, title, apiSecret) {
+  if (!reservation._id){
+    reservation = Reservations.findOne({_id:reservation});
+  }
+
+  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  } else{
+    return Reservations.update(reservation._id, {
+      $set: {
+        title: title
+      }
+    });
+  }
+};
+
+/**
+ * Check whether the current user can manage the given reservation
+ * @param reservation Reservation collection object or id
+ */
+methods.canManageReservation = function(reservation, apiSecret) {
+  if (!reservation._id){
+    reservation = Reservations.findOne({_id:reservation});
+  }
+
+  return isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret);
+};
+
+/**
+ * Get incomplete reservations for user
+ */
+methods.getIncompleteReservationsForUser = function(apiSecret) {
+  return methods.getReservationsForUser(true, apiSecret);
+};
+
+externalizedMethods.getIncompleteReservationsForUser = [];
+
+/**
+ * Get complete reservations for user
+ */
+methods.getCompleteReservationsForUser = function(apiSecret) {
+  return methods.getReservationsForUser(false, apiSecret);
+};
+
+externalizedMethods.getCompleteReservationsForUser = [];
+
+/**
+ * Get reservations for user
+ * @param isIncomplete set true to return incomplete reservations or false to return complete reservations
+ */
+methods.getReservationsForUser = function(isIncomplete, apiSecret){
+  var userId = currentUserOrWithKey(apiSecret, false);
+
+  if (!userId) {
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  } else {
+    var params = {
+      owner_id: userId,
+      cancelled: false,
+      incomplete: isIncomplete
+    };
+    return Reservations.find(params).fetch();
+  }
+};
+
 
 methods.incompleteReservationsForApprover = function(apiSecret) {
     var userID = currentUserOrWithKey(apiSecret, false);
@@ -675,7 +753,7 @@ Find the number of conflicting reservations given a resource and a start and end
 function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
   //check for a conflicting reservation
   var params = {
-    resource_id: {$in: resourceIds},
+    resource_ids: {$in: resourceIds},
     cancelled: false,
     start_date: {
       $lt: endDate
