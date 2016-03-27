@@ -162,11 +162,12 @@ function getCalendarEvents(start, end, timezone, callback){
         result[i].start = moment(result[i].start)
         result[i].end = moment(result[i].end)
         //event customization
+        var FADED = result[i].reservation.incomplete ? '_FADED' : '';
         if (result[i].reservation.owner._id == Meteor.userId()){
-          result[i].color = COLOR_PALETTE.BLUE_THEME_COLOR_HEX_STRING;
+          result[i].color = COLOR_PALETTE['BLUE_THEME_COLOR_HEX_STRING'+FADED];
         }
         else{
-          result[i].color = COLOR_PALETTE.SECONDARY_THEME_COLOR_HEX_STRING;
+          result[i].color = COLOR_PALETTE['SECONDARY_THEME_COLOR_HEX_STRING'+FADED];
         }
       };
       callback(result);
@@ -197,21 +198,16 @@ http://fullcalendar.io/docs/selection/select_callback/
   The calendar view object
 **/
 function didMakeSelection(start, end, jsEvent, view){
-  if (attachedResources.length > 1){
-    //compound reservation requires title
-    MaterializeModal.form({
-      title: "Reservation Info:",
-      bodyTemplate: "reservationForm",
-      callback: function(error, response){
-        if (response.submit){
-          createReservation(start, end, response.form['reservation-title'], response.form['reservation-description']);
-        }
+  //compound reservation requires title
+  MaterializeModal.form({
+    title: "Reservation Info:",
+    bodyTemplate: "reservationForm",
+    callback: function(error, response){
+      if (response.submit){
+        createReservation(start, end, response.form['reservation-title'], response.form['reservation-description']);
       }
-    });
-  }
-  else{
-    createReservation(start, end, null, null);
-  }
+    }
+  });
 }
 
 function createReservation(start, end, title, description){
