@@ -449,7 +449,7 @@ methods.approveReservation = function(apiSecret, reservation) {
             approvalsNeeded.splice(index, 1);
         }
     }
-    var isIncomplete = (approvalsNeeded.length > 0);
+    var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
     if(isNotApprover) {
         //ERROR: user is not approver
         throw new Meteor.Error('unauthorized', 'You are not an approver of this reservation.');
