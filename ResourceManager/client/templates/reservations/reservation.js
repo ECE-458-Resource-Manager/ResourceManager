@@ -7,6 +7,7 @@ var reservation;
 
 Template.reservation.rendered = function () {
     reservation = this.data;
+    console.log(reservation);
 
     if (reservation.incomplete) {
         $("#reservationStatus").text("Pending Reservation");
@@ -14,6 +15,7 @@ Template.reservation.rendered = function () {
         $("#reservationStatus").text("Approved Reservation");
     }
 
+    $("#owner_name").text(reservation.owner.username);
     $("#title").text(reservation.title);
     $("#description").text(reservation.description);
     $("#startDate").text(reservation.start_date);
@@ -38,7 +40,7 @@ Template.reservation.events({
             if (error) {
                 Materialize.toast(error.message, 4000);
             } else {
-                Materialize.toast('Title updated successfully!', 4000);
+                Meteor._reload.reload();
             }
         });
     },
@@ -47,13 +49,12 @@ Template.reservation.events({
     },
     'click #save_reservation_description': function (e) {
         Meteor.call('changeReservationDescription', reservation, Session.get(reservationDescriptionKey), function (error, result) {
-                if (error) {
-                    Materialize.toast(error.message, 4000);
-                } else {
-                    Materialize.toast('Description updated successfully!', 4000);
-                }
+            if (error) {
+                Materialize.toast(error.message, 4000);
+            } else {
+                Meteor._reload.reload();
             }
-        );
+        });
     }
 });
 
