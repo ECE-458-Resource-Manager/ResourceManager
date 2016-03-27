@@ -39,7 +39,7 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
     description: description,
     view_permission: viewPermission,
     reserve_permission: reservePermission,
-    approve_permission: approvePermission,
+    approve_permission: [approvePermission],
     tags: tags
   });
 }
@@ -75,7 +75,7 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
       description: description,
       view_permission: viewPermission,
       reserve_permission: reservePermission,
-      approve_permission: approvePermission,
+      approve_permission: [approvePermission],
       tags: tags
     }},
   );
@@ -226,9 +226,12 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
     console.log("------------------------------------------------------------");
     if (currentResource.approve_permission != null){
       needsApproval = true;
-      if(approverGroup.indexOf(currentResource.approve_permission) == -1) {
-          approverGroup.push(currentResource.approve_permission);
-          console.log("Resource needs approval: " + currentResource.approve_permission);
+      for(var j = 0; j < currentResource.approve_permission.length; j++) {
+          var currentApprovePermission = currentResource.approve_permission[j];
+          if(approverGroup.indexOf(currentApprovePermission) == -1) {
+              approverGroup.push(currentApprovePermission);
+              console.log("Reservation needs approval: " + currentApprovePermission);
+          }
       }
     }
   }

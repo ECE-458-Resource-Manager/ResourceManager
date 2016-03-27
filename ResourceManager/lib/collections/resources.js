@@ -35,7 +35,7 @@ ResourceSchema = new SimpleSchema({
     },
 
     approve_permission: {
-        type: String,
+        type: [String],
         label: "Restricted Approval Permission",
         optional: true
     }
