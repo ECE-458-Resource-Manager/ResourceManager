@@ -200,6 +200,7 @@ function didMakeSelection(start, end, jsEvent, view){
   MaterializeModal.form({
     title: "Reservation Info:",
     bodyTemplate: "reservationForm",
+    reservationTitle: Meteor.user().username + "'s Reservation - " + start.format('ddd, MMM Do YYYY, h:mm a'),
     callback: function(error, response){
       if (response.submit){
         createReservation(start, end, response.form['reservation-title'], response.form['reservation-description']);
