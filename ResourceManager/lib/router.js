@@ -48,8 +48,6 @@ Router.route('/calendar/:_ids', {
         var resources = this.params._ids.split(',');
         var resourceObjects = [];
         for (var i = 0; i < resources.length; i++) {
-            var thisResource = Resources.findOne(resources[i]);
-            console.log(thisResource);
             resourceObjects.push(Resources.findOne(resources[i]));
         };
         return resourceObjects;
