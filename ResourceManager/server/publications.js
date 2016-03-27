@@ -1,10 +1,10 @@
 Meteor.publish('resources', function () {
 	foundResources = Resources.find().fetch();
-	if (hasPermissionID("admin") || hasPermissionID("manage-resources")) {
+	if (hasPermissionID("admin", this.userId) || hasPermissionID("manage-resources", this.userId)) {
 		return Resources.find();
 	}
 	filteredResources = _.filter(foundResources, function(curResource) {
-		return (hasPermissionID(curResource.view_permission) || !curResource.view_permission);
+		return (hasPermissionID(curResource.view_permission, this.userId) || !curResource.view_permission);
 	});
 	filteredIds = _.map(filteredResources, function(resource){
 		return resource._id;
