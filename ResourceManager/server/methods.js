@@ -328,7 +328,7 @@ function isExtension(newStartDate, newEndDate, oldStartDate, oldEndDate) {
 methods.cancelReservation = function(reservation, apiSecret){
   var reservationId = getCollectionId(reservation);
 
-  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret))){
+  if (!methods.canManageReservation(reservation, apiSecret)){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }

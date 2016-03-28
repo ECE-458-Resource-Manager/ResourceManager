@@ -87,6 +87,16 @@ Template.reservation.events({
             }
         });
     },
+    'click #cancel_reservation_btn': function(e) {
+        Meteor.call('cancelReservation', reservation, function (error, result) {
+            if (error) {
+                Materialize.toast(error.message, 4000);
+            } else {
+                Materialize.toast('Reservation cancelled successfully.',4000);
+                Router.go('myReservations');
+            }
+        });
+    },
 
     // TODO: Move to approval page
     'click #approve_reservation': function (e) {

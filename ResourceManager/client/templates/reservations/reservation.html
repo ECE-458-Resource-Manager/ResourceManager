@@ -144,8 +144,20 @@
 
         {{#if canManageReservation}}
             <div class="section">
-                <a class="waves-effect waves-light btn">Delete Reservation</a>
+                <a class="modal-trigger waves-effect waves-light btn" href="#cancel_reservation_modal">Cancel Reservation</a>
             </div>
+
+            <!-- Modal Structure -->
+            <div id="cancel_reservation_modal" class="modal">
+                <div class="modal-content">
+                    <h4>Confirm Cancellation</h4>
+                    <p>Cancel reservation?</p>
+                </div>
+                <div class="modal-footer">
+                    <a id="cancel_reservation_btn" class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
+                </div>
+            </div>
+
         {{/if}}
     
     </div>
