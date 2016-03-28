@@ -434,7 +434,7 @@ methods.getReservationsForApprover = function(isIncomplete, apiSecret) {
 /**
  * Send approval for a particular reservation
  */
-methods.approveReservation = function(apiSecret, reservation) {
+methods.approveReservation = function(reservation, apiSecret) {
     var userID = currentUserOrWithKey(apiSecret, false);
     if (!reservation._id){
         reservation = Reservations.findOne({_id:reservation});
