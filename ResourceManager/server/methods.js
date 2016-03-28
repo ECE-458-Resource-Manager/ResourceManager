@@ -75,7 +75,7 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
       description: description,
       view_permission: viewPermission,
       reserve_permission: reservePermission,
-      approve_permission: approvePermission,
+      approve_permission: [approvePermission],
       tags: tags
     }},
   );
@@ -183,9 +183,10 @@ methods.getReservationStream = function(resources, startDate, endDate){
 
   for (var i = 0; i < reservationData.length; i++) {
     var reservation = reservationData[i]
+    //console.log("Have knowledge of this res (server-side): ");
+    //console.log(reservation);
     calendarEventObjects.push(buildCalObject(reservation));
   };
-  console.log(calendarEventObjects);
   return calendarEventObjects;
 }
 
@@ -201,8 +202,10 @@ methods.getReservationStream = function(resources, startDate, endDate){
 **/
 methods.createReservation = function(resources, startDate, endDate, title, description, apiSecret){
   var resourceIds = getCollectionIds(resources);
-
   var userId = currentUserOrWithKey(apiSecret, false);
+  console.log("________________________CREATING RESERVATION______________________");
+  console.log("This reservation contains " + resourceIds.length + " resources");
+  console.log("All resources in this reservation (server-side): " + resourceIds);
   if (conflictingReservationCount(null, resourceIds, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
@@ -216,18 +219,28 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
   var needsApproval = false;
   //Check if any resources requires approval, if so return 'incomplete' reservation
   for (var i = 0; i < resourceIds.length; i++) {
+    console.log("Attempting to check if the following resource needs approval");
     var resourceId = resourceIds[i];
     var currentResource = Resources.findOne(resourceId);
+    console.log(currentResource);
+    console.log("------------------------------------------------------------");
     if (currentResource.approve_permission != null){
       needsApproval = true;
-      approverGroup.push(currentResource.approve_permission);
-      console.log("Resource needs approval: " + needsApproval);
+      for(var j = 0; j < currentResource.approve_permission.length; j++) {
+          var currentApprovePermission = currentResource.approve_permission[j];
+          if(approverGroup.indexOf(currentApprovePermission) == -1) {
+              approverGroup.push(currentApprovePermission);
+              console.log("Reservation needs approval: " + currentApprovePermission);
+          }
+      }
     }
-  };
+  }
+  console.log("_________________________________________________________________________________________________");
+  
+  
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-
   else{
       return Reservations.insert({
         owner_id: [userId],
@@ -248,6 +261,7 @@ externalizedMethods.createReservation = [{name: "resource", type: "String"},
                                          {name: "startDate", type: "Date"},
                                          {name: "endDate", type: "Date"}];
 
+
 /**
   Change a reservation's start and/or end datetime
 
@@ -265,31 +279,45 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (conflictingReservationCount(reservation._id, reservation.resource_ids, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  if (!(isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
-    //TODO: expand privileges
-    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+
+  if (!methods.canManageReservation(reservation, apiSecret)) {
+      throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-  else if (isOwner(reservation, apiSecret)){
-    var isExtension = (reservation.start_date.getTime() == startDate.getTime() && reservation.end_date.getTime() != endDate.getTime());
-    if (isExtension){
+
+  if (!isOwner(reservation, apiSecret)) {
+      return changeReservationTimeHelper(reservation, startDate, endDate);
+  }
+
+  // is owner
+  if (isReduction(startDate, endDate, reservation.start_date, reservation.end_date)) {
+      return changeReservationTimeHelper(reservation, startDate, endDate);
+  } else if (isExtension(startDate, endDate, reservation.start_date, reservation.end_date)) {
       methods.createReservation(reservation.resource_ids, reservation.end_date, endDate, reservation.title, reservation.description)
-    }
-    else{
-      throw new Meteor.Error('unauthorized', 'You may not modify the start or end time of your reservations.');
-    }
+  } else {
+      throw new Meteor.Error('unauthorized', 'Extending a reservation is done by changing the end date/time, not the start.');
   }
-  else{
-    return Reservations.update(reservation._id, {
-      $set: {
-        start_date: startDate,
-        end_date: endDate
-      }
-    });
-  }
-}
+};
+
 externalizedMethods.changeReservationTime = [{name: "reservation", type: "String"},
                                              {name: "startDate", type: "Date"},
                                              {name: "endDate", type: "Date"}];
+
+function changeReservationTimeHelper(reservation, startDate, endDate) {
+    return Reservations.update(reservation._id, {
+        $set: {
+            start_date: startDate,
+            end_date: endDate
+        }
+    });
+}
+
+function isReduction(newStartDate, newEndDate, oldStartDate, oldEndDate) {
+    return (oldStartDate <= newStartDate) || (newEndDate <= oldEndDate);
+}
+
+function isExtension(newStartDate, newEndDate, oldStartDate, oldEndDate) {
+    return (oldStartDate == newStartDate) && (oldEndDate < newEndDate);
+}
 
 /**
   Cancel a reservation
@@ -300,7 +328,7 @@ externalizedMethods.changeReservationTime = [{name: "reservation", type: "String
 methods.cancelReservation = function(reservation, apiSecret){
   var reservationId = getCollectionId(reservation);
 
-  if (!(isOwner(reservation, apiSecret) || isAdmin(apiSecret))){
+  if (!methods.canManageReservation(reservation, apiSecret)){
     //TODO: expand privileges
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -369,6 +397,7 @@ methods.canManageReservation = function(reservation, apiSecret) {
   return isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret);
 };
 
+
 /**
  * Get incomplete reservations for user
  */
@@ -405,6 +434,50 @@ methods.getReservationsForUser = function(isIncomplete, apiSecret){
     return Reservations.find(params).fetch();
   }
 };
+
+
+methods.getReservationsForApprover = function(isIncomplete, apiSecret) {
+    var userID = currentUserOrWithKey(apiSecret, false);
+    var allPermissions = Roles.getRolesForUser(userID);
+    var params = {
+        approvers: {$in: allPermissions},
+        incomplete: isIncomplete
+    }
+   
+    return Reservations.find(params).fetch();
+}
+
+/**
+ * Send approval for a particular reservation
+ */
+methods.approveReservation = function(reservation, apiSecret) {
+    var userID = currentUserOrWithKey(apiSecret, false);
+    if (!reservation._id){
+        reservation = Reservations.findOne({_id:reservation});
+    }
+    var allMyPermissions = Roles.getRolesForUser(userID);
+    var approvalsNeeded = reservation.approvers;
+    var isNotApprover = true;
+    for( var i = 0; i < allMyPermissions.length; i++) {
+        var index = approvalsNeeded.indexOf(allMyPermissions[i]);
+        if(index > -1) {
+            isNotApprover = false;
+            approvalsNeeded.splice(index, 1);
+        }
+    }
+    var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
+    if(isNotApprover) {
+        //ERROR: user is not approver
+        throw new Meteor.Error('unauthorized', 'You are not an approver of this reservation.');
+    }
+    return Reservations.update(reservation._id, {
+        $set: {
+            approvers: approvalsNeeded,
+            incomplete: isIncomplete
+        }
+    });
+  
+}
 
 
 /********************************************************************************
@@ -762,8 +835,16 @@ Find the number of conflicting reservations given a resource and a start and end
 */
 function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
   //check for a conflicting reservation
+  //resources which are restricted should be allowed to be oversubscribed
+  var resourceIdsClone = resourceIds.slice();
+  for (var i = resourceIdsClone.length - 1; i >= 0; i--) {
+    var resource = Resources.findOne(resourceIdsClone[i]);
+    if (resource.approve_permission && resource.approve_permission.length){
+      resourceIdsClone.splice(i, 1);
+    }
+  };
   var params = {
-    resource_ids: {$in: resourceIds},
+    resource_ids: {$in: resourceIdsClone},
     cancelled: false,
     start_date: {
       $lt: endDate
@@ -882,8 +963,10 @@ objectArrayToIdArray = function(objects){
 Return the collection ID, whether given the ID or the object
 */
 getCollectionId = function(item){
-  if (item._id){
-    return item._id;
+  if (item) {
+    if(item._id){
+      return item._id;
+    }
   }
   return item;
 }

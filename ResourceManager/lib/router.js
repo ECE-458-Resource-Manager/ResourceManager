@@ -45,17 +45,24 @@ Router.route('/editUser/:_id', {
 Router.route('/calendar/:_ids', {
     name: 'calendar',
     data: function() {
-        var resources = this.params._ids.split(',');
-        var resourceObjects = [];
-        for (var i = 0; i < resources.length; i++) {
-            resourceObjects.push(Resources.findOne(resources[i]));
-        };
-        return resourceObjects;
+        return getResourcesFromIds(this.params._ids.split(','));
     },
     waitOn: function() {
         return Meteor.subscribe('resources');
     }
 });
+
+/**
+ *
+ * @param ids array of resource ids
+ */
+function getResourcesFromIds(ids) {
+    var resourceObjects = [];
+    for (var i = 0; i < ids.length; i++) {
+        resourceObjects.push(Resources.findOne(ids[i]));
+    }
+    return resourceObjects;
+}
 
 Router.route('/manageUsers', {
     name: 'manageUsers',
@@ -63,6 +70,17 @@ Router.route('/manageUsers', {
         return [Meteor.subscribe('allUsers'), Meteor.subscribe('groups')];
     }
 });
+
+Router.route('/createReservation/:_ids', {
+    name: 'createReservation',
+    data: function() {
+        return getResourcesFromIds(this.params._ids.split(','));
+    },
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
 
 Router.route('/myReservations',{
     name: 'myReservations'
