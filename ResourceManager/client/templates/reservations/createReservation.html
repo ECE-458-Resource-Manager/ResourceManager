@@ -1,0 +1,60 @@
+<template name="createReservation">
+    <div>
+        <h4>Create Reservation</h4>
+
+        <!-- Title -->
+        <div class="row">
+            <div class="input-field col s6">
+                <input id="title_input" type="text" class="validate">
+                <label class="active" for="title_input">Title</label>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="description_input" type="text" class="validate">
+                <label class="active" for="description_input">Description</label>
+            </div>
+        </div>
+
+        <!-- Resources -->
+        <h5>Resources</h5>
+        <ul class="collection">
+            {{#each resources}}
+                {{> reservationResourceItem }}
+            {{/each}}
+        </ul>
+
+        <!-- Duration -->
+        <h5>Duration</h5>
+        <div class="row">
+            <!-- Start -->
+            <div class="input-field col s2">
+                <input type="date" class="datepicker" id="start_date_input">
+                <label class="active" for="start_date_input">Start date</label>
+            </div>
+            <div class="input-field col s2">
+                <input type="time" id="start_time_input">
+                <label class="active" for="start_time_input">Start time</label>
+            </div>
+            <div class="input-field col s2 offset-s1">
+                <input type="date" class="datepicker" id="end_date_input">
+                <label class="active" for="end_date_input">End date</label>
+            </div>
+            <div class="input-field col s2">
+                <input type="time" id="end_time_input">
+                <label class="active" for="end_time_input">End time</label>
+            </div>
+        </div>
+        <div class="divider"></div>
+
+        <!-- Create reservation button -->
+        <div class="section">
+            <a id="create_reservation_btn" class="waves-effect waves-light btn">
+                Create Reservation
+            </a>
+        </div>
+
+    </div>
+</template>

@@ -9,6 +9,7 @@
         </div>
         <div class="divider"></div>
 
+
         <!-- Title -->
         <div class="section">
             {{#if canManageReservation}}
@@ -63,42 +64,120 @@
         <div class="divider"></div>
 
 
-        <h5>Resources</h5>
-        <ul class="collection">
-            {{#each resources}}
-                {{> resourceItem }}
-            {{/each}}
-        </ul>
-        <div class="divider"></div>
-
-        <h5>Duration</h5>
-        <div>
-            <div class="row">
-                <div class="col s6">
-                    <ul>
-                        <li><b>Start</b></li>
-                        <li id="startDate"></li>
-                    </ul>
-                </div>
-
-                <div class="col s6">
-                    <ul>
-                        <li><b>End</b></li>
-                        <li id="endDate"></li>
-                    </ul>
-                </div>
-            </div>
+        <!-- Resources -->
+        <div class="section">
+            <h5>Resources</h5>
+            <ul class="collection">
+                {{#each resources}}
+                    {{> reservationResourceItem }}
+                {{/each}}
+            </ul>
         </div>
         <div class="divider"></div>
-        
+
+
+        <!-- Duration -->
+        <h5>Duration</h5>
+        <div>
+            <!-- Start -->
+            <div class="row">
+                <div class="col s5">
+                    <ul>
+                        <li><b>Start</b></li>
+                        <li id="start_date"></li>
+                    </ul>
+                </div>
+
+                <div class="col s5">
+                    <ul>
+                        <li><b>End</b></li>
+                        <li id="end_date"></li>
+                    </ul>
+                </div>
+
+                <div class="col s2">
+                    {{#if canManageReservation}}
+                        <a href="#edit_duration_modal"
+                           class="waves-effect waves-light modal-trigger btn-floating left red tooltipped"
+                           data-position="bottom" data-delay="50" data-tooltip="Reduce Duration. To extend, click 'Extend' below.">
+                            <i class="material-icons left">edit</i>
+                        </a>
+                    {{/if}}
+                </div>
+
+                <!-- Modal Structure -->
+                <div id="edit_duration_modal" class="modal">
+                    <div class="modal-content" style="padding-bottom: 100px">
+                        <div class="input-field">
+                            <input type="date" class="datepicker center-align" id="start_date_input">
+                            <label class="active center-align" for="start_date_input">Start date</label>
+                        </div>
+                        <div class="input-field center-align">
+                            <input type="time" class="center-align" id="start_time_input">
+                            <label class="active center-align" for="start_time_input">Start time</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="date" class="datepicker center-align" id="end_date_input">
+                            <label class="active center-align" for="end_date_input">End date</label>
+                        </div>
+                        <div class="input-field center-align">
+                            <input type="time" class="center-align" id="end_time_input">
+                            <label class="active center-align" for="end_time_input">End time</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a id="save_duration"
+                           class=" modal-action waves-effect waves-green btn-flat">Save</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="divider"></div>
+
+
+        <!-- TODO: Move to Sam's approval page -->
         <div class="section">
            <a id="approve_reservation" class="waves-effect waves-light btn"> Approve Reservation  </a>
         </div>
 
+
+
         {{#if canManageReservation}}
+            <!-- Extend reservation button -->
             <div class="section">
-                <a class="waves-effect waves-light btn">Delete Reservation</a>
+                <a class="modal-trigger waves-effect waves-light btn" href="#extend_reservation_modal">Extend Reservation</a>
             </div>
+
+            <!-- Modal Structure -->
+            <div id="extend_reservation_modal" class="modal">
+                <div class="modal-content">
+                    <h4>Confirm Extending</h4>
+                    <p>Clicking 'PROCEED' will redirect you to a page where you can create a new reservation for the resources in this reservation.</p>
+                </div>
+                <div class="modal-footer">
+                    <a id="extend_reservation_btn" class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
+                </div>
+            </div>
+
+
+            <!-- Cancel reservation button -->
+            <div class="section">
+                <a class="modal-trigger waves-effect waves-light btn" href="#cancel_reservation_modal">Cancel Reservation</a>
+            </div>
+
+            <!-- Modal Structure -->
+            <div id="cancel_reservation_modal" class="modal">
+                <div class="modal-content">
+                    <h4>Confirm Cancellation</h4>
+                    <p>Cancel reservation?</p>
+                </div>
+                <div class="modal-footer">
+                    <a id="cancel_reservation_btn" class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
+                </div>
+            </div>
+
         {{/if}}
     
     </div>
