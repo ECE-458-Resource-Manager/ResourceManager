@@ -261,6 +261,7 @@ externalizedMethods.createReservation = [{name: "resource", type: "String"},
                                          {name: "startDate", type: "Date"},
                                          {name: "endDate", type: "Date"}];
 
+
 /**
   Change a reservation's start and/or end datetime
 
@@ -278,31 +279,45 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (conflictingReservationCount(reservation._id, reservation.resource_ids, startDate, endDate)){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
-  if (!(isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret))){
-    //TODO: expand privileges
-    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+
+  if (!methods.canManageReservation(reservation, apiSecret)) {
+      throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-  else if (isOwner(reservation, apiSecret)){
-    var isExtension = (reservation.start_date.getTime() == startDate.getTime() && reservation.end_date.getTime() != endDate.getTime());
-    if (isExtension){
+
+  if (!isOwner(reservation, apiSecret)) {
+      return changeReservationTimeHelper(reservation, startDate, endDate);
+  }
+
+  // is owner
+  if (isReduction(startDate, endDate, reservation.start_date, reservation.end_date)) {
+      return changeReservationTimeHelper(reservation, startDate, endDate);
+  } else if (isExtension(startDate, endDate, reservation.start_date, reservation.end_date)) {
       methods.createReservation(reservation.resource_ids, reservation.end_date, endDate, reservation.title, reservation.description)
-    }
-    else{
-      throw new Meteor.Error('unauthorized', 'You may not modify the start or end time of your reservations.');
-    }
+  } else {
+      throw new Meteor.Error('unauthorized', 'Extending a reservation is done by changing the end date/time, not the start.');
   }
-  else{
-    return Reservations.update(reservation._id, {
-      $set: {
-        start_date: startDate,
-        end_date: endDate
-      }
-    });
-  }
-}
+};
+
 externalizedMethods.changeReservationTime = [{name: "reservation", type: "String"},
                                              {name: "startDate", type: "Date"},
                                              {name: "endDate", type: "Date"}];
+
+function changeReservationTimeHelper(reservation, startDate, endDate) {
+    return Reservations.update(reservation._id, {
+        $set: {
+            start_date: startDate,
+            end_date: endDate
+        }
+    });
+}
+
+function isReduction(newStartDate, newEndDate, oldStartDate, oldEndDate) {
+    return (oldStartDate <= newStartDate) || (newEndDate <= oldEndDate);
+}
+
+function isExtension(newStartDate, newEndDate, oldStartDate, oldEndDate) {
+    return (oldStartDate == newStartDate) && (oldEndDate < newEndDate);
+}
 
 /**
   Cancel a reservation
@@ -381,6 +396,7 @@ methods.canManageReservation = function(reservation, apiSecret) {
 
   return isOwner(reservation, apiSecret) || isAdmin(apiSecret) || hasPermission("manage-reservations", apiSecret);
 };
+
 
 /**
  * Get incomplete reservations for user
