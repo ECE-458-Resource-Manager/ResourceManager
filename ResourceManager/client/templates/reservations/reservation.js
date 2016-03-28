@@ -104,17 +104,6 @@ Template.reservation.events({
                 Router.go('myReservations');
             }
         });
-    },
-
-    // TODO: Move to Sam's approval page
-    'click #approve_reservation': function (e) {
-         Meteor.call('approveReservation', reservation, function(error, result) {
-             if (error) {
-                 Materialize.toast(error.message, 4000);
-             } else {
-                 Meteor._reload.reload();
-             }
-         });
     }
 });
 
