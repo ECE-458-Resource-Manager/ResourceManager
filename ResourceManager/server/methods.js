@@ -39,7 +39,7 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
     description: description,
     view_permission: viewPermission,
     reserve_permission: reservePermission,
-    approve_permission: approvePermission,
+    approve_permission: [approvePermission],
     tags: tags
   });
 }
