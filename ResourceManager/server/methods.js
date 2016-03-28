@@ -835,8 +835,16 @@ Find the number of conflicting reservations given a resource and a start and end
 */
 function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
   //check for a conflicting reservation
+  //resources which are restricted should be allowed to be oversubscribed
+  var resourceIdsClone = resourceIds.slice();
+  for (var i = resourceIdsClone.length - 1; i >= 0; i--) {
+    var resource = Resources.findOne(resourceIdsClone[i]);
+    if (resource.approve_permission && resource.approve_permission.length){
+      resourceIdsClone.splice(i, 1);
+    }
+  };
   var params = {
-    resource_ids: {$in: resourceIds},
+    resource_ids: {$in: resourceIdsClone},
     cancelled: false,
     start_date: {
       $lt: endDate
