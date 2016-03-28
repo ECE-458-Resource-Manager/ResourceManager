@@ -113,7 +113,7 @@ if (Resources.find().count() === 0) {
         title: 'First dummy reservation',
         description: 'An incredibly detailed description of this dummy reservation',
         incomplete: true,
-        approvers: ['role1, role2, role3']
+        approvers: ['role1', 'role2', 'role3']
     });
 
     Reservations.insert({
@@ -127,7 +127,7 @@ if (Resources.find().count() === 0) {
         title: 'Second dummy reservation',
         description: 'An incredibly detailed description of this dummy reservation',
         incomplete: true,
-        approvers: ['role1, role2, role3']
+        approvers: ['role1', 'role2', 'role3']
     });
 
     Reservations.insert({
@@ -141,6 +141,6 @@ if (Resources.find().count() === 0) {
         title: 'Third dummy reservation',
         description: 'An incredibly detailed description of this dummy reservation',
         incomplete: false,
-        approvers: ['role1, role2, role3']
+        approvers: ['role1', 'role2', 'role3']
     });
 }

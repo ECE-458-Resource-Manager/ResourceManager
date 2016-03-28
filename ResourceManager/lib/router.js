@@ -86,13 +86,20 @@ Router.route('/myReservations',{
     name: 'myReservations'
 });
 
+Router.route('/approvals', {
+    name: 'approvals',
+    waitOn: function() {
+        return Meteor.subscribe('reservations');
+    }
+});
+
 Router.route('/reservation/:_id',{
     name: 'reservation',
     data: function() {
         return Reservations.findOne(this.params._id);
     },
     waitOn: function() {
-        return [Meteor.subscribe('reservations'),Meteor.subscribe('resources')];
+        return [Meteor.subscribe('reservations'), Meteor.subscribe('resources')];
     }
 });
 
