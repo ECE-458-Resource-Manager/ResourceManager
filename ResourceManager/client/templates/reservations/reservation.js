@@ -87,6 +87,14 @@ Template.reservation.events({
             }
         });
     },
+    'click #extend_reservation_btn': function(e) {
+        var resourceIds = reservation.resources[0]._id;
+        for (var i=1; i < reservation.resources.length; i++) {
+            resourceIds = resourceIds.concat(',',reservation.resources[i]._id);
+        }
+        Router.go('/createReservation/'+resourceIds);
+    },
+
     'click #cancel_reservation_btn': function(e) {
         Meteor.call('cancelReservation', reservation, function (error, result) {
             if (error) {
@@ -98,7 +106,7 @@ Template.reservation.events({
         });
     },
 
-    // TODO: Move to approval page
+    // TODO: Move to Sam's approval page
     'click #approve_reservation': function (e) {
          Meteor.call('approveReservation', reservation, function(error, result) {
              if (error) {
