@@ -206,8 +206,9 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
   console.log("________________________CREATING RESERVATION______________________");
   console.log("This reservation contains " + resourceIds.length + " resources");
   console.log("All resources in this reservation (server-side): " + resourceIds);
-  if (conflictingReservationCount(null, resourceIds, startDate, endDate)){
-    throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
+  var conflictCheck = conflictingReservationCheck(null, resourceIds, startDate, endDate)
+  if (conflictCheck != ''){
+    throw new Meteor.Error('overlapping', conflictCheck);
   }
   else if (!userId){
     //TODO: or not privileged
@@ -823,6 +824,7 @@ function buildCalObject(reservation){
 @ignore
 
 Find the number of conflicting reservations given a resource and a start and end date, with an optional reservation to ignore.
+This is default behavior and does not count 
 
 @oaram reservationId
   Reservation ID to ignore as a conflict (optional)
@@ -834,17 +836,23 @@ Find the number of conflicting reservations given a resource and a start and end
   End date to check for conflicts
 */
 function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
+  return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, false);
+}
+
+/**
+Additional conflicting reservation method for returning conflict message, ReservationCount returns number of conflicts
+*/
+function conflictingReservationCheck(reservationId, resourceIds, startDate, endDate){
+  return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, true);
+}
+
+/**
+Core conflict method which both above methods use, one returns count of conflicts the other returns the conflict message
+*/
+function conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, shouldReturnMessage){
   //check for a conflicting reservation
-  //resources which are restricted should be allowed to be oversubscribed
-  var resourceIdsClone = resourceIds.slice();
-  for (var i = resourceIdsClone.length - 1; i >= 0; i--) {
-    var resource = Resources.findOne(resourceIdsClone[i]);
-    if (resource.approve_permission && resource.approve_permission.length){
-      resourceIdsClone.splice(i, 1);
-    }
-  };
   var params = {
-    resource_ids: {$in: resourceIdsClone},
+    resource_ids: {$in: resourceIds},
     cancelled: false,
     start_date: {
       $lt: endDate
@@ -858,9 +866,31 @@ function conflictingReservationCount(reservationId, resourceIds, startDate, endD
       $ne: reservationId
     }
   }
-  var conflictingReservations = Reservations.find(params);
-  return conflictingReservations.count();
+  var conflictMessage = "Reservations cannot overlap."
+  var conflictingReservations = Reservations.find(params).fetch();
+  for (var i = conflictingReservations.length - 1; i >= 0; i--) {
+    var reservation = conflictingReservations[i];
+    if (reservation.incomplete){
+      var validOversubscription = true;
+      for (var j = resourceIds.length - 1; j >= 0; j--) {
+        var resource = Resources.findOne(resourceIds[j]);
+        //oversubscription is not valid if unrestricted resources exist in both conflicting and current reservation
+        if ((reservation.resource_ids.indexOf(resourceIds[j]) != -1) && (!resource.approve_permission || !resource.approve_permission.length)){
+          conflictMessage = "One or more unrestricted resources you requested are part of a pending reservation and are on hold.  Please try again later."
+          validOversubscription = false;
+        }
+      };
+      if (validOversubscription){
+        conflictingReservations.splice(i, 1);
+      }
+    }
+  };
+  if (shouldReturnMessage){
+    return conflictingReservations.length ? conflictMessage : "";
+  }
+  return conflictingReservations.length;
 }
+
 
 /**
 @ignore
