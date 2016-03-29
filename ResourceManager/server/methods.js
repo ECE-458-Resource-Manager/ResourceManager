@@ -452,33 +452,63 @@ methods.getReservationsForApprover = function(isIncomplete, apiSecret) {
  * Send approval for a particular reservation
  */
 methods.approveReservation = function(reservation, apiSecret) {
-    var userID = currentUserOrWithKey(apiSecret, false);
-    if (!reservation._id){
-        reservation = Reservations.findOne({_id:reservation});
-    }
-    var allMyPermissions = Roles.getRolesForUser(userID);
-    var approvalsNeeded = reservation.approvers;
-    var isNotApprover = true;
-    for( var i = 0; i < allMyPermissions.length; i++) {
-        var index = approvalsNeeded.indexOf(allMyPermissions[i]);
-        if(index > -1) {
-            isNotApprover = false;
-            approvalsNeeded.splice(index, 1);
-        }
-    }
-    var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
-    if(isNotApprover) {
-        //ERROR: user is not approver
-        throw new Meteor.Error('unauthorized', 'You are not an approver of this reservation.');
-    }
-    return Reservations.update(reservation._id, {
-        $set: {
-            approvers: approvalsNeeded,
-            incomplete: isIncomplete
-        }
-    });
-  
+  return approveOrDenyReservation(reservation, true, apiSecret);
 }
+
+/**
+* Deny a particular reservation
+*/
+methods.denyReservation = function(reservation, apiSecret){
+  return approveOrDenyReservation(reservation, false, apiSecret);
+}
+
+var approveOrDenyReservation = function(reservation, approve, apiSecret){
+  var userID = currentUserOrWithKey(apiSecret, false);
+  if (!reservation._id){
+      reservation = Reservations.findOne({_id:reservation});
+  }
+  var allMyPermissions = Roles.getRolesForUser(userID);
+  var approvalsNeeded = reservation.approvers;
+  var isNotApprover = true;
+  for( var i = 0; i < allMyPermissions.length; i++) {
+      var index = approvalsNeeded.indexOf(allMyPermissions[i]);
+      if(index > -1) {
+          isNotApprover = false;
+          if (approve){
+            approvalsNeeded.splice(index, 1);
+          }
+      }
+  }
+  var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
+  if(isNotApprover) {
+      //ERROR: user is not approver
+      throw new Meteor.Error('unauthorized', 'You are not an approver of this reservation.');
+  }
+  if (approve){
+    return Reservations.update(reservation._id, {
+      $set: {
+          approvers: approvalsNeeded,
+          incomplete: isIncomplete
+      }
+    });
+  }
+  else{
+    //send an email about the denial
+    Email.send({
+      to: reservation.owner.emails[0].address,
+      from: 'noreply@resourcereserve.xyz',
+      subject: 'Your reservation '+reservation.title+' was denied.',
+      text: 'Your reservation request '+reservation.title+' was denied.\n You requested this reservation from '+moment(reservation.start_date).format("ddd, MMM Do YYYY, h:mm a")+' to '+moment(reservation.end_date).format("ddd, MMM Do YYYY, h:mm a")+'.'
+    });
+    return Reservations.update(reservation._id, {
+      $set: {
+          cancelled: true
+      }
+    });    
+  }
+
+}
+
 
 
 /********************************************************************************
@@ -823,7 +853,7 @@ function buildCalObject(reservation){
 /**
 @ignore
 
-Find the number of conflicting reservations given a resource and a start and end date, with an optional reservation to ignore.
+Find the conflicting reservations given a resource and a start and end date, with an optional reservation to ignore.
 This is default behavior and does not count 
 
 @oaram reservationId
@@ -835,7 +865,7 @@ This is default behavior and does not count
 @param {date} endDate
   End date to check for conflicts
 */
-function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
+function conflictingReservations(reservationId, resourceIds, startDate, endDate){
   return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, false);
 }
 
@@ -888,7 +918,7 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
   if (shouldReturnMessage){
     return conflictingReservations.length ? conflictMessage : "";
   }
-  return conflictingReservations.length;
+  return conflictingReservations;
 }
 
 

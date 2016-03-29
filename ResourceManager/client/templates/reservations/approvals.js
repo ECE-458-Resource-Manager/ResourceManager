@@ -27,7 +27,7 @@ Template.reservationApprovalItem.events({
 		console.log(this.approvers);
 
 		// TODO: Check if need to notify about other reservations being cancelled
-		Meteor.call('approveReservation', this);
+		Meteor.call('approveReservation', this._id);
 		return false;
 	},
 
@@ -35,7 +35,7 @@ Template.reservationApprovalItem.events({
 		event.preventDefault();
 
 		// TODO: Notify user about reason for cancellation
-		Meteor.call('cancelReservation', this);
+		Meteor.call('denyReservation', this._id);
 		return false;
 	},
 });
