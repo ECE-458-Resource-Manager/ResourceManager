@@ -277,7 +277,7 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (!reservation._id){
     reservation = Reservations.findOne({_id:reservation});
   }
-  if (conflictingReservationCount(reservation._id, reservation.resource_ids, startDate, endDate)){
+  if (conflictingReservations(reservation._id, reservation.resource_ids, startDate, endDate).length){
     throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
   }
 
@@ -313,11 +313,12 @@ function changeReservationTimeHelper(reservation, startDate, endDate) {
 }
 
 function isReduction(newStartDate, newEndDate, oldStartDate, oldEndDate) {
-    return (oldStartDate <= newStartDate) || (newEndDate <= oldEndDate);
+    return (oldStartDate <= newStartDate) && (newEndDate <= oldEndDate);
 }
 
 function isExtension(newStartDate, newEndDate, oldStartDate, oldEndDate) {
-    return (oldStartDate == newStartDate) && (oldEndDate < newEndDate);
+    //can't do == on dates in js, ugh... http://stackoverflow.com/questions/4587060/
+    return (oldStartDate.getTime() == newStartDate.getTime()) && (oldEndDate < newEndDate);
 }
 
 /**
