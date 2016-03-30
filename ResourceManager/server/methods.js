@@ -311,7 +311,7 @@ methods.changeReservationTime = function(reservation, startDate, endDate, apiSec
   if (isReduction(startDate, endDate, reservation.start_date, reservation.end_date)) {
       return changeReservationTimeHelper(reservation, startDate, endDate);
   } else if (isExtension(startDate, endDate, reservation.start_date, reservation.end_date)) {
-      methods.createReservation(reservation.resource_ids, reservation.end_date, endDate, reservation.title, reservation.description)
+      methods.createReservation(reservation.resource_ids, reservation.end_date, endDate, "Extension of: "+reservation.title, reservation.description)
   } else {
       throw new Meteor.Error('unauthorized', 'Extending a reservation is done by changing the end date/time, not the start.');
   }
