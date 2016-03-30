@@ -146,42 +146,42 @@
                     <div class="col s6">
                         <a class="modal-trigger waves-effect waves-light btn" href="#extend_reservation_modal">Extend
                             Reservation</a>
-
-                        <!-- Modal Structure -->
-                        <div id="extend_reservation_modal" class="modal">
-                            <div class="modal-content">
-                                <h4>Confirm Extending</h4>
-                                <p>Clicking 'PROCEED' will redirect you to a page where you can create a new reservation
-                                    for the resources in this reservation.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a id="extend_reservation_btn"
-                                   class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Cancel reservation button -->
                     <div class="col s6">
                         <a class="modal-trigger waves-effect waves-light btn" href="#cancel_reservation_modal">Cancel
                             Reservation</a>
-
-                        <!-- Modal Structure -->
-                        <div id="cancel_reservation_modal" class="modal">
-                            <div class="modal-content">
-                                <h4>Confirm Cancellation</h4>
-                                <p>Cancel reservation?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a id="cancel_reservation_btn"
-                                   class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
             </div>
         {{/if}}
+
+        <!-- Extend reservation modal structure -->
+        <div id="extend_reservation_modal" class="modal">
+            <div class="modal-content">
+                <h4>Confirm Extending</h4>
+                <p>Clicking 'PROCEED' will redirect you to a page where you can create a new reservation
+                    for the resources in this reservation.</p>
+            </div>
+            <div class="modal-footer">
+                <a id="extend_reservation_btn"
+                   class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
+            </div>
+        </div>
+
+        <!-- Cancel reservation modal Structure -->
+        <div id="cancel_reservation_modal" class="modal">
+            <div class="modal-content">
+                <h4>Confirm Cancellation</h4>
+                <p>Cancel reservation?</p>
+            </div>
+            <div class="modal-footer">
+                <a id="cancel_reservation_btn"
+                   class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
+            </div>
+        </div>
 
     </div>
 </template>

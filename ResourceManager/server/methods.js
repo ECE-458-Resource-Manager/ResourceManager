@@ -34,6 +34,15 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
   if (!isAdmin(apiSecret) || hasPermission("manage-resources")){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
+  if (!_.contains(Roles.getAllRoles().fetch(), viewPermission)){
+    Roles.createRole(viewPermission);
+  }
+  if (!_.contains(Roles.getAllRoles().fetch(), reservePermission)){
+    Roles.createRole(reservePermission);
+  }
+  if (!_.contains(Roles.getAllRoles().fetch(), approvePermission)){
+    Roles.createRole(approvePermission);
+  }
   return Resources.insert({
     name: name,
     description: description,
@@ -65,6 +74,15 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
 methods.modifyResource = function(resource, name, description, viewPermission, reservePermission, approvePermission, tags, apiSecret){
   if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+  if (!_.contains(Roles.getAllRoles().fetch(), viewPermission)){
+    Roles.createRole(viewPermission);
+  }
+  if (!_.contains(Roles.getAllRoles().fetch(), reservePermission)){
+    Roles.createRole(reservePermission);
+  }
+  if (!_.contains(Roles.getAllRoles().fetch(), approvePermission)){
+    Roles.createRole(approvePermission);
   }
   var resourceId = getCollectionId(resource);
   return Resources.update(
@@ -729,6 +747,10 @@ methods.addPermissionForGroup = function(groupName, permissionName, apiSecret){
   foundGroup = Groups.findOne({name: groupName});
   if (!foundGroup){
     throw new Meteor.Error('invalid group name', 'No group exists with that name.');
+  }
+
+  if (!_.contains(Roles.getAllRoles().fetch(), permissionName)){
+    Roles.createRole(permissionName);
   }
 
   Groups.update(
