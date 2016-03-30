@@ -483,6 +483,17 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
                 approveOrDenyReservation(conflicts[n], false);
             }
           }
+      } else if (allMyPermissions[i] == 'admin' || allMyPermissions[i] == 'manage-reservations'){
+        isNotApprover = false;
+          if (approve){
+            approvalsNeeded.splice(0);
+            var conflicts = conflictingReservationsNoValids(reservation._id, reservation.resource_ids, reservation.start_date, reservation.end_date);
+            //console.log("Number of conflicts: " + conflicts.length);
+            for(var n = 0; n < conflicts.length; n++) {
+                //console.log("Cancel" + conflicts[n].title);
+                approveOrDenyReservation(conflicts[n], false);
+            }
+          }
       }
   }
   var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
