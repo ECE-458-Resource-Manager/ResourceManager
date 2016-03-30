@@ -17,10 +17,13 @@ Template.createResources.events({
 		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
 			console.log('created resource');
 			console.log(result);
+            if (error) {
+                Materialize.toast(error.message, 4000);
+            } else {
+                Materialize.toast('Resource created successfully.',4000);
+				clearCreateResourceForm(event);
+            }
 		});
-
-		// Clear form
-		clearCreateResourceForm(event);
 
 		// Prevent default form submit
 		return false;
