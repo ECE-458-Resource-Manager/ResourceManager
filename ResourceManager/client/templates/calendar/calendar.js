@@ -55,7 +55,7 @@ Template.calendar.rendered = function(){
   $('#resourceCalendar').fullCalendar({
     defaultView: defaultView,
     header: {
-      left:     'agendaDay,agendaWeek',
+      left:     'agendaDay,agendaWeek,month',
       center:   'title',
       right:    'today prev,next'
     },

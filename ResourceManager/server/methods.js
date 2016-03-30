@@ -506,8 +506,12 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
   }
   else{
     //send an email about the denial
+    var recipient = "nobody@resourcereserve.xyz";
+    if(reservation.owner.emails) {
+        recipient = reservation.owner.emails[0].address;
+    }
     Email.send({
-      to: reservation.owner.emails[0].address,
+      to: recipient,
       from: 'noreply@resourcereserve.xyz',
       subject: 'Your reservation '+reservation.title+' was denied.',
       text: 'Your reservation request '+reservation.title+' was denied.\n You requested this reservation from '+moment(reservation.start_date).format("ddd, MMM Do YYYY, h:mm a")+' to '+moment(reservation.end_date).format("ddd, MMM Do YYYY, h:mm a")+'.'
