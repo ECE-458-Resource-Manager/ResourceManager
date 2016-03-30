@@ -462,6 +462,12 @@ methods.denyReservation = function(reservation, apiSecret){
   return approveOrDenyReservation(reservation, false, apiSecret);
 }
 
+methods.willDenyConflicts = function(reservation, apiSecret){
+  var conflicts = conflictingReservationsNoValids(reservation._id, reservation.resource_ids, reservation.start_date, reservation.end_date);
+  return (conflicts.length > 0);
+}
+
+
 var approveOrDenyReservation = function(reservation, approve, apiSecret){
   var userID = currentUserOrWithKey(apiSecret, false);
   if (!reservation._id){

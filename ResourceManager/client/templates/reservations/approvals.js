@@ -25,8 +25,12 @@ Template.reservationApprovalItem.events({
 
 		console.log(this);
 		console.log(this.approvers);
-
+		var res = false;
 		// TODO: Check if need to notify about other reservations being cancelled
+		//Meteor.call('willDenyConflicts', this._id, function(error, result) {
+                //    res = result; 
+                //});
+                console.log("Will deny others: " + res);
 		Meteor.call('approveReservation', this._id);
 		return false;
 	},
