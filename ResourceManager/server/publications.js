@@ -43,11 +43,11 @@ FilterCollections.publish(Resources, {
 });
 
 Meteor.publish('allUsers', function(){
-	var result = [];
 	if (Roles.userIsInRole(this.userId, ['admin', 'manage-users'])) {
 		return Meteor.users.find();
+	} else {
+		return [];
 	}
-	return null;
 });
 
 Meteor.publish('groups', function(){
