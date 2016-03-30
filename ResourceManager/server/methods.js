@@ -203,11 +203,12 @@ methods.getReservationStream = function(resources, startDate, endDate){
 methods.createReservation = function(resources, startDate, endDate, title, description, apiSecret){
   var resourceIds = getCollectionIds(resources);
   var userId = currentUserOrWithKey(apiSecret, false);
-  console.log("________________________CREATING RESERVATION______________________");
-  console.log("This reservation contains " + resourceIds.length + " resources");
-  console.log("All resources in this reservation (server-side): " + resourceIds);
-  if (conflictingReservationCount(null, resourceIds, startDate, endDate)){
-    throw new Meteor.Error('overlapping', 'Reservations cannot overlap.');
+  //console.log("________________________CREATING RESERVATION______________________");
+  //console.log("This reservation contains " + resourceIds.length + " resources");
+  //console.log("All resources in this reservation (server-side): " + resourceIds);
+  var conflictCheck = conflictingReservationCheck(null, resourceIds, startDate, endDate)
+  if (conflictCheck != ''){
+    throw new Meteor.Error('overlapping', conflictCheck);
   }
   else if (!userId){
     //TODO: or not privileged
@@ -219,23 +220,23 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
   var needsApproval = false;
   //Check if any resources requires approval, if so return 'incomplete' reservation
   for (var i = 0; i < resourceIds.length; i++) {
-    console.log("Attempting to check if the following resource needs approval");
+    //console.log("Attempting to check if the following resource needs approval");
     var resourceId = resourceIds[i];
     var currentResource = Resources.findOne(resourceId);
     console.log(currentResource);
-    console.log("------------------------------------------------------------");
+    //console.log("------------------------------------------------------------");
     if (currentResource.approve_permission != null){
       needsApproval = true;
       for(var j = 0; j < currentResource.approve_permission.length; j++) {
           var currentApprovePermission = currentResource.approve_permission[j];
           if(approverGroup.indexOf(currentApprovePermission) == -1) {
               approverGroup.push(currentApprovePermission);
-              console.log("Reservation needs approval: " + currentApprovePermission);
+              //console.log("Reservation needs approval: " + currentApprovePermission);
           }
       }
     }
   }
-  console.log("_________________________________________________________________________________________________");
+  //console.log("_________________________________________________________________________________________________");
   
   
   if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
@@ -451,33 +452,69 @@ methods.getReservationsForApprover = function(isIncomplete, apiSecret) {
  * Send approval for a particular reservation
  */
 methods.approveReservation = function(reservation, apiSecret) {
-    var userID = currentUserOrWithKey(apiSecret, false);
-    if (!reservation._id){
-        reservation = Reservations.findOne({_id:reservation});
-    }
-    var allMyPermissions = Roles.getRolesForUser(userID);
-    var approvalsNeeded = reservation.approvers;
-    var isNotApprover = true;
-    for( var i = 0; i < allMyPermissions.length; i++) {
-        var index = approvalsNeeded.indexOf(allMyPermissions[i]);
-        if(index > -1) {
-            isNotApprover = false;
-            approvalsNeeded.splice(index, 1);
-        }
-    }
-    var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
-    if(isNotApprover) {
-        //ERROR: user is not approver
-        throw new Meteor.Error('unauthorized', 'You are not an approver of this reservation.');
-    }
-    return Reservations.update(reservation._id, {
-        $set: {
-            approvers: approvalsNeeded,
-            incomplete: isIncomplete
-        }
-    });
-  
+  return approveOrDenyReservation(reservation, true, apiSecret);
 }
+
+/**
+* Deny a particular reservation
+*/
+methods.denyReservation = function(reservation, apiSecret){
+  return approveOrDenyReservation(reservation, false, apiSecret);
+}
+
+var approveOrDenyReservation = function(reservation, approve, apiSecret){
+  var userID = currentUserOrWithKey(apiSecret, false);
+  if (!reservation._id){
+      reservation = Reservations.findOne({_id:reservation});
+  }
+  var allMyPermissions = Roles.getRolesForUser(userID);
+  var approvalsNeeded = reservation.approvers;
+  var isNotApprover = true;
+  for( var i = 0; i < allMyPermissions.length; i++) {
+      var index = approvalsNeeded.indexOf(allMyPermissions[i]);
+      if(index > -1) {
+          isNotApprover = false;
+          if (approve){
+            approvalsNeeded.splice(index, 1);
+            var conflicts = conflictingReservationsNoValids(reservation._id, reservation.resource_ids, reservation.start_date, reservation.end_date);
+            //console.log("Number of conflicts: " + conflicts.length);
+            for(var n = 0; n < conflicts.length; n++) {
+                //console.log("Cancel" + conflicts[n].title);
+                approveOrDenyReservation(conflicts[n], false);
+            }
+          }
+      }
+  }
+  var isIncomplete = !(typeof approvalsNeeded === undefined) && (approvalsNeeded.length > 0);
+  if(isNotApprover) {
+      //ERROR: user is not approver
+      throw new Meteor.Error('unauthorized', 'You are not an approver of this reservation.');
+  }
+  if (approve){
+    return Reservations.update(reservation._id, {
+      $set: {
+          approvers: approvalsNeeded,
+          incomplete: isIncomplete
+      }
+    });
+  }
+  else{
+    //send an email about the denial
+    Email.send({
+      to: reservation.owner.emails[0].address,
+      from: 'noreply@resourcereserve.xyz',
+      subject: 'Your reservation '+reservation.title+' was denied.',
+      text: 'Your reservation request '+reservation.title+' was denied.\n You requested this reservation from '+moment(reservation.start_date).format("ddd, MMM Do YYYY, h:mm a")+' to '+moment(reservation.end_date).format("ddd, MMM Do YYYY, h:mm a")+'.'
+    });
+    return Reservations.update(reservation._id, {
+      $set: {
+          cancelled: true
+      }
+    });    
+  }
+
+}
+
 
 
 /********************************************************************************
@@ -822,7 +859,8 @@ function buildCalObject(reservation){
 /**
 @ignore
 
-Find the number of conflicting reservations given a resource and a start and end date, with an optional reservation to ignore.
+Find the conflicting reservations given a resource and a start and end date, with an optional reservation to ignore.
+This is default behavior and does not count 
 
 @oaram reservationId
   Reservation ID to ignore as a conflict (optional)
@@ -833,18 +871,28 @@ Find the number of conflicting reservations given a resource and a start and end
 @param {date} endDate
   End date to check for conflicts
 */
-function conflictingReservationCount(reservationId, resourceIds, startDate, endDate){
+function conflictingReservations(reservationId, resourceIds, startDate, endDate){
+  return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, false, true);
+}
+
+function conflictingReservationsNoValids(reservationId, resourceIds, startDate, endDate){
+  return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, false, false);
+}
+
+/**
+Additional conflicting reservation method for returning conflict message, ReservationCount returns number of conflicts
+*/
+function conflictingReservationCheck(reservationId, resourceIds, startDate, endDate){
+  return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, true, true);
+}
+
+/**
+Core conflict method which both above methods use, one returns count of conflicts the other returns the conflict message
+*/
+function conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, shouldReturnMessage, omitValids){
   //check for a conflicting reservation
-  //resources which are restricted should be allowed to be oversubscribed
-  var resourceIdsClone = resourceIds.slice();
-  for (var i = resourceIdsClone.length - 1; i >= 0; i--) {
-    var resource = Resources.findOne(resourceIdsClone[i]);
-    if (resource.approve_permission && resource.approve_permission.length){
-      resourceIdsClone.splice(i, 1);
-    }
-  };
   var params = {
-    resource_ids: {$in: resourceIdsClone},
+    resource_ids: {$in: resourceIds},
     cancelled: false,
     start_date: {
       $lt: endDate
@@ -858,9 +906,31 @@ function conflictingReservationCount(reservationId, resourceIds, startDate, endD
       $ne: reservationId
     }
   }
-  var conflictingReservations = Reservations.find(params);
-  return conflictingReservations.count();
+  var conflictMessage = "Reservations cannot overlap."
+  var conflictingReservations = Reservations.find(params).fetch();
+  for (var i = conflictingReservations.length - 1; i >= 0; i--) {
+    var reservation = conflictingReservations[i];
+    if (reservation.incomplete){
+      var validOversubscription = true;
+      for (var j = resourceIds.length - 1; j >= 0; j--) {
+        var resource = Resources.findOne(resourceIds[j]);
+        //oversubscription is not valid if unrestricted resources exist in both conflicting and current reservation
+        if ((reservation.resource_ids.indexOf(resourceIds[j]) != -1) && (!resource.approve_permission || !resource.approve_permission.length)){
+          conflictMessage = "One or more unrestricted resources you requested are part of a pending reservation and are on hold.  Please try again later."
+          validOversubscription = false;
+        }
+      };
+      if (validOversubscription && omitValids){
+        conflictingReservations.splice(i, 1);
+      }
+    }
+  };
+  if (shouldReturnMessage){
+    return conflictingReservations.length ? conflictMessage : "";
+  }
+  return conflictingReservations;
 }
+
 
 /**
 @ignore

@@ -83,5 +83,8 @@ Template.search.helpers({
     },
     selectedResources: function () {
         return Session.get(selectedResourcesKey);
+    },
+    areMultipleResourcesSelected: function () {
+        return Session.get(selectedResourcesKey).length > 1;
     }
 });

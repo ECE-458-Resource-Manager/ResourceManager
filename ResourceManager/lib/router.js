@@ -99,7 +99,7 @@ Router.route('/reservation/:_id',{
         return Reservations.findOne(this.params._id);
     },
     waitOn: function() {
-        return [Meteor.subscribe('reservations'), Meteor.subscribe('resources')];
+        return [Meteor.subscribe('reservations'), Meteor.subscribe('resources'), Meteor.subscribe('allUsers')];
     }
 });
 
