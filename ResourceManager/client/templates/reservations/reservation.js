@@ -28,7 +28,7 @@ Template.reservation.rendered = function () {
     });
 
     // Initialize modals
-    $('.modal-trigger').leanModal();
+    this.$('.modal-trigger').leanModal();
 
     // Date picker initialization
     this.$('.datepicker').pickadate({
@@ -37,7 +37,7 @@ Template.reservation.rendered = function () {
     });
 
     // Initialize tooltips
-    $('.tooltipped').tooltip({delay: 50});
+    this.$('.tooltipped').tooltip({delay: 50});
 
 };
 
