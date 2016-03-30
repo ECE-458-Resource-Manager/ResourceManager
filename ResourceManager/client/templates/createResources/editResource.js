@@ -34,13 +34,14 @@ Template.editResource.events({
 		if (!selectedTags) selectedTags = [];
 
 		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
-			//error handle?
+			if (error) {
+                Materialize.toast(error.message, 4000);
+            } else {
+                Materialize.toast('Resource updated successfully.', 4000);
+				clearEditResourceForm(event);
+				Router.go('mainPage');
+            }
 		});
-
-		// Clear form
-		clearEditResourceForm(event);
-
-		Router.go('mainPage');
 
 		// Prevent default form submit
 		return false;
