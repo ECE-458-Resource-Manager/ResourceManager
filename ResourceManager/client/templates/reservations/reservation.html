@@ -13,13 +13,13 @@
         <!-- Title -->
         <div class="section">
             {{#if canManageReservation}}
-                <a href="#editReservationTitle" class="waves-effect waves-light modal-trigger btn-floating right red">
+                <a id="edit_reservation_title_button" class="waves-effect waves-light btn-floating right red">
                     <i class="material-icons right">edit</i>
                 </a>
             {{/if}}
 
             <!-- Modal Structure -->
-            <div id="editReservationTitle" class="modal">
+            <div id="edit_reservation_title_modal" class="modal">
                 <div class="modal-content">
                     <h4>Edit Reservation Title</h4>
                     <input placeholder="New Title" id="reservation_title_entry" type="text" class="validate">
@@ -39,14 +39,14 @@
         <!-- Description -->
         <div class="section">
             {{#if canManageReservation}}
-                <a href="#editReservationDescription"
-                   class="waves-effect waves-light modal-trigger btn-floating right red">
+                <a id="edit_reservation_description_button"
+                   class="waves-effect waves-light btn-floating right red">
                     <i class="material-icons right">edit</i>
                 </a>
             {{/if}}
 
             <!-- Modal Structure -->
-            <div id="editReservationDescription" class="modal">
+            <div id="edit_reservation_description_modal" class="modal">
                 <div class="modal-content">
                     <h4>Edit Reservation Description</h4>
                     <input placeholder="New Description" id="reservation_description_entry" type="text"
@@ -97,7 +97,7 @@
 
                 <div class="col s2">
                     {{#if canManageReservation}}
-                        <a href="#edit_duration_modal"
+                        <a id="edit_reservation_duration_button"
                            class="waves-effect waves-light modal-trigger btn-floating left red tooltipped"
                            data-position="bottom" data-delay="50"
                            data-tooltip="Reduce Duration. To extend, click 'Extend' below.">
@@ -107,7 +107,7 @@
                 </div>
 
                 <!-- Modal Structure -->
-                <div id="edit_duration_modal" class="modal">
+                <div id="edit_reservation_duration_modal" class="modal">
                     <div class="modal-content" style="padding-bottom: 100px">
                         <div class="input-field">
                             <input type="date" class="datepicker center-align" id="start_date_input">
@@ -140,48 +140,42 @@
 
         {{#if canManageReservation}}
             <div class="section">
+                <a id="extend_reservation_modal_button" class="waves-effect waves-light btn">Extend
+                    Reservation</a>
 
-                <div class="row">
-                    <!-- Extend reservation button -->
-                    <div class="col s6">
-                        <a class="modal-trigger waves-effect waves-light btn" href="#extend_reservation_modal">Extend
-                            Reservation</a>
+                <!-- Extend reservation modal structure -->
+                <div id="extend_reservation_modal" class="modal">
+                    <div class="modal-content">
+                        <h4>Confirm Extending</h4>
+                        <p>Clicking 'PROCEED' will redirect you to a page where you can create a new reservation
+                            for the resources in this reservation.</p>
                     </div>
-
-                    <!-- Cancel reservation button -->
-                    <div class="col s6">
-                        <a class="modal-trigger waves-effect waves-light btn" href="#cancel_reservation_modal">Cancel
-                            Reservation</a>
+                    <div class="modal-footer">
+                        <a id="extend_reservation_btn"
+                           class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
                     </div>
                 </div>
-
             </div>
+
+            <div class="section">
+                <a id="cancel_reservation_modal_button" class="waves-effect waves-light btn">Cancel
+                    Reservation</a>
+
+                <!-- Cancel reservation modal Structure -->
+                <div id="cancel_reservation_modal" class="modal">
+                    <div class="modal-content">
+                        <h4>Confirm Cancellation</h4>
+                        <p>Cancel reservation?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a id="cancel_reservation_btn"
+                           class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
+                    </div>
+                </div>
+            </div>
+
         {{/if}}
 
-        <!-- Extend reservation modal structure -->
-        <div id="extend_reservation_modal" class="modal">
-            <div class="modal-content">
-                <h4>Confirm Extending</h4>
-                <p>Clicking 'PROCEED' will redirect you to a page where you can create a new reservation
-                    for the resources in this reservation.</p>
-            </div>
-            <div class="modal-footer">
-                <a id="extend_reservation_btn"
-                   class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
-            </div>
-        </div>
-
-        <!-- Cancel reservation modal Structure -->
-        <div id="cancel_reservation_modal" class="modal">
-            <div class="modal-content">
-                <h4>Confirm Cancellation</h4>
-                <p>Cancel reservation?</p>
-            </div>
-            <div class="modal-footer">
-                <a id="cancel_reservation_btn"
-                   class="modal-action modal-close waves-effect waves-green btn-flat ">Proceed</a>
-            </div>
-        </div>
 
     </div>
 </template>

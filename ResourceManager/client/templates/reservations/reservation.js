@@ -27,9 +27,6 @@ Template.reservation.rendered = function () {
         Session.set(canManageReservationKey, result);
     });
 
-    // Initialize modals
-    this.$('.modal-trigger').leanModal();
-
     // Date picker initialization
     this.$('.datepicker').pickadate({
         selectMonths: true, // Creates a dropdown to control month
@@ -38,7 +35,6 @@ Template.reservation.rendered = function () {
 
     // Initialize tooltips
     this.$('.tooltipped').tooltip({delay: 50});
-
 };
 
 Template.reservation.events({
@@ -104,6 +100,22 @@ Template.reservation.events({
                 Router.go('myReservations');
             }
         });
+    },
+
+    'click #edit_reservation_title_button': function(e) {
+        $('#edit_reservation_title_modal').openModal();
+    },
+    'click #edit_reservation_description_button': function(e) {
+        $('#edit_reservation_description_modal').openModal();
+    },
+    'click #edit_reservation_duration_button': function(e) {
+        $('#edit_reservation_duration_modal').openModal();
+    },
+    'click #extend_reservation_modal_button': function(e) {
+        $('#extend_reservation_modal').openModal();
+    },
+    'click #cancel_reservation_modal_button': function(e) {
+        $('#cancel_reservation_modal').openModal();
     }
 });
 
