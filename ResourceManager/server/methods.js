@@ -30,7 +30,7 @@ methods.externalizedMethods = function(){ return externalizedMethods; }
   @param {array} tags
     Tags to associate with the resource, as a comma-separated array of strings
 */
-methods.addResource = function(name, description, viewPermission, reservePermission, approvePermission, tags, apiSecret){
+methods.addResource = function(name, description, viewPermission, reservePermission, approvePermission, tags, shareLevel, shareAmount, apiSecret){
   if (!isAdmin(apiSecret) || hasPermission("manage-resources")){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -49,7 +49,9 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
     view_permission: viewPermission,
     reserve_permission: reservePermission,
     approve_permission: [approvePermission],
-    tags: tags
+    tags: tags,
+    share_level: shareLevel,
+    share_amount: shareAmount
   });
 }
 externalizedMethods.addResource = [{name: "name", type: "String"},
@@ -57,7 +59,9 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
                                    {name: "viewPermission", type: "String"},
                                    {name: "reservePermission", type: "String"},
                                    {name: "approvePermission", type: "String"},
-                                   {name: "tags", type: "Array"}];
+                                   {name: "tags", type: "Array"},
+                                   {name: "shareLevel", type: "String"},
+                                   {name: "shareAmount", type: "Number"}];
 
 /**
   Modify a resource
@@ -71,7 +75,7 @@ externalizedMethods.addResource = [{name: "name", type: "String"},
   @param {array} tags
     Tags to associate with the resource, as a comma-separated array of strings
 */
-methods.modifyResource = function(resource, name, description, viewPermission, reservePermission, approvePermission, tags, apiSecret){
+methods.modifyResource = function(resource, name, description, viewPermission, reservePermission, approvePermission, tags, shareLevel, shareAmount, apiSecret){
   if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
@@ -94,7 +98,9 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
       view_permission: viewPermission,
       reserve_permission: reservePermission,
       approve_permission: [approvePermission],
-      tags: tags
+      tags: tags,
+      share_level: shareLevel,
+      share_amount: shareAmount
     }},
   );
 }
@@ -104,7 +110,9 @@ externalizedMethods.modifyResource = [{name: "resource", type: "String"},
                                      {name: "viewPermission", type: "String"},
                                      {name: "reservePermission", type: "String"},
                                      {name: "approvePermission", type: "String"},
-                                     {name: "tags", type: "Array"}];
+                                     {name: "tags", type: "Array"},
+                                     {name: "shareLevel", type: "String"},
+                                     {name: "shareAmount", type: "Number"}];
 
 
 /**
@@ -228,6 +236,9 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
   if (conflictCheck != ''){
     throw new Meteor.Error('overlapping', conflictCheck);
   }
+  //TODO: Check if any resources are past their share limits!
+  //var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
+   
   else if (!userId){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
