@@ -38,6 +38,16 @@ ResourceSchema = new SimpleSchema({
         type: [String],
         label: "Restricted Approval Permission",
         optional: true
+    },
+    share_level: {
+        type: String,
+        label: "Level of Sharing",
+        optional: true
+    },
+    share_amount: {
+        type: Number,
+        label: "Fixed quantity of simultaneous reservations allowed on this resource.",
+        optional: true
     }
 });
 

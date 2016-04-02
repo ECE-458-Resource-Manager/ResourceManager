@@ -1,5 +1,14 @@
 Template.createResources.rendered = function() {
 	Session.set(selectedTagsKey, []); // clear tags
+        this.$('.dropdown-button').dropdown({
+          inDuration: 300,
+          outDuration: 225,
+          constrain_width: false, // Does not change width of dropdown to that of the activator
+          hover: false, // Activate on hover
+          gutter: 0, // Spacing from edge
+          belowOrigin: false, // Displays dropdown below the button
+          alignment: 'left' // Displays dropdown with edge aligned to the left of button
+        });
 };
 
 Template.createResources.events({
@@ -10,11 +19,13 @@ Template.createResources.events({
 		var viewPermission = event.target.viewPermission.value;
 		var reservePermission = event.target.reservePermission.value;
                 var approvePermission = event.target.approvePermission.value;
+                var shareLevel = event.target.shareLevel.value;
+                var shareAmount = event.target.shareAmount.value;
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
 
-		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
+		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, shareLevel, shareAmount, function(error, result){
 			console.log('created resource');
 			console.log(result);
             if (error) {
@@ -27,7 +38,10 @@ Template.createResources.events({
 
 		// Prevent default form submit
 		return false;
-	}
+	},
+        'click .share-level': function (e, template) {
+           template.$("#shareLevelInput")[0].value = e.target.innerText;
+        }
 });
 
 function clearCreateResourceForm(event) {
@@ -36,5 +50,7 @@ function clearCreateResourceForm(event) {
 	event.target.viewPermission.value = "";
 	event.target.reservePermission.value = "";
         event.target.approvePermission.value = "";
+        event.target.shareLevel.value = "";
+        event.target.shareAmount.value = 0;
 	Session.set(selectedTagsKey, []);
 }
