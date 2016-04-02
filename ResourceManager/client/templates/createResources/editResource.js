@@ -13,12 +13,27 @@ Template.editResource.rendered = function() {
         if (this.data.approve_permission){
                 $("#approvePermissionInput")[0].value = this.data.approve_permission;
         }
+        if (this.data.share_level) {
+                $("#shareLevelInput")[0].value = this.data.share_level;
+        }
+        if (this.data.share_amount) {
+                $("#shareAmountInput")[0].value = this.data.share_amount;
+        }
 	// $("#viewPermissionInput")[0].value = this.data.view_permission;
 	// $("#reservePermissionInput")[0].value = this.data.reserve_permission;
 	resource = this.data;
 	var selectedTags = this.data.tags;
     if (!selectedTags) selectedTags = [];
     Session.set(selectedTagsKey, selectedTags);
+        this.$('.dropdown-button').dropdown({
+          inDuration: 300,
+          outDuration: 225,
+          constrain_width: false, // Does not change width of dropdown to that of the activator
+          hover: false, // Activate on hover
+          gutter: 0, // Spacing from edge
+          belowOrigin: false, // Displays dropdown below the button
+          alignment: 'left' // Displays dropdown with edge aligned to the left of button
+        });
 };
 
 Template.editResource.events({
@@ -30,10 +45,12 @@ Template.editResource.events({
 		var viewPermission = event.target.viewPermission.value;
 		var reservePermission = event.target.reservePermission.value;
                 var approvePermission = event.target.approvePermission.value;
+                var shareLevel = event.target.shareLevel.value;
+                var shareAmount = event.target.shareAmount.value;
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
-		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, function(error, result){
+		Meteor.call('modifyResource', resource, resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, shareLevel, shareAmount, function(error, result){
 			if (error) {
                 Materialize.toast(error.message, 4000);
             } else {
@@ -74,7 +91,11 @@ Template.editResource.events({
 			}
 		});
 		return false;
-	}
+	},
+        'click .share-level': function (e, template) {
+           template.$("#shareLevelInput")[0].value = e.target.innerText;
+        }
+
 });
 
 function clearEditResourceForm(event) {
@@ -82,5 +103,7 @@ function clearEditResourceForm(event) {
 	event.target.resourceDescription.value = "";
 	event.target.viewPermission.value = "";
 	event.target.reservePermission.value = "";
+        event.target.shareLevel.value = "";
+        event.target.shareAmount.value = 0;
 	Session.set(selectedTagsKey, []);
 }

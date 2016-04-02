@@ -11,6 +11,29 @@
 			<label for="resourceDescriptionInput">Resource Description</label>
 			<input type="text" name="resourceDescription" id="resourceDescriptionInput" required>
 		</div>
+ 
+              <!-- Dropdown Trigger -->
+               <div class="row">
+                <div class="valign-wrapper">
+                   <div class="input-field col s4" style="margin-top: 0; margin-left: 0px; padding: 0px;">
+                    <input type="text" name="shareLevel" id="shareLevelInput" placeholder="Share Level">
+                    </div>
+                <a class='dropdown-button btn-floating small' href='#' data-activates='dropdown1' ><i class="material-icons secondary-content" style="font-size: 35px;">arrow_drop_down</i></a>
+                   <!-- Dropdown Structure -->
+                   <div class="right" style="margin-left: 30px">
+                     <ul id='dropdown1' class='dropdown-content'> Select Share Level
+                       <li><a class="share-level" href="#">Exclusive</a></li>
+                       <li><a class="share-level" href="#">Limited</a></li>
+                       <li><a class="share-level" href="#">Unlimited</a></li>
+                     </ul>
+                   </div>
+                </div>                
+                <div class="input-field col s4">
+                        <label for="shareAmountInput">Amount of Sharing</label>
+                        <input type="number" name="shareAmount" id="shareAmountInput" required>
+                 </div>
+                </div>
+
 
 		<div class="row">
 
@@ -24,12 +47,11 @@
 				<input type="text" name="reservePermission" id="reservePermissionInput" required>
 			</div>
                         
-            <div class="input-field col s4">
-                <label for="approvePermissionInput">Approval Permission</label>
-                <input type="text" name="approvePermission" id="approvePermissionInput" required>
-            </div>
-
-		</div>
+                        <div class="input-field col s4">
+                          <label for="approvePermissionInput">Approval Permission</label>
+                          <input type="text" name="approvePermission" id="approvePermissionInput" required>
+                       </div>
+                </div>
 
 
 		{{> selectTags}}
