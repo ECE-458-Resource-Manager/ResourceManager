@@ -942,9 +942,41 @@ function sharedConflictingReservationCheck(reservationId, resourceIds, startDate
    //   cancelled: 
    //}
    for(var j = 0; j < resourceIds.length; j++) {
+      var isOk = checkSharing(resourceIds[j], startDate, endDate, shareLevel, shareAmount);
+      if(!isOk) {
+      }
    }        
 
       
+}
+
+function checkSharing(resourceId, startDate, endDate, shareLevel, shareAmount) {
+   for(var j = 0; j < resourceIds.length; j++) {
+
+     var params = {
+       resource_ids: {$in: resourceId},
+       cancelled: false,
+       end_date: {
+        $gt: startDate
+       }
+     };
+     if (endDate){
+       params.start_date = {
+        $lt: endDate
+       }
+     }
+
+     var reservations = Reservations.find(params);
+     var numSimultaneous = reservations.count();
+     if(shareLevel == 'Exclusive'){
+         return (numSimultaneous == 0);
+     } else if (shareLevel == 'Limited') {
+         return (numSimultaneous <= shareAmount);
+     } else if (shareLevel == 'Unlimited') {
+         return true;
+     }
+   }
+
 }
 
 /**
