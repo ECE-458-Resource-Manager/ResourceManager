@@ -3,27 +3,18 @@
         <div class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper" style="margin-left:50px; margin-right:50px;">
-                    <ul class="left">
-                        <li><a class="brand-logo" style="padding:0 15px 0 15px;" href="/">Resource Manager</a></li>
+
+                    <a class="brand-logo" style="padding:0 15px 0 15px;" href="/">Resource Manager</a>
+                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+
+                    <ul class="right hide-on-med-and-down">
+                        {{>layout_navbar_items}}
                     </ul>
-                    <ul class="right">
-                        {{#if isInRole 'admin, manage-resources'}}
-                            <li><a href="/create"><i class="mdi-content-add-circle left" style="margin-right: 5px;"></i>Add Resource</a></li>
-                        {{/if}}
-                        {{#if isInRole 'admin, manage-users'}}
-                            <li><a href="/manageUsers"><i class="mdi-social-people left" style="margin-right: 5px;"></i>Manage</a></li>
-                        {{/if}}
-                        {{#if currentUser}}
-                            <li><a href="/myReservations"><i class="mdi-action-view-list left" style="margin-right: 5px;"></i>Reservations</a></li>
-                            <li><a href="/approvals"><i class="mdi-action-check-circle left" style="margin-right: 5px;"></i>Approvals</a></li>
-                            <li><a href="/accountInfo"><i class="mdi-action-account-circle left" style="margin-right: 5px;"></i>{{currentUser.username}}</a></li>
-                        {{/if}}
-                        
-                        <li>{{> atNavButton}}</li>
-                        {{#unless currentUser}}
-                            <li>{{> dukeOauthButton}}</li>
-                        {{/unless}}
+
+                    <ul class="side-nav" id="mobile-demo">
+                        {{>layout_navbar_items}}
                     </ul>
+
                 </div>
             </nav>
         </div>
@@ -41,4 +32,23 @@
             </div>
         </div>
     </footer>
+</template>
+
+<template name="layout_navbar_items">
+    {{#if isInRole 'admin, manage-resources'}}
+        <li><a href="/create"><i class="mdi-content-add-circle left" style="margin-right: 5px;"></i>Add Resource</a></li>
+    {{/if}}
+    {{#if isInRole 'admin, manage-users'}}
+        <li><a href="/manageUsers"><i class="mdi-social-people left" style="margin-right: 5px;"></i>Manage</a></li>
+    {{/if}}
+    {{#if currentUser}}
+        <li><a href="/myReservations"><i class="mdi-action-view-list left" style="margin-right: 5px;"></i>Reservations</a></li>
+        <li><a href="/approvals"><i class="mdi-action-check-circle left" style="margin-right: 5px;"></i>Approvals</a></li>
+        <li><a href="/accountInfo"><i class="mdi-action-account-circle left" style="margin-right: 5px;"></i>{{currentUser.username}}</a></li>
+    {{/if}}
+
+    <li>{{> atNavButton}}</li>
+    {{#unless currentUser}}
+        <li>{{> dukeOauthButton}}</li>
+    {{/unless}}
 </template>
