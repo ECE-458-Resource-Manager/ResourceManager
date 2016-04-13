@@ -935,6 +935,18 @@ function conflictingReservationCheck(reservationId, resourceIds, startDate, endD
   return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, true, true);
 }
 
+function sharedConflictingReservationCheck(reservationId, resourceIds, startDate, endDate, shouldReturnMessage, omitValids){
+   //TODO: Loop through resources, do query for each, checking how many reservations exist at that time, and if its over limit
+   //var params = {
+   //   resource_ids: {$in: resourceIds},
+   //   cancelled: 
+   //}
+   for(var j = 0; j < resourceIds.length; j++) {
+   }        
+
+      
+}
+
 /**
 Core conflict method which both above methods use, one returns count of conflicts the other returns the conflict message
 */
