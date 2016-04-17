@@ -34,13 +34,16 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
   if (!isAdmin(apiSecret) || hasPermission("manage-resources")){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-  if (!_.contains(Roles.getAllRoles().fetch(), viewPermission)){
+  var allRoles = Roles.getAllRoles().fetch().map(function(obj){
+    return obj.name
+  })
+  if (!_.contains(allRoles, viewPermission)){
     Roles.createRole(viewPermission);
   }
-  if (!_.contains(Roles.getAllRoles().fetch(), reservePermission)){
+  if (!_.contains(allRoles, reservePermission)){
     Roles.createRole(reservePermission);
   }
-  if (!_.contains(Roles.getAllRoles().fetch(), approvePermission)){
+  if (!_.contains(allRoles, approvePermission)){
     Roles.createRole(approvePermission);
   }
   return Resources.insert({
@@ -79,13 +82,16 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
   if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-  if (!_.contains(Roles.getAllRoles().fetch(), viewPermission)){
+  var allRoles = Roles.getAllRoles().fetch().map(function(obj){
+    return obj.name
+  })
+  if (!_.contains(allRoles, viewPermission)){
     Roles.createRole(viewPermission);
   }
-  if (!_.contains(Roles.getAllRoles().fetch(), reservePermission)){
+  if (!_.contains(allRoles, reservePermission)){
     Roles.createRole(reservePermission);
   }
-  if (!_.contains(Roles.getAllRoles().fetch(), approvePermission)){
+  if (!_.contains(allRoles, approvePermission)){
     Roles.createRole(approvePermission);
   }
   var resourceId = getCollectionId(resource);
@@ -760,7 +766,10 @@ methods.addPermissionForGroup = function(groupName, permissionName, apiSecret){
     throw new Meteor.Error('invalid group name', 'No group exists with that name.');
   }
 
-  if (!_.contains(Roles.getAllRoles().fetch(), permissionName)){
+  var allRoles = Roles.getAllRoles().fetch().map(function(obj){
+    return obj.name
+  })
+  if (!_.contains(allRoles, permissionName)){
     Roles.createRole(permissionName);
   }
 
