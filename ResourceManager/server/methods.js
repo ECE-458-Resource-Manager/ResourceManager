@@ -436,6 +436,13 @@ methods.canManageReservation = function(reservation, apiSecret) {
 
 
 /**
+ * Check whether the current user can manage resources
+ */
+methods.canManageResources = function(apiSecret) {
+    return isAdmin(apiSecret) || hasPermission("manage-resources");
+};
+
+/**
  * Get incomplete reservations for user
  */
 methods.getIncompleteReservationsForUser = function(apiSecret) {
