@@ -13,3 +13,9 @@ Template.resourceItem.events({
     Session.set(selectedResourcesKey, selectedItems);
   }
 });
+
+Template.resourceItem.helpers({
+    canManageResources: function () {
+        return Session.get(canManageResourcesKey);
+    }
+});
