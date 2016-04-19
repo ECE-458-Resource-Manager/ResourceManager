@@ -236,14 +236,14 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
   if (conflictCheck != ''){
     throw new Meteor.Error('overlapping', conflictCheck);
   }
-  //TODO: Check if any resources are past their share limits!
-  //var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
-   
   else if (!userId){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-
+  var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
+  if (sharedConflictCheck != ''){
+    throw new Meteor.Error('unauthorized', 'One of the resources you requested is overshared.')
+  }
 
   var approverGroup =  [];
   var needsApproval = false;
@@ -944,8 +944,11 @@ function sharedConflictingReservationCheck(reservationId, resourceIds, startDate
    for(var j = 0; j < resourceIds.length; j++) {
       var isOk = checkSharing(resourceIds[j], startDate, endDate, shareLevel, shareAmount);
       if(!isOk) {
+        return 'Resource is over shared';
       }
    }        
+ 
+   return '';
 
       
 }
@@ -958,20 +961,18 @@ function checkSharing(resourceId, startDate, endDate, shareLevel, shareAmount) {
        cancelled: false,
        end_date: {
         $gt: startDate
-       }
-     };
-     if (endDate){
-       params.start_date = {
+       },
+       start_date: {
         $lt: endDate
        }
-     }
+     };
 
      var reservations = Reservations.find(params);
      var numSimultaneous = reservations.count();
      if(shareLevel == 'Exclusive'){
          return (numSimultaneous == 0);
      } else if (shareLevel == 'Limited') {
-         return (numSimultaneous <= shareAmount);
+         return (numSimultaneous < shareAmount); // < instead of <= because this doesnt include resource in new res.
      } else if (shareLevel == 'Unlimited') {
          return true;
      }
