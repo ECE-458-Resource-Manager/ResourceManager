@@ -1,10 +1,12 @@
 Resources = new Mongo.Collection('resources', {
     transform: function(doc) {
         var children = [];
-        for (var i = 0; i < doc.children_ids.length; i++) {
-            var resource = Resources.findOne({_id:doc.children_ids[i]}, { name: 1, children_ids: 1 });
-            children.push(resource);
-        };
+        if (doc.children_ids) {
+            for (var i = 0; i < doc.children_ids.length; i++) {
+                var resource = Resources.findOne({_id:doc.children_ids[i]}, { name: 1, children_ids: 1 });
+                children.push(resource);
+            };
+        }
         doc.children = children;
         return doc;
     }
