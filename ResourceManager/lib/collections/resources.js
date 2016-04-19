@@ -48,6 +48,12 @@ ResourceSchema = new SimpleSchema({
         type: Number,
         label: "Fixed quantity of simultaneous reservations allowed on this resource.",
         optional: true
+    },
+
+    children: {
+        type: [String],
+        label: "Child Resources",
+        optional: true
     }
 });
 
