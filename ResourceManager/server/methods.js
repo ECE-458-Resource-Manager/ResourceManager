@@ -246,10 +246,10 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
-  var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
-  if (sharedConflictCheck != ''){
-    throw new Meteor.Error('unauthorized', 'One of the resources you requested is overshared.')
-  }
+  //var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
+  //if (sharedConflictCheck != ''){
+  //  throw new Meteor.Error('unauthorized', 'One of the resources you requested is overshared.')
+  //}
 
   var approverGroup =  [];
   var needsApproval = false;
@@ -970,10 +970,9 @@ function sharedConflictingReservationCheck(reservationId, resourceIds, startDate
 }
 
 function checkSharing(resourceId, startDate, endDate, shareLevel, shareAmount) {
-   for(var j = 0; j < resourceIds.length; j++) {
-
-     var params = {
-       resource_ids: {$in: resourceId},
+     
+    var params = {
+       resource_ids: resourceId,
        cancelled: false,
        end_date: {
         $gt: startDate
@@ -985,6 +984,7 @@ function checkSharing(resourceId, startDate, endDate, shareLevel, shareAmount) {
 
      var reservations = Reservations.find(params);
      var numSimultaneous = reservations.count();
+     console.log("Number of simultaneous reservations is " + numSimultaneous);
      if(shareLevel == 'Exclusive'){
          return (numSimultaneous == 0);
      } else if (shareLevel == 'Limited') {
@@ -992,8 +992,6 @@ function checkSharing(resourceId, startDate, endDate, shareLevel, shareAmount) {
      } else if (shareLevel == 'Unlimited') {
          return true;
      }
-   }
-
 }
 
 /**
@@ -1016,7 +1014,7 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
       $ne: reservationId
     }
   }
-  var conflictMessage = "Reservations cannot overlap."
+  var conflictMessage = ""
   var conflictingReservations = Reservations.find(params).fetch();
   for (var i = conflictingReservations.length - 1; i >= 0; i--) {
     var reservation = conflictingReservations[i];
@@ -1035,6 +1033,16 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
       }
     }
   };
+  for (var j = resourceIds.length - 1; j >= 0; j--) {
+     var resource_obj = Resources.findOne(resourceIds[j]);
+     if(resource_obj) {
+       var validSharing = checkSharing(resourceIds[j], startDate, endDate, resource_obj.share_level, resource_obj.share_amount);
+       if(!validSharing){
+          conflictMessage = "One ore more resources you requested are already subscribed to their sharing limit";
+       }
+     }
+  }
+  
   if (shouldReturnMessage){
     return conflictingReservations.length ? conflictMessage : "";
   }
