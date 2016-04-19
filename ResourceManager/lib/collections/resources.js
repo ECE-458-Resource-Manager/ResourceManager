@@ -1,4 +1,16 @@
-Resources = new Mongo.Collection('resources');
+Resources = new Mongo.Collection('resources', {
+    transform: function(doc) {
+        var children = [];
+        if (doc.children_ids) {
+            for (var i = 0; i < doc.children_ids.length; i++) {
+                var resource = Resources.findOne({_id:doc.children_ids[i]}, { name: 1, children_ids: 1 });
+                children.push(resource);
+            };
+        }
+        doc.children = children;
+        return doc;
+    }
+});
 
 /* Fields:
  * name: String
@@ -50,9 +62,9 @@ ResourceSchema = new SimpleSchema({
         optional: true
     },
 
-    children: {
+    children_ids: {
         type: [String],
-        label: "Child Resources",
+        label: "Child Resources IDs",
         optional: true
     }
 });
