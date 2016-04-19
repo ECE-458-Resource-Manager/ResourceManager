@@ -26,6 +26,14 @@ Router.route('/editResource/:_id', {
     }
 });
 
+Router.route('/viewHierarchy/:_id', {
+    name: 'hierarchy',
+    data: function() { return Resources.findOne(this.params._id); },
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
 Router.route('/editGroup/:_id', {
     name: 'editGroup',
     data: function() { return Groups.findOne(this.params._id); },

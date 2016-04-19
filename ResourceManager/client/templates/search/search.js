@@ -1,3 +1,5 @@
+canManageResourcesKey = "canManageResourcesKey";
+
 ResourcesFilter = new FilterCollections(Resources, {
     template: 'search',
     name: 'filter-collections-resources', // should match publish name
@@ -52,6 +54,11 @@ Template.search.rendered = function () {
     this.$('.datepicker').pickadate({
         selectMonths: true, // Creates a dropdown to control month
         selectYears: 15 // Creates a dropdown of 15 years to control year
+    });
+
+    // Check if user can manage resources
+    Meteor.call('canManageResources', function (error, result) {
+        Session.set(canManageResourcesKey, result);
     });
 
     // Set input fields to previously entered values
