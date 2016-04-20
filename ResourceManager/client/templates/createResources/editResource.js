@@ -93,9 +93,18 @@ Template.editResource.events({
 		return false;
 	},
         'click .share-level': function (e, template) {
-           template.$("#shareLevelInput")[0].value = e.target.innerText;
-        }
+			template.$("#shareLevelInput")[0].value = e.target.innerText;
+		},
 
+	'click #exclusiveShareLevel': function (e) {
+		$("#shareAmountInput").prop('disabled',true);
+	},
+	'click #limitedShareLevel': function (e) {
+		$("#shareAmountInput").prop('disabled',false);
+	},
+	'click #unlimitedShareLevel': function (e) {
+		$("#shareAmountInput").prop('disabled',true);
+	}
 });
 
 function clearEditResourceForm(event) {

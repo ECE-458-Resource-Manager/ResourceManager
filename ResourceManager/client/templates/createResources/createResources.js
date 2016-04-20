@@ -9,6 +9,8 @@ Template.createResources.rendered = function() {
           belowOrigin: false, // Displays dropdown below the button
           alignment: 'left' // Displays dropdown with edge aligned to the left of button
         });
+
+    $("#shareAmountInput").prop('disabled',true);
 };
 
 Template.createResources.events({
@@ -41,7 +43,17 @@ Template.createResources.events({
 	},
         'click .share-level': function (e, template) {
            template.$("#shareLevelInput")[0].value = e.target.innerText;
-        }
+        },
+
+    'click #exclusiveShareLevel': function (e) {
+        $("#shareAmountInput").prop('disabled',true);
+    },
+    'click #limitedShareLevel': function (e) {
+        $("#shareAmountInput").prop('disabled',false);
+    },
+    'click #unlimitedShareLevel': function (e) {
+        $("#shareAmountInput").prop('disabled',true);
+    }
 });
 
 function clearCreateResourceForm(event) {
