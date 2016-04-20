@@ -1,7 +1,7 @@
 Resources = new Mongo.Collection('resources', {
     transform: function(doc) {
         var children = [];
-        if (doc.children_ids) {
+        if (doc.children_ids !== undefined && doc.children_ids.length != 0) {
             for (var i = 0; i < doc.children_ids.length; i++) {
                 var resource = Resources.findOne({_id:doc.children_ids[i]}, { name: 1, children_ids: 1, children: 1 });
                 children.push(resource);

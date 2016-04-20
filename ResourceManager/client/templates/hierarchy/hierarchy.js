@@ -18,7 +18,6 @@ Template.hierarchy.rendered = function() {
 	];
 
 	var children_data = [];
-	console.log(this.data);
 	var head_resource = {label: this.data.name, id: ++current_id, children: generateChildren(this.data)};
 	children_data.push(head_resource);
 
@@ -31,8 +30,8 @@ Template.hierarchy.rendered = function() {
 };
 
 var generateChildren = function(node) {
-	children = [];
-	if (!node.children) {
+	var children = [];
+	if (node.children === undefined || node.children.length == 0) {
 		return children;
 	}
 	for (var i = 0; i < node.children.length; i++) {
