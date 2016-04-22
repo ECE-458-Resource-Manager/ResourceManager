@@ -17,19 +17,16 @@ Template.manageHierarchy.rendered = function() {
 		    'tree.move',
 		    function(event) {
 		    	event.preventDefault();
-        		// do the move first, and _then_ POST back.
         		event.move_info.do_move();
-		    	console.log('event move info', event.move_info);
-		        console.log('moved_node', event.move_info.moved_node);
-		        console.log('target_node', event.move_info.target_node);
-		        console.log('position', event.move_info.position);
-		        console.log('previous_parent', event.move_info.previous_parent);
+		    	// console.log('event move info', event.move_info);
+		     //    console.log('moved_node', event.move_info.moved_node);
+		     //    console.log('target_node', event.move_info.target_node);
+		     //    console.log('position', event.move_info.position);
+		     //    console.log('previous_parent', event.move_info.previous_parent);
 
 		        movedName = event.move_info.moved_node.name
 		        var prevParentName = event.move_info.previous_parent.name
 		        var newParentName = event.move_info.moved_node.parent.name
-		        console.log('PREV NAME', prevParentName);
-		        console.log('NEW NAME', newParentName);
 
 		        if (prevParentName != newParentName) {
 		        	movedResource = Resources.findOne({name: movedName})
