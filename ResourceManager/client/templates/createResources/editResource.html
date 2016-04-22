@@ -22,17 +22,17 @@
                    <!-- Dropdown Structure -->
                    <div class="right" style="margin-left: 30px">
                      <ul id='dropdown1' class='dropdown-content'> Select Share Level
-                       <li><a class="share-level" href="#">Exclusive</a></li>
-                       <li><a class="share-level" href="#">Limited</a></li>
-                       <li><a class="share-level" href="#">Unlimited</a></li>
+                       <li><a class="share-level" href="#" id="exclusiveShareLevel">Exclusive</a></li>
+                       <li><a class="share-level" href="#" id="limitedShareLevel">Limited</a></li>
+                       <li><a class="share-level" href="#" id="unlimitedShareLevel">Unlimited</a></li>
                      </ul>
                    </div>
                 </div>
                 
                 
-                <div class="input-field col s4" style="margin-top: 0; margin-left: 0px; padding: 0px;">
+                <div id="shareAmountContainer" class="input-field col s4" style="margin-top: 0; margin-left: 0px; padding: 0px;">
                         <label for="shareAmountInput">Amount of Sharing</label>
-                        <input type="number" name="shareAmount" id="shareAmountInput" placeholder="Share Amount">
+                        <input type="number" name="shareAmount" id="shareAmountInput">
                 </div>
                 </div>
 
@@ -51,9 +51,21 @@
 
 
 			<div class="input-field col s4">
-				<label for="approvePermissionInput" class="active">Approval Permission</label>
-		        <input type="text" name="approvePermission" id="approvePermissionInput">
+        <div class="row">
+            <div class="col s10">
+              <label for="approvePermissionInput">Approval Permissions</label>
+              <input type="text" name="approvePermission" id="approvePermissionInput">
             </div>
+            <div class="col s2">
+              <a data='approvePermissions' class="add-permission new-tag-button btn-floating waves-effect waves-light" href="#"><i class="material-icons">add</i></a>
+            </div>
+            <div class="row">
+              <div class="col s10">
+                {{> listView dataSource='approvePermissions'}}
+              </div>
+            </div>
+        </div>
+      </div>
 
 		</div>
 

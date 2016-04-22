@@ -51,7 +51,7 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
     description: description,
     view_permission: viewPermission,
     reserve_permission: reservePermission,
-    approve_permission: [approvePermission],
+    approve_permission: approvePermission,
     tags: tags,
     share_level: shareLevel,
     share_amount: shareAmount
@@ -103,7 +103,7 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
       description: description,
       view_permission: viewPermission,
       reserve_permission: reservePermission,
-      approve_permission: [approvePermission],
+      approve_permission: approvePermission,
       tags: tags,
       share_level: shareLevel,
       share_amount: shareAmount
@@ -233,31 +233,49 @@ methods.getReservationStream = function(resources, startDate, endDate){
     New reservation end date
 **/
 methods.createReservation = function(resources, startDate, endDate, title, description, apiSecret){
-  var resourceIds = getCollectionIds(resources);
+  var parentIds = getCollectionIds(resources);
+  var childrenIds = getChildrenIds(parentIds);
+  var parentsAndChildrenIds = parentIds.concat(childrenIds);
+
   var userId = currentUserOrWithKey(apiSecret, false);
   //console.log("________________________CREATING RESERVATION______________________");
   //console.log("This reservation contains " + resourceIds.length + " resources");
   //console.log("All resources in this reservation (server-side): " + resourceIds);
-  var conflictCheck = conflictingReservationCheck(null, resourceIds, startDate, endDate)
+  var conflictCheck = conflictingReservationCheck(null, parentsAndChildrenIds, startDate, endDate)
   if (conflictCheck != ''){
     throw new Meteor.Error('overlapping', conflictCheck);
-  }
+  }   
+
   else if (!userId){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
+
   //var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
   //if (sharedConflictCheck != ''){
   //  throw new Meteor.Error('unauthorized', 'One of the resources you requested is overshared.')
   //}
 
+
+    // Confirm that user has permission to reserve parent resources
+    if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret))) {
+        for (var k=0; k<parentIds.length; k++) {
+            var currResource = Resources.findOne(parentIds[k]);
+
+            if (!hasPermission(currResource.reserve_permission, apiSecret)) {
+                throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+            }
+        }
+    }
+
+
   var approverGroup =  [];
   var needsApproval = false;
   //Check if any resources requires approval, if so return 'incomplete' reservation
-  for (var i = 0; i < resourceIds.length; i++) {
+  for (var i = 0; i < parentsAndChildrenIds.length; i++) {
     //console.log("Attempting to check if the following resource needs approval");
-    var resourceId = resourceIds[i];
-    var currentResource = Resources.findOne(resourceId);
+    var currentResource = Resources.findOne(parentsAndChildrenIds[i]);
+
     console.log(currentResource);
     //console.log("------------------------------------------------------------");
     if (currentResource.approve_permission != null){
@@ -272,16 +290,13 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
     }
   }
   //console.log("_________________________________________________________________________________________________");
-  
-  
-  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret) || hasPermission(currentResource.reserve_permission, apiSecret))){
-    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
-  }
-  else{
-      return Reservations.insert({
+
+
+
+    return Reservations.insert({
         owner_id: [userId],
         attending_user_id: [userId],
-        resource_ids: resourceIds,
+        resource_ids: parentsAndChildrenIds,
         start_date: startDate,
         end_date: endDate,
         cancelled: false,
@@ -290,8 +305,7 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
         description: description,
         incomplete: needsApproval,
         approvers: approverGroup
-      });
-  }
+    });
 }
 externalizedMethods.createReservation = [{name: "resource", type: "String"}, 
                                          {name: "startDate", type: "Date"},
@@ -1182,6 +1196,32 @@ getCollectionIds = function(items){
   return newItems;
 }
 
+/**
+ * Returns all of the children IDs for the given parent resources
+ * @param parentIds Resource IDS for parent resources
+ */
+getChildrenIds = function(parentIds) {
+    var childrenIds = [];
+    for (var i=0; i<parentIds.length; i++) {
+        childrenIds = childrenIds.concat(getChildrenIdsHelper(parentIds[i]));
+    }
+    return childrenIds;
+};
+
+/**
+ * Returns the IDs for all of the children belonging to the resource with the given ID
+ * @param resourceId
+ */
+getChildrenIdsHelper = function(resourceId) {
+    var resource = Resources.findOne(resourceId);
+    var childrenIds = resource.children_ids;
+
+    for (var i=0; i<resource.children_ids.length; i++) {
+        childrenIds = childrenIds.concat( getChildrenIdsHelper(resource.children_ids[i]) );
+    }
+
+    return childrenIds;
+};
 
 //pass methods to Meteor.methods
 Meteor.methods(methods);

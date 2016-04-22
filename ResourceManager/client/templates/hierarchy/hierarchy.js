@@ -1,3 +1,5 @@
+var current_id = 0
+
 Template.hierarchy.rendered = function() {
 	var data = [
 		{
@@ -14,9 +16,28 @@ Template.hierarchy.rendered = function() {
 			]
 		}
 	];
+
+	var children_data = [];
+	var head_resource = {label: this.data.name, id: ++current_id, children: generateChildren(this.data)};
+	children_data.push(head_resource);
+
+
 	$('#tree1').tree({
-		data: data,
+		data: children_data,
 		autoOpen: true,
 		dragAndDrop: true
 	});
+};
+
+var generateChildren = function(node) {
+	var children = [];
+	if (node.children === undefined || node.children.length == 0) {
+		return children;
+	}
+	for (var i = 0; i < node.children.length; i++) {
+		var new_node = {label: node.children[i].name, id: ++current_id, children: generateChildren(node.children[i])};
+		children.push(new_node);
+	}
+	return children
+
 };

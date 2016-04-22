@@ -22,15 +22,15 @@
                    <!-- Dropdown Structure -->
                    <div class="right" style="margin-left: 30px">
                      <ul id='dropdown1' class='dropdown-content'> Select Share Level
-                       <li><a class="share-level" href="#">Exclusive</a></li>
-                       <li><a class="share-level" href="#">Limited</a></li>
-                       <li><a class="share-level" href="#">Unlimited</a></li>
+                       <li><a class="share-level" href="#" id="exclusiveShareLevel">Exclusive</a></li>
+                       <li><a class="share-level" href="#" id="limitedShareLevel">Limited</a></li>
+                       <li><a class="share-level" href="#" id="unlimitedShareLevel">Unlimited</a></li>
                      </ul>
                    </div>
                 </div>                
-                <div class="input-field col s4">
+                <div id="shareAmountContainer" class="input-field col s4">
                         <label for="shareAmountInput">Amount of Sharing</label>
-                        <input type="number" name="shareAmount" id="shareAmountInput" required>
+                        <input type="number" name="shareAmount" id="shareAmountInput">
                  </div>
                 </div>
 
@@ -38,20 +38,40 @@
 		<div class="row">
 
 			<div class="input-field col s4">
-				<label for="viewPermissionInput">View Permission</label>
-				<input type="text" name="viewPermission" id="viewPermissionInput" required>
+        <div class="row">
+          <div class="col s12">
+            <label for="viewPermissionInput">View Permission</label>
+				    <input type="text" name="viewPermission" id="viewPermissionInput" required>
+          </div>
+        </div>
 			</div>
 
 			<div class="input-field col s4">
-				<label for="reservePermissionInput">Reserve Permission</label>
-				<input type="text" name="reservePermission" id="reservePermissionInput" required>
-			</div>
+        <div class="row">
+          <div class="col s12">
+				    <label for="reservePermissionInput">Reserve Permission</label>
+				    <input type="text" name="reservePermission" id="reservePermissionInput" required>
+          </div>
+  			</div>
+      </div>
                         
-                        <div class="input-field col s4">
-                          <label for="approvePermissionInput">Approval Permission</label>
-                          <input type="text" name="approvePermission" id="approvePermissionInput" required>
-                       </div>
-                </div>
+      <div class="input-field col s4">
+        <div class="row">
+            <div class="col s10">
+              <label for="approvePermissionInput">Approval Permissions</label>
+              <input type="text" name="approvePermission" id="approvePermissionInput" required>
+            </div>
+            <div class="col s2">
+              <a data='approvePermissions' class="add-permission new-tag-button btn-floating waves-effect waves-light" href="#"><i class="material-icons">add</i></a>
+            </div>
+            <div class="row">
+              <div class="col s10">
+                {{> listView dataSource='approvePermissions'}}
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
 
 
 		{{> selectTags}}
