@@ -46,6 +46,9 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
   if (!_.contains(allRoles, approvePermission)){
     Roles.createRole(approvePermission);
   }
+  if(approvePermission.length == 0) {
+    approvePermission = null;
+  }
   return Resources.insert({
     name: name,
     description: description,
@@ -95,6 +98,9 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
     Roles.createRole(approvePermission);
   }
   var resourceId = getCollectionId(resource);
+  if(approvePermission.length == 0){
+     approvePermission = null;
+  }
   return Resources.update(
     {_id: resourceId},
     { $set:{
