@@ -540,11 +540,11 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
                 var conflictReservation = conflicts[n];
                 var keepThisReservation = true;
                 for( var j = 0; j < conflictReservation.resource_ids.length; j++) {
-                    var conflictResourceID = conflictReservation.resource_ids[j]);
+                    var conflictResourceID = conflictReservation.resource_ids[j];
                     var conflictResource = Resources.findOne({_id: conflictResourceID});
-                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_leve, conflictResource.share_amount);
+                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_level, conflictResource.share_amount);
                     
-                    keepThisReservation = !okForSharing;
+                    keepThisReservation = okForSharing;
                     
                 }
                 if(!keepThisReservation){
@@ -564,11 +564,11 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
                 var conflictReservation = conflicts[n];
                 var keepThisReservation = true;
                 for( var j = 0; j < conflictReservation.resource_ids.length; j++) {
-                    var conflictResourceID = conflictReservation.resource_ids[j]);
+                    var conflictResourceID = conflictReservation.resource_ids[j];
                     var conflictResource = Resources.findOne({_id: conflictResourceID});
-                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_leve, conflictResource.share_amount);
+                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_level, conflictResource.share_amount);
 
-                    keepThisReservation = !okForSharing;
+                    keepThisReservation = okForSharing;
 
                 }
                 if(!keepThisReservation){
