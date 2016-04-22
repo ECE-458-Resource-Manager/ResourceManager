@@ -48,6 +48,13 @@ Router.route('/manageHierarchy', {
     }
 });
 
+Router.route('/reservationHierarchy', {
+    name: 'reservationHierarchy',
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
 Router.route('/editGroup/:_id', {
     name: 'editGroup',
     data: function() { return Groups.findOne(this.params._id); },
