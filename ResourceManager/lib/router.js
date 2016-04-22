@@ -11,8 +11,15 @@ Router.route('/', {
     }
 });
 
-Router.route('/create', {
-    name: 'createResources',
+// Router.route('/create', {
+//     name: 'createResources',
+//     waitOn: function() {
+//         return Meteor.subscribe('resources');
+//     }
+// });
+
+Router.route('/manageResources', {
+    name: 'manageResources',
     waitOn: function() {
         return Meteor.subscribe('resources');
     }
@@ -29,6 +36,13 @@ Router.route('/editResource/:_id', {
 Router.route('/viewHierarchy/:_id', {
     name: 'hierarchy',
     data: function() { return Resources.findOne(this.params._id); },
+    waitOn: function() {
+        return Meteor.subscribe('resources');
+    }
+});
+
+Router.route('/manageHierarchy', {
+    name: 'manageHierarchy',
     waitOn: function() {
         return Meteor.subscribe('resources');
     }

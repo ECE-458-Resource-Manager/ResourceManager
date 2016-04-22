@@ -137,6 +137,63 @@ methods.removeResource = function(resource, apiSecret){
 externalizedMethods.removeResource = [{name: "resource", type: "String"}];
 
 
+/**
+  Get resources hierarchy
+*/
+methods.getResourcesHierarchy = function(apiSecret){
+  if (!(isAdmin(apiSecret) || hasPermission("manage-resources"))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  allResources = Resources.find().fetch()
+
+  var current_id = 0;
+  var nonRoots = new Set();
+  var hierarchyData = [];
+
+  var findNonRoots = function(node) {
+    if (node.children === undefined || node.children.length == 0) {
+      return;
+    }
+    for (var i = 0; i < node.children.length; i++) {
+      nonRoots.add(node.children[i].name)
+      findNonRoots(node.children[i]);
+    }
+  };
+
+  for (var i = 0; i < allResources.length; i++) {
+    findNonRoots(allResources[i]);
+  };
+
+  // for (let item of nonRoots) console.log(item);
+
+  var generateChildren = function(node) {
+    var children = [];
+    if (node.children === undefined || node.children.length == 0) {
+      return children;
+    }
+    for (var i = 0; i < node.children.length; i++) {
+      var new_node = {label: node.children[i].name, id: ++current_id, children: generateChildren(node.children[i])};
+      children.push(new_node);
+    }
+    return children
+
+  };
+
+  for (var i = 0; i < allResources.length; i++) {
+    if (!nonRoots.has(allResources[i].name)) {
+      var rootResource = {label: allResources[i].name, id: ++current_id, children: generateChildren(allResources[i])};
+      hierarchyData.push(rootResource);
+    }
+  };
+  // console.log("Hierarchy Tree:");
+  // console.log(hierarchyData)
+  return hierarchyData
+
+}
+externalizedMethods.getResourcesHierarchy = [];
+
+
 
 /********************************************************************************
 *****
