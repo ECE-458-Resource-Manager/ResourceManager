@@ -2,9 +2,9 @@
 	<a href="#" class="collection-item">
     	<h5>{{name}}</h5>
     	{{#if canManageResources}}
-    		<a href="/editResource/{{_id}}" class="waves-effect waves-light btn-floating right red"><i class="material-icons right">edit</i></a>
+    		<a href="/editResource/{{_id}}" class="waves-effect waves-light btn-floating right red nobubble"><i class="material-icons right">edit</i></a>
     	{{/if}}
-        <a href="/viewHierarchy/{{_id}}" class="waves-effect waves-light btn-floating right red"><i class="material-icons right">filter_list</i></a>
+        <a href="/viewHierarchy/{{_id}}" class="waves-effect waves-light btn-floating right red nobubble"><i class="material-icons right">filter_list</i></a>
     	<p>{{description}}</p>
     	{{#each tags}}
     		{{> tagChipNoX}}
