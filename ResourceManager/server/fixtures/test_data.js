@@ -7,7 +7,8 @@ if (Resources.find().count() === 0) {
         description: 'Thin is in. This HP ENVY notebook is the thinnest we\'ve ever made. ' +
         'This superbly sleek, elegantly designed body packs the power of a high-performance PC. ' +
         'It\'s portable. It\'s beautiful. It\'s going to be your new obsession.',
-        tags: ['laptop', 'hp', 'notebook']
+        tags: ['laptop', 'hp', 'notebook'],
+        share_level: 'Exclusive'
     });
 
     Resources.insert({
@@ -17,7 +18,8 @@ if (Resources.find().count() === 0) {
         'work unplugged. When it’s time to kick back and relax, you can get up to 10 hours of iTunes movie playback ' +
         'on the 11-inch model and up to 12 hours on the 13-inch model. And with up to 30 days of standby time, you can ' +
         'go away for weeks and pick up right where you left off.',
-        tags: ['laptop', 'apple', 'mac', 'macbook']
+        tags: ['laptop', 'apple', 'mac', 'macbook'],
+        share_level: 'Unlimited'
     });
 
     Resources.insert({
@@ -27,7 +29,9 @@ if (Resources.find().count() === 0) {
         'professional or educational tasks. With an am.7 1/2 hour battery life. - Intel® HD Graphics for quality viewing. - ' +
         'Vibrant 15" display for a larger computing area.8GB DDR3L RAM for efficient processing. - Dell laptop provides incredible' +
         ' performance for both gaming and professional use. ',
-        tags: ['laptop', 'dell']
+        tags: ['laptop', 'dell'],
+        share_level: 'Limited',
+        share_amount: 3
     })
 
     // Rooms
@@ -37,20 +41,25 @@ if (Resources.find().count() === 0) {
         description: 'Located in the lower stacks, this large study room allows for more secluded conference or ' +
         'group study alike. Seating 6-8, it provides DVD/VHS abilities as well as a flatscreen TV and sound system ' +
         'for presentations. In-desk media hookups with Ethernet and HDMI cables allow for easy presenting.',
-        tags: ['classroom', 'study room']
+        tags: ['classroom', 'study room'],
+        share_level: 'Limited',
+        share_amount: 1
     });
 
     Resources.insert({
         name: 'Edge Project Room 1',
         description: 'Seats 2-4',
-        tags: ['project room']
+        tags: ['project room'],
+        share_level: 'Unlimited'
     });
 
     Resources.insert({
         name: 'Lilly 001',
         description: 'The Paul B. Williams Study Room is located on Lilly’s lower floor. The room features flexible ' +
         'furnishings and whiteboards and can accommodate groups up to 18.',
-        tags: ['study room']
+        tags: ['study room'],
+        share_level: 'Limited',
+        share_amount: 6
     });
 
     // Servers
@@ -63,21 +72,24 @@ if (Resources.find().count() === 0) {
         'the instance size.  T2 instances accrue CPU Credits when they are idle, and use CPU credits when they are active.  ' +
         'T2 instances are a good choice for workloads that don’t use the full CPU often or consistently, ' +
         'but occasionally need to burst (e.g. web servers, developer environments and small databases).',
-        tags: ['server', 't2']
+        tags: ['server', 't2'],
+        share_level: 'Unlimited'
     });
 
     Resources.insert({
         name: 'Amazon M4 Server 10',
         description: 'M4 instances are the latest generation of General Purpose Instances. This family provides a ' +
         'balance of compute, memory, and network resources, and it is a good choice for many applications.',
-        tags: ['server', 'm4']
+        tags: ['server', 'm4'],
+        share_level: 'Exclusive'
     });
 
     Resources.insert({
         name: 'Amazon M3 Server 5',
         description: 'This family includes the M3 instance types and provides a balance of compute, memory, and ' +
         'network resources, and it is a good choice for many applications.',
-        tags: ['server', 'm3']
+        tags: ['server', 'm3'],
+        share_level: 'Unlimited'
     });
 
 
