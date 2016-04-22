@@ -924,6 +924,31 @@ externalizedMethods.removePermissionForGroup = [{name: "groupName", type: "Strin
                                                 {name: "permissionName", type: "String"}];
 
 /**
+@param groupName
+  Name of group to delete
+**/
+methods.deleteGroup = function(groupName, apiSecret){
+  if (!currentUserOrWithKey(apiSecret)){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  if (!(hasPermission("admin", apiSecret) || hasPermission("manage-users", apiSecret))){
+    throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
+  }
+
+  foundGroup = Groups.findOne({name: groupName});
+  if (!foundGroup){
+    throw new Meteor.Error('invalid group name', 'No group exists with that name.');
+  }
+
+  Groups.remove(
+    { name: groupName }
+  );
+  return true;
+}
+externalizedMethods.removePermissionForGroup = [{name: "groupName", type: "String"}];
+
+/**
 @ignore
 
 Find the API secret for a user, creating a new one if needed.

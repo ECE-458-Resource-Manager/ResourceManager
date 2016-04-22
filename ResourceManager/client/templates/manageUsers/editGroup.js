@@ -51,6 +51,13 @@ Template.editGroup.events({
 		memberID = Meteor.users.findOne({username: memberName})._id;
 		Meteor.call('removeUserFromGroup', memberID, Session.get(selectedGroupKey).name);
 		return false;
+	},
+
+	"click .deleteGroupButton": function (event, template) {
+		event.preventDefault();
+		Meteor.call('deleteGroup', Session.get(selectedGroupKey).name);
+		Router.go('manageUsers');
+		return false;
 	}
 });
 
