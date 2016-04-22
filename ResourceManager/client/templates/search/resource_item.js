@@ -11,6 +11,10 @@ Template.resourceItem.events({
       selectedItems.push(this);
     }
     Session.set(selectedResourcesKey, selectedItems);
+  },
+
+  'click .nobubble': function(event){
+    event.stopPropagation();
   }
 });
 
