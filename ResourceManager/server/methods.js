@@ -1154,8 +1154,13 @@ getChildrenIdsHelper = function(resourceId) {
     var resource = Resources.findOne(resourceId);
     var childrenIds = resource.children_ids;
 
-    for (var i=0; i<resource.children_ids.length; i++) {
-        childrenIds = childrenIds.concat( getChildrenIdsHelper(resource.children_ids[i]) );
+    if (childrenIds){    
+      for (var i=0; i<resource.children_ids.length; i++) {
+          childrenIds = childrenIds.concat( getChildrenIdsHelper(resource.children_ids[i]) );
+      }
+    }
+    else{
+      childrenIds = []
     }
 
     return childrenIds;
