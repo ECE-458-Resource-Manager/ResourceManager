@@ -537,11 +537,23 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
             //console.log("Number of conflicts: " + conflicts.length);
             for(var n = 0; n < conflicts.length; n++) {
                 //console.log("Cancel" + conflicts[n].title);
-                approveOrDenyReservation(conflicts[n], false);
+                var conflictReservation = conflicts[n];
+                var keepThisReservation = true;
+                for( var j = 0; j < conflictReservation.resource_ids.length; j++) {
+                    var conflictResourceID = conflictReservation.resource_ids[j]);
+                    var conflictResource = Resources.findOne({_id: conflictResourceID});
+                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_leve, conflictResource.share_amount);
+                    
+                    keepThisReservation = !okForSharing;
+                    
+                }
+                if(!keepThisReservation){
+                    approveOrDenyReservation(conflicts[n], false);
+                }
             }
           }
       } else if (allMyPermissions[i] == 'admin' || allMyPermissions[i] == 'manage-reservations'){
-        isNotApprover = false;
+          isNotApprover = false;
           if (approve){
             approvalsNeeded.splice(0);
             var conflicts = conflictingReservationsNoValids(reservation._id, reservation.resource_ids, reservation.start_date, reservation.end_date);
@@ -549,7 +561,20 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
             
             for(var n = 0; n < conflicts.length; n++) {
                 //console.log("Cancel" + conflicts[n].title);
-                approveOrDenyReservation(conflicts[n], false);
+                var conflictReservation = conflicts[n];
+                var keepThisReservation = true;
+                for( var j = 0; j < conflictReservation.resource_ids.length; j++) {
+                    var conflictResourceID = conflictReservation.resource_ids[j]);
+                    var conflictResource = Resources.findOne({_id: conflictResourceID});
+                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_leve, conflictResource.share_amount);
+
+                    keepThisReservation = !okForSharing;
+
+                }
+                if(!keepThisReservation){
+                    approveOrDenyReservation(conflicts[n], false);
+                }
+            
             }
           }
       }
@@ -1054,10 +1079,6 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
        var validSharing = checkSharing(resourceIds[j], startDate, endDate, resource_obj.share_level, resource_obj.share_amount);
        if(!validSharing){
           conflictMessage = "One ore more resources you requested are already subscribed to their sharing limit";
-       } else {
-          for (var i = conflictingReservations.length - 1; i >= 0; i--) {
-             var reservation = conflictingReservations[i];
-          }
        }
      }
   }
@@ -1215,9 +1236,8 @@ getChildrenIds = function(parentIds) {
 getChildrenIdsHelper = function(resourceId) {
     var resource = Resources.findOne(resourceId);
     var childrenIds = resource.children_ids;
-
     for (var i=0; i<resource.children_ids.length; i++) {
-        childrenIds = childrenIds.concat( getChildrenIdsHelper(resource.children_ids[i]) );
+       childrenIds = childrenIds.concat( getChildrenIdsHelper(resource.children_ids[i]) );
     }
 
     return childrenIds;
