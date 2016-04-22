@@ -46,6 +46,9 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
   if (!_.contains(allRoles, approvePermission)){
     Roles.createRole(approvePermission);
   }
+  if(approvePermission.length == 0) {
+    approvePermission = null;
+  }
   return Resources.insert({
     name: name,
     description: description,
@@ -95,6 +98,9 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
     Roles.createRole(approvePermission);
   }
   var resourceId = getCollectionId(resource);
+  if(approvePermission.length == 0){
+     approvePermission = null;
+  }
   return Resources.update(
     {_id: resourceId},
     { $set:{
@@ -301,15 +307,18 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
   var conflictCheck = conflictingReservationCheck(null, parentsAndChildrenIds, startDate, endDate)
   if (conflictCheck != ''){
     throw new Meteor.Error('overlapping', conflictCheck);
-  }
+  }   
 
-  //TODO: Check if any resources are past their share limits!
-  //var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
-   
   else if (!userId){
     //TODO: or not privileged
     throw new Meteor.Error('unauthorized', 'You are not authorized to perform that operation.');
   }
+
+  //var sharedConflictCheck = sharedConflictingReservationCheck(null, resourceIds, startDate, endDate);
+  //if (sharedConflictCheck != ''){
+  //  throw new Meteor.Error('unauthorized', 'One of the resources you requested is overshared.')
+  //}
+
 
     // Confirm that user has permission to reserve parent resources
     if (!(hasPermission("admin", apiSecret) || hasPermission("manage-reservations", apiSecret))) {
@@ -321,6 +330,7 @@ methods.createReservation = function(resources, startDate, endDate, title, descr
             }
         }
     }
+
 
   var approverGroup =  [];
   var needsApproval = false;
@@ -590,18 +600,44 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
             //console.log("Number of conflicts: " + conflicts.length);
             for(var n = 0; n < conflicts.length; n++) {
                 //console.log("Cancel" + conflicts[n].title);
-                approveOrDenyReservation(conflicts[n], false);
+                var conflictReservation = conflicts[n];
+                var keepThisReservation = true;
+                for( var j = 0; j < conflictReservation.resource_ids.length; j++) {
+                    var conflictResourceID = conflictReservation.resource_ids[j];
+                    var conflictResource = Resources.findOne({_id: conflictResourceID});
+                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_level, conflictResource.share_amount);
+                    
+                    keepThisReservation = okForSharing;
+                    
+                }
+                if(!keepThisReservation){
+                    approveOrDenyReservation(conflicts[n], false);
+                }
             }
           }
       } else if (allMyPermissions[i] == 'admin' || allMyPermissions[i] == 'manage-reservations'){
-        isNotApprover = false;
+          isNotApprover = false;
           if (approve){
             approvalsNeeded.splice(0);
             var conflicts = conflictingReservationsNoValids(reservation._id, reservation.resource_ids, reservation.start_date, reservation.end_date);
             //console.log("Number of conflicts: " + conflicts.length);
+            
             for(var n = 0; n < conflicts.length; n++) {
                 //console.log("Cancel" + conflicts[n].title);
-                approveOrDenyReservation(conflicts[n], false);
+                var conflictReservation = conflicts[n];
+                var keepThisReservation = true;
+                for( var j = 0; j < conflictReservation.resource_ids.length; j++) {
+                    var conflictResourceID = conflictReservation.resource_ids[j];
+                    var conflictResource = Resources.findOne({_id: conflictResourceID});
+                    var okForSharing = checkSharing(conflictResourceID, reservation.start_date, reservation.end_date, conflictResource.share_level, conflictResource.share_amount);
+
+                    keepThisReservation = okForSharing;
+
+                }
+                if(!keepThisReservation){
+                    approveOrDenyReservation(conflicts[n], false);
+                }
+            
             }
           }
       }
@@ -1018,6 +1054,49 @@ function conflictingReservationCheck(reservationId, resourceIds, startDate, endD
   return conflictingReservationCheckWithMessage(reservationId, resourceIds, startDate, endDate, true, true);
 }
 
+function sharedConflictingReservationCheck(reservationId, resourceIds, startDate, endDate, shouldReturnMessage, omitValids){
+   //TODO: Loop through resources, do query for each, checking how many reservations exist at that time, and if its over limit
+   //var params = {
+   //   resource_ids: {$in: resourceIds},
+   //   cancelled: 
+   //}
+   for(var j = 0; j < resourceIds.length; j++) {
+      var isOk = checkSharing(resourceIds[j], startDate, endDate, shareLevel, shareAmount);
+      if(!isOk) {
+        return 'Resource is over shared';
+      }
+   }        
+ 
+   return '';
+
+      
+}
+
+function checkSharing(resourceId, startDate, endDate, shareLevel, shareAmount) {
+     
+    var params = {
+       resource_ids: resourceId,
+       cancelled: false,
+       end_date: {
+        $gt: startDate
+       },
+       start_date: {
+        $lt: endDate
+       }
+     };
+
+     var reservations = Reservations.find(params);
+     var numSimultaneous = reservations.count();
+     console.log("Number of simultaneous reservations is " + numSimultaneous);
+     if(shareLevel == 'Exclusive'){
+         return (numSimultaneous == 0);
+     } else if (shareLevel == 'Limited') {
+         return (numSimultaneous < shareAmount); // < instead of <= because this doesnt include resource in new res.
+     } else if (shareLevel == 'Unlimited') {
+         return true;
+     }
+}
+
 /**
 Core conflict method which both above methods use, one returns count of conflicts the other returns the conflict message
 */
@@ -1038,7 +1117,7 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
       $ne: reservationId
     }
   }
-  var conflictMessage = "Reservations cannot overlap."
+  var conflictMessage = ""
   var conflictingReservations = Reservations.find(params).fetch();
   for (var i = conflictingReservations.length - 1; i >= 0; i--) {
     var reservation = conflictingReservations[i];
@@ -1057,6 +1136,16 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
       }
     }
   };
+  for (var j = resourceIds.length - 1; j >= 0; j--) {
+     var resource_obj = Resources.findOne(resourceIds[j]);
+     if(resource_obj) {
+       var validSharing = checkSharing(resourceIds[j], startDate, endDate, resource_obj.share_level, resource_obj.share_amount);
+       if(!validSharing){
+          conflictMessage = "One ore more resources you requested are already subscribed to their sharing limit";
+       }
+     }
+  }
+  
   if (shouldReturnMessage){
     return conflictingReservations.length ? conflictMessage : "";
   }
