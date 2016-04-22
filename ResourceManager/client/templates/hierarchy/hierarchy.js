@@ -1,21 +1,21 @@
 var current_id = 0
 
 Template.hierarchy.rendered = function() {
-	var data = [
-		{
-			label: 'node1', id: 1,
-			children: [
-				{ label: 'child1', id: 2 },
-				{ label: 'child2', id: 3 }
-			]
-		},
-		{
-			label: 'node2', id: 4,
-			children: [
-				{ label: 'child3', id: 5 }
-			]
-		}
-	];
+	// var data = [
+	// 	{
+	// 		label: 'node1', id: 1,
+	// 		children: [
+	// 			{ label: 'child1', id: 2 },
+	// 			{ label: 'child2', id: 3 }
+	// 		]
+	// 	},
+	// 	{
+	// 		label: 'node2', id: 4,
+	// 		children: [
+	// 			{ label: 'child3', id: 5 }
+	// 		]
+	// 	}
+	// ];
 
 	var children_data = [];
 	var head_resource = {label: this.data.name, id: ++current_id, children: generateChildren(this.data)};
@@ -25,8 +25,9 @@ Template.hierarchy.rendered = function() {
 	$('#tree1').tree({
 		data: children_data,
 		autoOpen: true,
-		dragAndDrop: true
+		dragAndDrop: false
 	});
+
 };
 
 var generateChildren = function(node) {

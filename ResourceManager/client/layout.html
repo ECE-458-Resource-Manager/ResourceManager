@@ -36,7 +36,8 @@
 
 <template name="layout_navbar_items">
     {{#if isInRole 'admin, manage-resources'}}
-        <li><a href="/create"><i class="mdi-content-add-circle left" style="margin-right: 5px;"></i>Add Resource</a></li>
+        <!-- <li><a href="/create"><i class="mdi-content-add-circle left" style="margin-right: 5px;"></i>Add Resource</a></li> -->
+        <li><a href="/manageResources"><i class="mdi-action-extension left" style="margin-right: 5px;"></i>Resources</a></li>
     {{/if}}
     {{#if isInRole 'admin, manage-users'}}
         <li><a href="/manageUsers"><i class="mdi-social-people left" style="margin-right: 5px;"></i>Manage</a></li>
