@@ -532,6 +532,7 @@ var approveOrDenyReservation = function(reservation, approve, apiSecret){
             approvalsNeeded.splice(0);
             var conflicts = conflictingReservationsNoValids(reservation._id, reservation.resource_ids, reservation.start_date, reservation.end_date);
             //console.log("Number of conflicts: " + conflicts.length);
+            
             for(var n = 0; n < conflicts.length; n++) {
                 //console.log("Cancel" + conflicts[n].title);
                 approveOrDenyReservation(conflicts[n], false);
@@ -1039,6 +1040,10 @@ function conflictingReservationCheckWithMessage(reservationId, resourceIds, star
        var validSharing = checkSharing(resourceIds[j], startDate, endDate, resource_obj.share_level, resource_obj.share_amount);
        if(!validSharing){
           conflictMessage = "One ore more resources you requested are already subscribed to their sharing limit";
+       } else {
+          for (var i = conflictingReservations.length - 1; i >= 0; i--) {
+             var reservation = conflictingReservations[i];
+          }
        }
      }
   }
