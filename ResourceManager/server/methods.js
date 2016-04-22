@@ -51,7 +51,7 @@ methods.addResource = function(name, description, viewPermission, reservePermiss
     description: description,
     view_permission: viewPermission,
     reserve_permission: reservePermission,
-    approve_permission: [approvePermission],
+    approve_permission: approvePermission,
     tags: tags,
     share_level: shareLevel,
     share_amount: shareAmount
@@ -103,7 +103,7 @@ methods.modifyResource = function(resource, name, description, viewPermission, r
       description: description,
       view_permission: viewPermission,
       reserve_permission: reservePermission,
-      approve_permission: [approvePermission],
+      approve_permission: approvePermission,
       tags: tags,
       share_level: shareLevel,
       share_amount: shareAmount

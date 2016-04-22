@@ -11,13 +11,17 @@ Template.editResource.rendered = function() {
 		$("#reservePermissionInput")[0].value = this.data.reserve_permission;
 	}
         if (this.data.approve_permission){
-                $("#approvePermissionInput")[0].value = this.data.approve_permission;
+          Session.set('approvePermissions', this.data.approve_permission);
+        }
+        else{
+          Session.set('approvePermissions', []);
         }
         if (this.data.share_level) {
-                $("#shareLevelInput")[0].value = this.data.share_level;
+          $("#shareAmountContainer").prop('hidden',this.data.share_level != 'Limited');
+          $("#shareLevelInput")[0].value = this.data.share_level;
         }
         if (this.data.share_amount) {
-                $("#shareAmountInput")[0].value = this.data.share_amount;
+          $("#shareAmountInput")[0].value = this.data.share_amount;
         }
 	// $("#viewPermissionInput")[0].value = this.data.view_permission;
 	// $("#reservePermissionInput")[0].value = this.data.reserve_permission;
@@ -37,6 +41,19 @@ Template.editResource.rendered = function() {
 };
 
 Template.editResource.events({
+  "click .add-permission": function(event) {
+    var dataKey = $(event.target.parentNode).attr('data');
+    var permissionData = Session.get(dataKey);
+    var permissionInput;
+    if (dataKey == 'approvePermissions'){
+      permissionInput = $("#approvePermissionInput").val();
+      $("#approvePermissionInput").val('');
+    }
+    if (permissionInput){
+      permissionData.push(permissionInput);
+      Session.set(dataKey, permissionData);
+    }
+  },
 	"submit form": function (event) {
 		event.preventDefault();
 		var resourceName = event.target.resourceName.value;
@@ -44,9 +61,9 @@ Template.editResource.events({
 		var resourceDescription = event.target.resourceDescription.value;
 		var viewPermission = event.target.viewPermission.value;
 		var reservePermission = event.target.reservePermission.value;
-                var approvePermission = event.target.approvePermission.value;
-                var shareLevel = event.target.shareLevel.value;
-                var shareAmount = event.target.shareAmount.value;
+    var approvePermission = Session.get('approvePermissions');
+    var shareLevel = event.target.shareLevel.value;
+    var shareAmount = event.target.shareAmount.value;
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
@@ -97,13 +114,13 @@ Template.editResource.events({
 		},
 
 	'click #exclusiveShareLevel': function (e) {
-		$("#shareAmountInput").prop('disabled',true);
+		$("#shareAmountContainer").prop('hidden',true);
 	},
 	'click #limitedShareLevel': function (e) {
-		$("#shareAmountInput").prop('disabled',false);
+		$("#shareAmountContainer").prop('hidden',false);
 	},
 	'click #unlimitedShareLevel': function (e) {
-		$("#shareAmountInput").prop('disabled',true);
+		$("#shareAmountContainer").prop('hidden',true);
 	}
 });
 

@@ -1,5 +1,6 @@
 Template.createResources.rendered = function() {
 	Session.set(selectedTagsKey, []); // clear tags
+  Session.set('approvePermissions', []);
         this.$('.dropdown-button').dropdown({
           inDuration: 300,
           outDuration: 225,
@@ -10,25 +11,47 @@ Template.createResources.rendered = function() {
           alignment: 'left' // Displays dropdown with edge aligned to the left of button
         });
 
-    $("#shareAmountInput").prop('disabled',true);
+    $("#shareAmountContainer").prop('hidden',true);
 };
 
 Template.createResources.events({
+  "click .add-permission": function(event) {
+    var dataKey = $(event.target.parentNode).attr('data');
+    var permissionData = Session.get(dataKey);
+    var permissionInput;
+    if (dataKey == 'approvePermissions'){
+      permissionInput = $("#approvePermissionInput").val();
+      $("#approvePermissionInput").val('');
+    }
+    if (permissionInput){
+      permissionData.push(permissionInput);
+      Session.set(dataKey, permissionData);
+    }
+
+  },
 	"submit form": function (event) {
 		event.preventDefault();
 		var resourceName = event.target.resourceName.value;
 		var resourceDescription = event.target.resourceDescription.value;
 		var viewPermission = event.target.viewPermission.value;
 		var reservePermission = event.target.reservePermission.value;
-                var approvePermission = event.target.approvePermission.value;
-                var shareLevel = event.target.shareLevel.value;
-                var shareAmount = event.target.shareAmount.value;
+    if (event.target.approvePermission.value){
+      var permissionData = Session.get('approvePermissions');
+      permissionData.push(event.target.approvePermission.value);
+      Session.set('approvePermissions', permissionData);
+    }
+    var approvePermissions = Session.get('approvePermissions');
+    var shareLevel = event.target.shareLevel.value;
+    if (event.target.shareAmount.value){
+      var shareAmount = event.target.shareAmount.value;
+    }
 		var selectedTags = Session.get(selectedTagsKey);
 		if (!selectedTags) selectedTags = [];
 
 
-		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermission, selectedTags, shareLevel, shareAmount, function(error, result){
+		Meteor.call('addResource', resourceName, resourceDescription, viewPermission, reservePermission, approvePermissions, selectedTags, shareLevel, shareAmount, function(error, result){
 			console.log('created resource');
+      Session.set('approvePermissions', []);
 			console.log(result);
             if (error) {
                 Materialize.toast(error.message, 4000);
@@ -46,13 +69,13 @@ Template.createResources.events({
         },
 
     'click #exclusiveShareLevel': function (e) {
-        $("#shareAmountInput").prop('disabled',true);
+        $("#shareAmountContainer").prop('hidden',true);
     },
     'click #limitedShareLevel': function (e) {
-        $("#shareAmountInput").prop('disabled',false);
+        $("#shareAmountContainer").prop('hidden',false);
     },
     'click #unlimitedShareLevel': function (e) {
-        $("#shareAmountInput").prop('disabled',true);
+        $("#shareAmountContainer").prop('hidden',true);
     }
 });
 
