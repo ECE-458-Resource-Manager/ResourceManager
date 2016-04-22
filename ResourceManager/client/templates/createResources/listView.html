@@ -1,0 +1,9 @@
+<template name="listView">
+  {{#if listHasCount}}
+    <ul class="collection">
+      {{#each listData}}
+        <li class="list-item collection-item">{{this}}</li>
+      {{/each}}
+    </ul>
+  {{/if}}
+</template>
